@@ -8,12 +8,21 @@
 import SwiftUI
 
 struct SummaryView: View {
+    @State private var weekData = WeekData()
+
     var body: some View {
-        ZStack {
-            HomeHeaderView(name:"User", doneThisWeek: 1, plannedThisWeek: 3).padding(20).background(AppColors.background)
+        ScrollView {
+            VStack(spacing: 20) {
+                HomeHeaderView(name: "User", doneThisWeek: 1, plannedThisWeek: 3)
+
+                WeekCardView(days: weekData.days(), onEdit: {})
+            }
+            .padding(20)
         }
+        .background(AppColors.background)
     }
 }
+
 
 #Preview {
     SummaryView()
