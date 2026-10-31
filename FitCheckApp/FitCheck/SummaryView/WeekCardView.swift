@@ -222,10 +222,3 @@ private let sampleData: WeekData = {
         .background(AppColors.background)
         .preferredColorScheme(.dark)
 }
-
-// Small phone: 320 pt wide, so unit is 3.2
-#Preview("Small phone") {
-    WeekCardView(days: sampleData.days(), unit: 3.2, onEdit: {})
-        .frame(width: 320)
-        .background(AppColors.background)
-}
