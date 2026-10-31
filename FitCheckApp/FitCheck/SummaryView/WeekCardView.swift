@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Stato di un giorno
+// MARK: - State of a day
 // Decides how the circle is drawn.
 enum DayState {
     case done       // workout done: green circle
@@ -56,8 +56,6 @@ struct WeekData {
         let letters = ["M", "T", "W", "T", "F", "S", "S"]
         let todayStart = cal.startOfDay(for: today)
 
-        
-        
         var result: [WeekDay] = []
         for (offset, letter) in letters.enumerated() {
             // Monday + offset days = the date of this day
@@ -80,8 +78,7 @@ struct WeekData {
     // The state of a day: the first check that matches wins.
     private func state(of date: Date, weekday: Int, todayStart: Date) -> DayState {
         let day = Calendar.current.startOfDay(for: date)
-        
-        
+
         if day == todayStart {
             return .today
         }
@@ -101,38 +98,39 @@ struct WeekData {
 // MARK: - The card
 struct WeekCardView: View {
     let days: [WeekDay]
+    let unit: CGFloat   // 1% of the screen width
     let onEdit: () -> Void   // what happens when the pencil is tapped
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 4 * unit) {
 
-            // Title row with the pencil on the right
+            // Title row with the pencil button on the right
             HStack {
                 Text("This week")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.system(size: 3.8 * unit, weight: .semibold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
 
                 Button(action: onEdit) {
                     Image(systemName: "pencil")
-                        .font(.footnote.weight(.semibold))
+                        .font(.system(size: 3.4 * unit, weight: .semibold))
                         .foregroundStyle(AppColors.textSecondary)
-                        .padding(10)
+                        .padding(2.5 * unit)
                         .background(AppColors.cardAlt, in: Circle())
                 }
             }
 
-            // Row with the 7 days, all the same width
+            // The 7 days, each one gets the same width
             HStack {
                 ForEach(days) { day in
-                    DayCircleView(day: day)
+                    DayCircleView(day: day, unit: unit)
                         .frame(maxWidth: .infinity)
                 }
             }
         }
-        .padding(16)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 24))
+        .padding(4.5 * unit)
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 6 * unit))
     }
 }
 
@@ -140,27 +138,23 @@ struct WeekCardView: View {
 // Circle with the number inside and the letter below.
 struct DayCircleView: View {
     let day: WeekDay
-
-    // Circle diameter: scales with the iPhone's text size.
-    @ScaledMetric private var size: CGFloat = 40
+    let unit: CGFloat   // 1% of the screen width
 
     var body: some View {
-        VStack(spacing: 6) {
-
-            // The circle: fill + border + number, stacked on top of each other
+        VStack(spacing: 1.5 * unit) {
+            // Fill + border + number, one on top of the other
             ZStack {
                 Circle().fill(fillColor)
                 Circle().strokeBorder(borderColor, style: borderStyle)
                 Text("\(day.number)")
-                    .font(.footnote.bold())
+                    .font(.system(size: 3.6 * unit, weight: .bold))
                     .foregroundStyle(numberColor)
             }
-            .frame(width: size, height: size)
+            .frame(width: 10 * unit, height: 10 * unit)
 
             // The letter below, bold only for today
             Text(day.letter)
-                .font(.caption)
-                .fontWeight(day.state == .today ? .bold : .regular)
+                .font(.system(size: 3 * unit, weight: day.state == .today ? .bold : .regular))
                 .foregroundStyle(day.state == .today ? AppColors.textPrimary : AppColors.textSecondary)
         }
     }
@@ -185,12 +179,12 @@ struct DayCircleView: View {
         }
     }
 
-    // Border style: dashed only for today
+    // Dashed border only for today
     private var borderStyle: StrokeStyle {
         if day.state == .today {
-            return StrokeStyle(lineWidth: 2, dash: [4, 3])
+            return StrokeStyle(lineWidth: 0.5 * unit, dash: [1 * unit, 0.8 * unit])
         }
-        return StrokeStyle(lineWidth: 1.5)
+        return StrokeStyle(lineWidth: 0.4 * unit)
     }
 
     // Number color: readable on every background
@@ -215,15 +209,23 @@ private let sampleData: WeekData = {
     return data
 }()
 
-#Preview("Chiaro") {
-    WeekCardView(days: sampleData.days(), onEdit: {})
+// unit 3.9 = an iPhone that is 390 pt wide
+#Preview("Light") {
+    WeekCardView(days: sampleData.days(), unit: 3.9, onEdit: {})
         .padding(20)
         .background(AppColors.background)
 }
 
-#Preview("Scuro") {
-    WeekCardView(days: sampleData.days(), onEdit: {})
+#Preview("Dark") {
+    WeekCardView(days: sampleData.days(), unit: 3.9, onEdit: {})
         .padding(20)
         .background(AppColors.background)
         .preferredColorScheme(.dark)
+}
+
+// Small phone: 320 pt wide, so unit is 3.2
+#Preview("Small phone") {
+    WeekCardView(days: sampleData.days(), unit: 3.2, onEdit: {})
+        .frame(width: 320)
+        .background(AppColors.background)
 }
