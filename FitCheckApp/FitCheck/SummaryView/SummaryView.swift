@@ -17,9 +17,8 @@ struct SummaryView: View {
     // Goals chosen by the user: empty at the start
     @State private var goals: [GoalItem] = []
 
-    // Plans created by the user and the position of the plan that comes next: empty at the start
+    // Plans created by the user: empty at the start
     @State private var plans: [PlanItem] = []
-    @State private var nextPlanIndex = 0
 
     var body: some View {
         // The only GeometryReader of the screen: it measures the width of the device
@@ -45,10 +44,8 @@ struct SummaryView: View {
                     // My plans: with no plans this shows only the "Create your first plan" card
                     MyPlansSectionView(
                         plans: plans,
-                        nextPlanIndex: nextPlanIndex,
                         unit: unit,
                         onNewPlan: {},
-                        onEditRotation: {},
                         onOpenPlan: { _ in },
                         onEditPlan: { _ in }
                     )

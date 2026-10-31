@@ -42,7 +42,7 @@ struct TodayCardView: View {
                 Text("\(plan.minutes) min · \(plan.exerciseCount) exercises")
                     .font(.system(size: 3.6 * unit, weight: .medium))
                     .foregroundStyle(.black.opacity(0.8))
-                    .minimumScaleFactor(0.8)   // shrinks a little on a small phone instead of wrapping
+                    .minimumScaleFactor(0.8)   // shrinks a little instead of wrapping
                     .lineLimit(1)
             }
 
