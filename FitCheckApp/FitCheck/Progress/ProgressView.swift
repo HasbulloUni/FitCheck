@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct ProgressView: View {
     var body: some View {
         Text("Hello")
     }
 }
 
 #Preview {
-    HomeView()
+    ProgressView()
 }
