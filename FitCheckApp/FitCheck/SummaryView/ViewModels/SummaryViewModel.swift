@@ -79,6 +79,10 @@ final class SummaryViewModel {
         weekData.changeWeek(plannedWeekdays: draft.workoutWeekdays)
 
         savedWeekPlan = draft
+
+        // The reminders are updated in the background: the permission is asked now
+        Task { await ReminderScheduler.updateReminders(for: draft) }
+
         closeEditWeek()
     }
 

@@ -97,6 +97,14 @@ final class EditWeekViewModel {
     // The "Remind me" switch
     func setRemindMe(_ isOn: Bool) {
         draft.remindMe = isOn
+
+        // Turning it on: every training day must have its time (default 18:00)
+        if isOn {
+            for weekday in draft.workoutWeekdays where !draft.reminders.contains(where: { $0.weekday == weekday }) {
+                draft.reminders.append(DayReminder(weekday: weekday, minutes: EditWeekRules.defaultStartMinutes))
+            }
+            draft.reminders.sort { mondayFirstPosition($0.weekday) < mondayFirstPosition($1.weekday) }
+        }
     }
 
     // The time picker: the user taps "18:00" and chooses the time

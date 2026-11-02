@@ -27,8 +27,8 @@ struct EditWeekDraft {
     // How long a session is, in minutes (one of EditWeekRules.durations)
     var durationMinutes = EditWeekRules.defaultDuration
 
-    // The "Remind me" switch
-    var remindMe = true
+    // The "Remind me" switch: it starts off, the user turns it on
+    var remindMe = false
 
     // One reminder time for each training day
     var reminders: [DayReminder] = []

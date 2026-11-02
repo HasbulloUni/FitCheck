@@ -36,6 +36,14 @@ struct ReminderCard: View {
                     .scaleEffect(0.85)
             }
 
+            // Switch on but no training day yet: a short hint instead of an empty card
+            if remindMe && reminders.isEmpty {
+                Text(EditWeekRules.noDaysHint)
+                    .font(.system(size: 3.4 * unit, weight: .regular))
+                    .foregroundStyle(AppColors.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             if remindMe {
                 ForEach(reminders) { reminder in
                     ReminderTimeRow(
@@ -70,7 +78,7 @@ private func sampleTime(_ minutes: Int) -> String {
 // The card only draws: the switch value comes from outside.
 // This small wrapper keeps the value, so in the preview the switch really works.
 private struct ReminderCardPreview: View {
-    @State var remindMe = true
+    @State var remindMe = false
     let reminders: [DayReminder]
 
     var body: some View {
