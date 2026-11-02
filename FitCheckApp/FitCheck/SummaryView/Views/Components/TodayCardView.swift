@@ -10,14 +10,6 @@ import SwiftUI
 // BLOCK 3 - The yellow "Today" card: the workout of the day with a Start button.
 // Every measure is a multiple of "unit" (1% of the screen width).
 
-// MARK: - The data shown in the card
-// Only data, no logic. Later it will come from the user's plans.
-struct TodayPlan {
-    let name: String          // e.g. "Full body A"
-    let minutes: Int          // e.g. 67
-    let exerciseCount: Int    // e.g. 11
-}
-
 // MARK: - The card
 struct TodayCardView: View {
     let plan: TodayPlan
