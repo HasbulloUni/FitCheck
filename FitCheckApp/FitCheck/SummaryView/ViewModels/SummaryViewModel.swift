@@ -26,10 +26,64 @@ final class SummaryViewModel {
     // Plans created by the user: empty at the start
     var plans: [PlanItem] = []
 
+    // What the user saved in "Edit your week" (days, duration, reminders): nil until the first save
+    var savedWeekPlan: EditWeekDraft? = nil
+
+    // True while the screen "Edit your week" is open
+    var isEditWeekOpen = false
+
+    // Which week the card shows: 0 = this week, 1 = next week... (the user swipes to change it)
+    var weekOffset = 0
+
+    // How many weeks ahead the user can swipe
+    static let maxWeeksAhead = 8
+
     // The 7 days shown in the week card
-    var weekDays: [WeekDay] { weekData.days() }
+    var weekDays: [WeekDay] { weekData.days(weekOffset: weekOffset) }
+
+    // The title of the card
+    var weekTitle: String {
+        switch weekOffset {
+        case 0:  return "This week"
+        case 1:  return "Next week"
+        default: return "In \(weekOffset) weeks"
+        }
+    }
+
+    // Swipe to the next week
+    func showNextWeek() {
+        if weekOffset < Self.maxWeeksAhead {
+            weekOffset += 1
+        }
+    }
+
+    // Swipe back: never before this week, because the past cannot be trained
+    func showPreviousWeek() {
+        if weekOffset > 0 {
+            weekOffset -= 1
+        }
+    }
 
     // Workouts done / planned this week, shown in the header
-    var doneThisWeek: Int { weekDays.filter { $0.state == .done }.count }
+    var doneThisWeek: Int { weekData.days().filter { $0.state == .done }.count }
     var plannedThisWeek: Int { weekData.plannedWeekdays.count }
+
+    // The pencil of the week card: opens "Edit your week"
+    func openEditWeek() {
+        isEditWeekOpen = true
+    }
+
+    // Save changes: the chosen days go to the week card, the rest is kept for the next time
+    func saveWeek(_ draft: EditWeekDraft) {
+        // Valid from today on: the days before today keep what they had
+        weekData.changeWeek(plannedWeekdays: draft.workoutWeekdays)
+
+        savedWeekPlan = draft
+        closeEditWeek()
+    }
+
+    // Back (or Save): closes "Edit your week" and the Home is shown again
+    func closeEditWeek() {
+        isEditWeekOpen = false
+    }
 }

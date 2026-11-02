@@ -25,7 +25,15 @@ struct SummaryView: View {
                         unit: unit
                     )
 
-                    WeekCardView(days: viewModel.weekDays, unit: unit, onEdit: {})
+                    WeekCardView(
+                        days: viewModel.weekDays,
+                        title: viewModel.weekTitle,
+                        weekOffset: viewModel.weekOffset,
+                        unit: unit,
+                        onEdit: { viewModel.openEditWeek() },
+                        onPreviousWeek: { viewModel.showPreviousWeek() },
+                        onNextWeek: { viewModel.showNextWeek() }
+                    )
 
                     // Today: show the workout if there is one, otherwise invite the user to add it
                     if let plan = viewModel.todayPlan {
@@ -50,6 +58,15 @@ struct SummaryView: View {
             }
         }
         .background(AppColors.background)
+        // The pencil opens "Edit your week" over the Home: Back returns here
+        .fullScreenCover(isPresented: $viewModel.isEditWeekOpen) {
+            EditWeekView(
+                week: viewModel.weekData,
+                savedPlan: viewModel.savedWeekPlan,
+                onBack: { viewModel.closeEditWeek() },
+                onSave: { viewModel.saveWeek($0) }
+            )
+        }
     }
 }
 
