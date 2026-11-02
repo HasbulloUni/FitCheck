@@ -60,7 +60,7 @@ struct TodayCardView: View {
         }
         .padding(5 * unit)
         // The card stays yellow with black text in light and dark mode, so fixed black and white on purpose
-        .background(AppColors.yellow, in: RoundedRectangle(cornerRadius: 7 * unit))
+        .background(AppColors.yellow, in: RoundedRectangle(cornerRadius: 6 * unit))
     }
 }
 
@@ -107,7 +107,7 @@ struct TodayEmptyCardView: View {
         .padding(5 * unit)
         // Dashed border: it says "something is missing here"
         .overlay(
-            RoundedRectangle(cornerRadius: 7 * unit)
+            RoundedRectangle(cornerRadius: 6 * unit)
                 .strokeBorder(
                     AppColors.textSecondary,
                     style: StrokeStyle(lineWidth: 0.4 * unit, dash: [1 * unit, 0.8 * unit])

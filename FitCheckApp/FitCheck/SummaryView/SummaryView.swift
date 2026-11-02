@@ -11,6 +11,9 @@ struct SummaryView: View {
     // Week data: starts empty, it only knows the current day
     @State private var weekData = WeekData()
 
+    // The name of the user: empty until the user sets it
+    @State private var userName = ""
+
     // Today's workout: nil means the user has not added one yet
     @State private var todayPlan: TodayPlan? = nil
 
@@ -27,7 +30,12 @@ struct SummaryView: View {
 
             ScrollView {
                 VStack(spacing: 4 * unit) {
-                    HomeHeaderView(name: "User", doneThisWeek: 1, plannedThisWeek: 3, unit: unit)
+                    HomeHeaderView(
+                        name: userName,
+                        doneThisWeek: weekData.days().filter { $0.state == .done }.count,
+                        plannedThisWeek: weekData.plannedWeekdays.count,
+                        unit: unit
+                    )
 
                     WeekCardView(days: weekData.days(), unit: unit, onEdit: {})
 
