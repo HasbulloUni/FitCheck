@@ -24,9 +24,9 @@ enum AppColors {
     static let textSecondary = Color(light: 0x5F5D58, dark: 0xA8A59C)
 
     // MARK: Accenti
-    static let green = Color(light: 0x2F7A1F, dark: 0x86CF69)
+    static let green = Color(light: 0x86CF69, dark: 0x86CF69)
     static let greenSoft = Color(light: 0x6CBF4D, dark: 0x6CBF4D)
-    static let yellow = Color(light: 0xF2C230, dark: 0xF6D25C)
+    static let yellow = Color(light: 0xF2C230, dark: 0xF2C230)
     static let red = Color(light: 0xE5524A, dark: 0xF06B63)
 
     // MARK: Famiglie dei gruppi muscolari
