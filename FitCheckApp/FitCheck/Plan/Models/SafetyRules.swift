@@ -62,9 +62,13 @@ enum SafetyRules {
 
     // MARK: A plan made by hand in "Add your plan" (Peppino decision, 3 Nov 2026)
     static let minExercisesPerPlan = 4          // the main part needs at least 4 exercises
-    static let minWarmupMoves = 1               // the warm-up has 1 or 2 moves
-    static let maxWarmupMoves = 2
-    static let minutesPerWarmupMove = 4         // Peppino decision: each warm-up move is 4 min
+    // The warm-up is mandatory (no on/off switch): 1 to 3 moves from
+    // CatalogBuilder.warmupExerciseIds. Each quick mobility move is minutesPerWarmupMove;
+    // the treadmill walk (Peppino decision) is longer, treadmillWarmupMinutes on its own.
+    static let minWarmupMoves = 1
+    static let maxWarmupMoves = 3
+    static let minutesPerWarmupMove = 2         // ESTIMATE: a quick mobility move
+    static let treadmillWarmupMinutes = 8       // Peppino decision: 8-10 min, we use 8
 
     // MARK: Texts
     static let noticeSplitChanged = "We changed the split so each muscle can rest 48 hours."

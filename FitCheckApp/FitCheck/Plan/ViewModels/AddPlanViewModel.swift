@@ -9,7 +9,7 @@ import SwiftUI
 
 // The ViewModel of "Add your plan": one plan is one training DAY (legs, chest + back, full body...).
 // The day has three parts, like the plans of the generator:
-//  1. warm-up: 8 min, always on, the user picks 1 or 2 moves
+//  1. warm-up: 8 min, always on, the user picks 1 of the 5 safe moves (mandatory)
 //  2. main part: at least 4 exercises, picked by the user (sets can be changed)
 //  3. cool-down: 5 min, it can be switched off
 // The View only draws.
@@ -22,9 +22,8 @@ final class AddPlanViewModel {
     var minutes = EditWeekRules.defaultDuration   // 60 or 90
     private(set) var category: PlanCategory = .gym
     private(set) var chosen: [ChosenExercise] = []   // the main part, in order
-    private(set) var warmupMoves: [String] = []      // 1 or 2 moves
+    private(set) var warmupMoves: [String] = []      // 0 or 1 exercise id (mandatory once picked)
     var hasCooldown = true
-    var hasWarmup = true                // the warm-up can be switched off
 
     // MARK: What is open on the screen
     var isPickerShown = false                       // "Add exercises"
@@ -61,6 +60,7 @@ final class AddPlanViewModel {
     func loadCatalog(from exercises: [Exercise]) {
         if catalog != nil || exercises.isEmpty { return }
         catalog = CatalogBuilder.build(from: exercises)
+        warmupItems = CatalogBuilder.warmupItems(from: exercises)
         for exercise in exercises {
             imagesById[exercise.id] = exercise.images
             detailsById[exercise.id] = ExercisePickerDetails(
@@ -73,6 +73,9 @@ final class AddPlanViewModel {
 
     // What "Add exercises" needs to show the preview of each exercise
     var pickerDetails: [String: ExercisePickerDetails] { detailsById }
+
+    // The 5 safe warm-up exercises, built once in loadCatalog
+    private(set) var warmupItems: [CatalogItem] = []
 
     // The safe exercises the user can pick for this category
     var pool: [CatalogItem] {
@@ -144,8 +147,8 @@ final class AddPlanViewModel {
     }
 
     // The user pressed Done in "Warm-up"
-    func setWarmupMoves(_ moves: [String]) {
-        warmupMoves = Array(moves.prefix(SafetyRules.maxWarmupMoves))
+    func setWarmupMoves(_ ids: [String]) {
+        warmupMoves = Array(ids.prefix(SafetyRules.maxWarmupMoves))
     }
 
     // The exercise with this id, as it is now (nil if it was removed)
@@ -153,11 +156,9 @@ final class AddPlanViewModel {
         chosen.first(where: { $0.id == id })
     }
 
-    // The mobility moves depend on the muscles of the day: a move that is not offered anymore goes away
-    private func keepValidWarmup() {
-        let offered = WarmupCooldownBuilder.generalMoves + mobilityMoves
-        warmupMoves = warmupMoves.filter { offered.contains($0) }
-    }
+    // The warm-up pool is fixed (the 5 ids of CatalogBuilder.warmupExerciseIds), so nothing
+    // to drop when the exercises of the day change. Kept so selectCategory/setExercises can call it.
+    private func keepValidWarmup() {}
 
     // MARK: Name, icon and color
 
@@ -199,50 +200,37 @@ final class AddPlanViewModel {
     }
 
     // MARK: Warm-up
+    // The warm-up is mandatory (no on/off switch): 1 to 3 moves out of warmupItems.
 
-    // The mobility moves for the muscles of the day
-    var mobilityMoves: [String] {
-        WarmupCooldownBuilder.mobilityMoves(for: groups)
+    // The exercises picked for the warm-up, in the order they were picked
+    var selectedWarmupItems: [CatalogItem] {
+        warmupMoves.compactMap { id in warmupItems.first(where: { $0.id == id }) }
     }
 
-    // e.g. "MOBILITY FOR LEGS + GLUTES"
-    var mobilityTitle: String {
-        groups.isEmpty ? "MOBILITY" : "MOBILITY FOR " + groups.joined(separator: " + ").uppercased()
-    }
+    // At least 1 move must be picked before the plan can be saved
+    var isWarmupReady: Bool { warmupMoves.count >= SafetyRules.minWarmupMoves }
 
-    // Off counts as ready: the user chose to skip it
-    var isWarmupReady: Bool { !hasWarmup || warmupMoves.count >= SafetyRules.minWarmupMoves }
-
-    // Minutes of the warm-up: 4 for each move, counted only when the plan has exercises
+    // The treadmill walk is longer than the other moves and counted on its own;
+    // counted only when the plan has exercises
     var warmupMinutes: Int {
-        if !hasWarmup || chosen.isEmpty { return 0 }
-        return warmupMoves.count * SafetyRules.minutesPerWarmupMove
+        if warmupMoves.isEmpty || chosen.isEmpty { return 0 }
+        let hasTreadmill = warmupMoves.contains(CatalogBuilder.treadmillWarmupId)
+        let otherCount = hasTreadmill ? warmupMoves.count - 1 : warmupMoves.count
+        let treadmillTime = hasTreadmill ? SafetyRules.treadmillWarmupMinutes : 0
+        return treadmillTime + otherCount * SafetyRules.minutesPerWarmupMove
     }
-
-    // e.g. "1 / 2"
-    var warmupCountText: String { "\(warmupMoves.count) / \(SafetyRules.maxWarmupMoves)" }
 
     var warmupSummary: String {
-        if !hasWarmup { return "Off today" }
-        if warmupMoves.isEmpty { return "Pick 1 or 2 moves · 4 min each" }
-        if chosen.isEmpty { return "\(warmupMoves.count * SafetyRules.minutesPerWarmupMove) min · counted with exercises" }
-        return "\(warmupMinutes) min"
-    }
-
-    // The small text of a picked move, e.g. "Brisk walk · 4 min" or "Hip circles"
-    func warmupChipText(_ move: String) -> String {
-        return WarmupPickerViewModel.title(of: move) + " · \(SafetyRules.minutesPerWarmupMove) min"
+        let items = selectedWarmupItems
+        if items.isEmpty { return "Pick your warm-up" }
+        let names = items.map { displayName(of: $0) }.joined(separator: ", ")
+        if chosen.isEmpty { return names + " · counted with exercises" }
+        return names + " · \(warmupMinutes) min"
     }
 
     // The ViewModel of the "Warm-up" screen, with the moves picked so far
     func makeWarmupPicker() -> WarmupPickerViewModel {
-        WarmupPickerViewModel(
-            generalMoves: WarmupCooldownBuilder.generalMoves,
-            mobilityMoves: mobilityMoves,
-            mobilityTitle: mobilityTitle,
-            rampUpExercise: rampUpExercise.map { displayName(of: $0.item) },
-            selected: warmupMoves
-        )
+        WarmupPickerViewModel(items: warmupItems, details: pickerDetails, selected: warmupMoves)
     }
 
     // MARK: Main part: texts of one exercise
@@ -357,6 +345,12 @@ final class AddPlanViewModel {
 
     var hasEnoughExercises: Bool { chosen.count >= SafetyRules.minExercisesPerPlan }
 
+    // The plan must also get close to the chosen 60 or 90 minutes (same tolerance as the
+    // generator), so picking 90 instead of 60 actually changes how many exercises are needed.
+    var hasEnoughTime: Bool {
+        Double(estimatedMinutes) >= Double(minutes) * (1 - SafetyRules.durationTolerance)
+    }
+
     // e.g. "5 exercises"
     var exerciseCountText: String {
         chosen.count == 1 ? "1 exercise" : "\(chosen.count) exercises"
@@ -368,16 +362,14 @@ final class AddPlanViewModel {
         return hasEnoughExercises ? "\(chosen.count) · min \(minimum)" : "\(chosen.count) / \(minimum)"
     }
 
-    // The button works only with at least 4 exercises
-    var isSaveEnabled: Bool { hasEnoughExercises }
+    // The button works only with at least 4 exercises and close enough to the chosen minutes
+    var isSaveEnabled: Bool { hasEnoughExercises && hasEnoughTime }
 
     // The text of the big button says what is still missing
     var saveTitle: String {
-        let missing = SafetyRules.minExercisesPerPlan - chosen.count
-        if chosen.isEmpty { return "Add \(SafetyRules.minExercisesPerPlan) exercises to save" }
-        if missing == 1 { return "Add 1 more exercise" }
-        if missing > 1 { return "Add \(missing) more exercises" }
+        if !hasEnoughExercises { return "Save to My plans" }
         if !isWarmupReady { return "Pick your warm-up" }
+        if !hasEnoughTime { return "Add more to reach \(minutes) min" }
         return "Save to My plans"
     }
 
@@ -388,6 +380,7 @@ final class AddPlanViewModel {
             isWarmupShown = true
             return nil
         }
+        if !hasEnoughTime { return nil }
         return makePlan()
     }
 
@@ -405,7 +398,7 @@ final class AddPlanViewModel {
             exerciseSets: chosen.map { $0.sets },
             warmupMoves: warmupMoves,
             hasCooldown: hasCooldown,
-            hasWarmup: hasWarmup
+            hasWarmup: true
         )
     }
 }

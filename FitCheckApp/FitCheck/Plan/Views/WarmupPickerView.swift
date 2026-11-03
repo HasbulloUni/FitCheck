@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-// "Warm-up": the user picks 1 or 2 moves. 8 minutes, always on.
-// Two lists: the general moves to get warm, and the mobility moves for the muscles of the day.
-// Same design as "Add exercises": round back button, big title, rows with a check in the plan color.
+// "Warm-up": the user picks 1 to 3 moves. Same row style as "Add exercises" (photo, name,
+// muscle), but with no search bar: there are only a handful of moves, so they all fit on
+// one screen.
 // It only draws: the data and the logic live in WarmupPickerViewModel.
 // Every size is a multiple of "unit" (1% of the screen width), like the other screens.
 struct WarmupPickerView: View {
     @State private var viewModel: WarmupPickerViewModel
     let label: String                     // the name of the plan, next to the back button
     let accent: Color                     // the color of the plan
-    let onDone: ([String]) -> Void        // "Done": gives the picked moves back
+    let onDone: ([String]) -> Void        // "Done": gives the picked exercise ids back
     @Environment(\.dismiss) private var dismiss
 
     init(viewModel: WarmupPickerViewModel, label: String, accent: Color,
@@ -33,54 +33,34 @@ struct WarmupPickerView: View {
             let unit = geo.size.width / 100   // 1% of the screen width
 
             VStack(spacing: 0) {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 2 * unit) {
-                        topBar(unit: unit)
+                VStack(alignment: .leading, spacing: 2 * unit) {
+                    topBar(unit: unit)
 
-                        HStack {
-                            Text("Warm-up")
-                                .font(.system(size: 8 * unit, weight: .bold))
-                                .foregroundStyle(AppColors.textPrimary)
-                            Spacer()
-                            Text(viewModel.countText)
-                                .font(.system(size: 3 * unit, weight: .bold))
-                                .foregroundStyle(viewModel.canFinish ? Color.black : AppColors.textPrimary)
-                                .padding(.horizontal, 2.2 * unit)
-                                .frame(height: 6 * unit)
-                                .background(viewModel.canFinish ? AppColors.greenSoft : AppColors.cardAlt,
-                                            in: Capsule())
-                        }
-                        .padding(.top, 3 * unit)
-
-                        Text(viewModel.subtitle)
-                            .font(.system(size: 3.6 * unit, weight: .regular))
-                            .foregroundStyle(AppColors.textSecondary)
-
-                        if !viewModel.generalMoves.isEmpty {
-                            section(viewModel.generalTitle, moves: viewModel.generalMoves, unit: unit)
-                        }
-
-                        if !viewModel.mobilityMoves.isEmpty {
-                            section(viewModel.mobilityTitle, moves: viewModel.mobilityMoves, unit: unit)
-                        }
-
-                        if let note = viewModel.rampUpNote {
-                            HStack(alignment: .top, spacing: 2 * unit) {
-                                Image(systemName: "info.circle")
-                                    .font(.system(size: 3.6 * unit, weight: .semibold))
-                                Text(note)
-                                    .font(.system(size: 3.2 * unit, weight: .regular))
-                            }
+                    HStack {
+                        Text(viewModel.title)
+                            .font(.system(size: 8 * unit, weight: .bold))
                             .foregroundStyle(AppColors.textPrimary)
-                            .padding(3.5 * unit)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(AppColors.cardAlt, in: RoundedRectangle(cornerRadius: 4.5 * unit))
-                            .padding(.top, 2 * unit)
+                        Spacer()
+                        Text(viewModel.countText)
+                            .font(.system(size: 3 * unit, weight: .bold))
+                            .foregroundStyle(viewModel.canFinish ? Color.black : AppColors.textPrimary)
+                            .padding(.horizontal, 2.2 * unit)
+                            .frame(height: 6 * unit)
+                            .background(viewModel.canFinish ? AppColors.greenSoft : AppColors.cardAlt,
+                                        in: Capsule())
+                    }
+                }
+                .padding(.horizontal, 5 * unit)
+                .padding(.top, 4 * unit)
+
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 3 * unit) {
+                        ForEach(viewModel.items, id: \.id) { item in
+                            row(item, unit: unit)
                         }
                     }
                     .padding(.horizontal, 5 * unit)
-                    .padding(.top, 4 * unit)
-                    .padding(.bottom, 4 * unit)
+                    .padding(.vertical, 3 * unit)
                 }
 
                 doneButton(unit: unit)
@@ -119,51 +99,40 @@ struct WarmupPickerView: View {
         }
     }
 
-    // A small grey title and its moves
-    private func section(_ title: String, moves: [String], unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2 * unit) {
-            Text(title)
-                .font(.system(size: 2.8 * unit, weight: .bold))
-                .tracking(0.3 * unit)
-                .foregroundStyle(AppColors.textSecondary)
-                .padding(.leading, 1 * unit)
-                .padding(.top, 2 * unit)
+    // One move: photo, name, muscle, and the round add button on the right.
+    // With 3 moves picked the others are faded until one is removed.
+    private func row(_ item: CatalogItem, unit: CGFloat) -> some View {
+        let isSelected = viewModel.isSelected(item)
+        let isAllowed = viewModel.canToggle(item)
 
-            ForEach(moves, id: \.self) { move in
-                row(move, unit: unit)
-            }
-        }
-    }
+        return Button(action: { viewModel.toggle(item) }) {
+            HStack(spacing: 3.2 * unit) {
+                ExerciseImageView(paths: viewModel.images(of: item))
+                    .frame(width: 17 * unit, height: 17 * unit)
+                    .clipShape(RoundedRectangle(cornerRadius: 3.6 * unit))
 
-    // One move: the name, a small note if it has one, and the check on the right.
-    // With 2 moves picked the others are faded until one is removed.
-    private func row(_ move: String, unit: CGFloat) -> some View {
-        let isSelected = viewModel.isSelected(move)
-        let isAllowed = viewModel.canToggle(move)
-
-        return Button(action: { viewModel.toggle(move) }) {
-            HStack(spacing: 3 * unit) {
-                VStack(alignment: .leading, spacing: 0.5 * unit) {
-                    Text(WarmupPickerViewModel.title(of: move))
-                        .font(.system(size: 3.9 * unit, weight: .bold))
+                VStack(alignment: .leading, spacing: 0.8 * unit) {
+                    Text(item.name)
+                        .font(.system(size: 4.6 * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
 
-                    if let note = WarmupPickerViewModel.note(of: move) {
-                        Text(note)
-                            .font(.system(size: 3.2 * unit, weight: .regular))
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
+                    Text(item.muscle.capitalized)
+                        .font(.system(size: 3.6 * unit, weight: .regular))
+                        .foregroundStyle(AppColors.textSecondary)
+                        .lineLimit(1)
                 }
 
-                Spacer()
+                Spacer(minLength: 0)
 
-                checkbox(isSelected: isSelected, unit: unit)
+                addButton(isSelected: isSelected, isBlocked: !isAllowed, unit: unit)
             }
-            .padding(.horizontal, 4 * unit)
-            .padding(.vertical, 3.5 * unit)
-            .background(AppColors.card, in: RoundedRectangle(cornerRadius: 4.5 * unit))
+            .padding(.horizontal, 3 * unit)
+            .padding(.vertical, 2.8 * unit)
+            .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
             .overlay(
-                RoundedRectangle(cornerRadius: 4.5 * unit)
+                RoundedRectangle(cornerRadius: 5 * unit)
                     .stroke(accent, lineWidth: isSelected ? 0.5 * unit : 0)
             )
         }
@@ -173,24 +142,16 @@ struct WarmupPickerView: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
-    // The square check: plan color with a black tick when picked, an empty outline otherwise
-    private func checkbox(isSelected: Bool, unit: CGFloat) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 1.8 * unit)
-                .fill(isSelected ? accent : Color.clear)
-            RoundedRectangle(cornerRadius: 1.8 * unit)
-                .stroke(isSelected ? accent : AppColors.divider, lineWidth: 0.5 * unit)
-
-            if isSelected {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 3.2 * unit, weight: .bold))
-                    .foregroundStyle(Color.black)
-            }
-        }
-        .frame(width: 6.5 * unit, height: 6.5 * unit)
+    // The round button: plus (black) to add, check (plan color) when chosen
+    private func addButton(isSelected: Bool, isBlocked: Bool, unit: CGFloat) -> some View {
+        Image(systemName: isSelected ? "checkmark" : "plus")
+            .font(.system(size: 4.6 * unit, weight: .bold))
+            .foregroundStyle(isSelected ? Color.black : AppColors.background)
+            .frame(width: 11 * unit, height: 11 * unit)
+            .background(isSelected ? accent : AppColors.textPrimary, in: Circle())
     }
 
-    // The big black button, fixed at the bottom: it works with 1 or 2 moves
+    // The big black button, fixed at the bottom: it works with 1 to 3 moves
     private func doneButton(unit: CGFloat) -> some View {
         Button(action: {
             onDone(viewModel.selected)
@@ -222,15 +183,33 @@ struct WarmupPickerView: View {
 
 // MARK: - Previews
 // The sample moves exist only here, inside the previews.
+private func previewItems() -> [CatalogItem] {
+    [
+        CatalogItem(id: "Standing_Hip_Circles", name: "Standing Hip Circles", level: "beginner",
+                    mechanic: "isolation", force: "static", equipment: "Bodyweight", muscle: "abductors",
+                    group: "Legs", variants: [:], needsBar: false),
+        CatalogItem(id: "Ankle_Circles", name: "Ankle Circles", level: "beginner", mechanic: "isolation",
+                    force: "static", equipment: "Bodyweight", muscle: "calves", group: "Legs", variants: [:],
+                    needsBar: false),
+        CatalogItem(id: "Arm_Circles", name: "Arm Circles", level: "beginner", mechanic: "isolation",
+                    force: "static", equipment: "Bodyweight", muscle: "shoulders", group: "Shoulders",
+                    variants: [:], needsBar: false),
+        CatalogItem(id: "Wrist_Circles", name: "Wrist Circles", level: "beginner", mechanic: "isolation",
+                    force: "static", equipment: "Bodyweight", muscle: "forearms", group: "Arms", variants: [:],
+                    needsBar: false),
+        CatalogItem(id: "Single_Leg_Glute_Bridge", name: "Single Leg Glute Bridge", level: "beginner",
+                    mechanic: "isolation", force: "pull", equipment: "Bodyweight", muscle: "glutes",
+                    group: "Glutes", variants: [:], needsBar: false),
+        CatalogItem(id: "Walking_Treadmill", name: "Walking, Treadmill", level: "beginner", mechanic: "",
+                    force: "", equipment: "Machine", muscle: "quadriceps", group: "Legs", variants: [:],
+                    needsBar: false)
+    ]
+}
+
 #Preview("Light") {
     WarmupPickerView(
-        viewModel: WarmupPickerViewModel(
-            generalMoves: ["Brisk walk", "Light stationary bike", "March on the spot"],
-            mobilityMoves: ["Hip circles", "Ankle circles", "Leg swings front to back (holding a support)"],
-            mobilityTitle: "MOBILITY FOR LEGS",
-            rampUpExercise: "Goblet Squat",
-            selected: ["Brisk walk", "Hip circles"]
-        ),
+        viewModel: WarmupPickerViewModel(items: previewItems(), details: [:],
+                                         selected: ["Ankle_Circles", "Walking_Treadmill"]),
         label: "Legs",
         accent: AppColors.muscleOrange,
         onDone: { _ in }
@@ -239,13 +218,7 @@ struct WarmupPickerView: View {
 
 #Preview("Dark") {
     WarmupPickerView(
-        viewModel: WarmupPickerViewModel(
-            generalMoves: ["Brisk walk", "Light stationary bike", "March on the spot"],
-            mobilityMoves: ["Hip circles", "Ankle circles", "Leg swings front to back (holding a support)"],
-            mobilityTitle: "MOBILITY FOR LEGS",
-            rampUpExercise: "Goblet Squat",
-            selected: ["Brisk walk"]
-        ),
+        viewModel: WarmupPickerViewModel(items: previewItems(), details: [:], selected: []),
         label: "Legs",
         accent: AppColors.muscleOrange,
         onDone: { _ in }
@@ -255,13 +228,7 @@ struct WarmupPickerView: View {
 
 #Preview("No data") {
     WarmupPickerView(
-        viewModel: WarmupPickerViewModel(
-            generalMoves: [],
-            mobilityMoves: [],
-            mobilityTitle: "MOBILITY",
-            rampUpExercise: nil,
-            selected: []
-        ),
+        viewModel: WarmupPickerViewModel(items: [], details: [:], selected: []),
         label: "New plan",
         accent: AppColors.muscleBlue,
         onDone: { _ in }

@@ -66,6 +66,42 @@ enum CatalogBuilder {
         return ExerciseCatalog(items: items, stretches: stretches)
     }
 
+    // MARK: The warm-up exercises (Peppino decision, 3 Nov 2026; treadmill added later the same day)
+    // A fixed list of safe moves, no equipment needed except the treadmill. The user picks 1 to 3.
+    static let warmupExerciseIds = [
+        "Standing_Hip_Circles", "Ankle_Circles", "Arm_Circles", "Wrist_Circles", "Single_Leg_Glute_Bridge",
+        "Walking_Treadmill"
+    ]
+
+    // The treadmill walk is longer (8-10 min) than the other moves: AddPlanViewModel gives it
+    // its own minutes instead of the flat SafetyRules.minutesPerWarmupMove.
+    static let treadmillWarmupId = "Walking_Treadmill"
+
+    // Most of these ids are category "stretching" or "cardio", so build(from:) above would not
+    // keep them (it only keeps "strength" items). This builds just these, in the order above.
+    static func warmupItems(from exercises: [Exercise]) -> [CatalogItem] {
+        let byId = Dictionary(uniqueKeysWithValues: exercises.map { ($0.id, $0) })
+        return warmupExerciseIds.compactMap { id -> CatalogItem? in
+            guard let exercise = byId[id],
+                  let muscle = exercise.primaryMuscles.first,
+                  let equipment = equipmentName[exercise.equipment],
+                  let group = groupOfMuscle[muscle] else { return nil }
+
+            return CatalogItem(
+                id: exercise.id,
+                name: exercise.name,
+                level: exercise.level,
+                mechanic: exercise.mechanic,
+                force: exercise.force,
+                equipment: equipment,
+                muscle: muscle,
+                group: group,
+                variants: [:],
+                needsBar: false
+            )
+        }
+    }
+
     // MARK: The ids of the exercises that are never used
     // Read from the file once, then kept.
     static let excludedIds: [String] = {

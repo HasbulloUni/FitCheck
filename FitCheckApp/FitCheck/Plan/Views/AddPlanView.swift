@@ -46,7 +46,7 @@ struct AddPlanView: View {
                     VStack(spacing: 0) {
                         bigHeader(unit: unit, topInset: topInset)
 
-                        VStack(spacing: 2.5 * unit) {
+                        VStack(spacing: 2 * unit) {
                             warmupCard(unit: unit)
                             mainPartTitle(unit: unit)
 
@@ -71,8 +71,8 @@ struct AddPlanView: View {
                                 .padding(.top, 1.5 * unit)
                         }
                         .padding(.horizontal, 5 * unit)
-                        .padding(.top, 4 * unit)
-                        .padding(.bottom, 6 * unit)
+                        .padding(.top, 3 * unit)
+                        .padding(.bottom, 4 * unit)
                     }
                 }
                 .scrollDismissesKeyboard(.immediately)
@@ -98,7 +98,7 @@ struct AddPlanView: View {
                         goal: viewModel.goal,
                         level: viewModel.level,
                         targetMinutes: viewModel.minutes,
-                        warmupMinutes: viewModel.hasWarmup ? viewModel.warmupMoves.count * SafetyRules.minutesPerWarmupMove : 0,
+                        warmupMinutes: viewModel.warmupMinutes,
                         cooldownMinutes: viewModel.hasCooldown ? Int(SafetyRules.cooldownMinutes) : 0,
                         planName: viewModel.displayName,
                         details: viewModel.pickerDetails
@@ -158,11 +158,6 @@ struct AddPlanView: View {
                 categorySwitch(unit: unit)
             }
 
-            Text("Name of the day")
-                .font(.system(size: 3.3 * unit, weight: .bold))
-                .foregroundStyle(.black.opacity(0.7))
-                .padding(.top, 8 * unit)
-
             // The name: the suggested one is shown faded until the user writes one
             HStack(spacing: 3 * unit) {
                 TextField(
@@ -185,7 +180,7 @@ struct AddPlanView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Rename")
             }
-            .padding(.top, 0.5 * unit)
+            .padding(.top, 5 * unit)
 
             HStack(spacing: 2 * unit) {
                 statPill(icon: "dumbbell", text: viewModel.exerciseCountText, unit: unit)
@@ -194,14 +189,14 @@ struct AddPlanView: View {
             .padding(.top, 3.5 * unit)
 
             durationSwitch(unit: unit)
-                .padding(.top, 5.5 * unit)
+                .padding(.top, 4 * unit)
 
             colorRow(unit: unit)
-                .padding(.top, 5 * unit)
+                .padding(.top, 3.5 * unit)
         }
         .padding(.horizontal, 5.5 * unit)
-        .padding(.top, topInset + 3 * unit)
-        .padding(.bottom, 6 * unit)
+        .padding(.top, topInset + 2.5 * unit)
+        .padding(.bottom, 4 * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             viewModel.color,
@@ -368,86 +363,75 @@ struct AddPlanView: View {
 
     // MARK: - Warm-up, main part, cool-down
 
-    // The warm-up card: the picked moves are small chips under the title
+    // The warm-up card: mandatory, no on/off switch. A small check shows it is picked.
     private func warmupCard(unit: CGFloat) -> some View {
-        @Bindable var viewModel = viewModel
-
-        return VStack(alignment: .leading, spacing: 2.5 * unit) {
+        return Button(action: { viewModel.isWarmupShown = true }) {
             HStack(spacing: 3.5 * unit) {
-                Button(action: { viewModel.isWarmupShown = true }) {
-                    HStack(spacing: 3.5 * unit) {
-                        iconTile("flame", unit: unit)
+                iconTile("flame", unit: unit)
 
-                    VStack(alignment: .leading, spacing: 0.5 * unit) {
-                        Text("Warm-up")
-                            .font(.system(size: 4 * unit, weight: .bold))
-                            .foregroundStyle(AppColors.textPrimary)
-                        Text(viewModel.warmupSummary)
-                            .font(.system(size: 3.2 * unit, weight: .regular))
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
-
-                    Spacer()
-
-                    if viewModel.hasWarmup {
-                        countBadge(viewModel.warmupCountText, isDone: viewModel.isWarmupReady, unit: unit)
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 3.6 * unit, weight: .semibold))
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
-                    }
-                    .contentShape(Rectangle())
+                VStack(alignment: .leading, spacing: 0.5 * unit) {
+                    Text("Warm-up")
+                        .font(.system(size: 4 * unit, weight: .bold))
+                        .foregroundStyle(AppColors.textPrimary)
+                    Text(viewModel.warmupSummary)
+                        .font(.system(size: 3.2 * unit, weight: .regular))
+                        .foregroundStyle(AppColors.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
-                .buttonStyle(.plain)
-                .disabled(!viewModel.hasWarmup)
-                .accessibilityHint("Pick 1 or 2 warm-up moves")
 
-                Toggle("Warm-up", isOn: $viewModel.hasWarmup)
-                    .labelsHidden()
-                    .tint(AppColors.greenSoft)
-            }
+                Spacer()
 
-                if viewModel.hasWarmup && !viewModel.warmupMoves.isEmpty {
-                    HStack(spacing: 1.5 * unit) {
-                        ForEach(viewModel.warmupMoves, id: \.self) { move in
-                            smallChip(viewModel.warmupChipText(move), unit: unit)
-                        }
-                    }
-                    .padding(.leading, 13 * unit)
+                if viewModel.isWarmupReady {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 4.6 * unit, weight: .semibold))
+                        .foregroundStyle(AppColors.greenSoft)
                 }
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 3.6 * unit, weight: .semibold))
+                    .foregroundStyle(AppColors.textSecondary)
             }
-            .padding(3 * unit)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Pick the warm-up move")
+        .padding(2.5 * unit)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
     }
 
-    // "Main part", the count against the minimum of 4, and the black "+ Add" button
+    // "Main part" and, once there is at least 1 exercise, the count against the minimum of 4
+    // and the black "+ Add" button. While the list is empty, emptyCard below already has its
+    // own "+" button and its own "at least 4 exercises" text, so this row stays just the title.
     private func mainPartTitle(unit: CGFloat) -> some View {
         HStack(spacing: 2.5 * unit) {
             Text("Main part")
                 .font(.system(size: 4.6 * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
 
-            countBadge(viewModel.mainCountText, isDone: viewModel.hasEnoughExercises, unit: unit)
+            if !viewModel.chosen.isEmpty {
+                countBadge(viewModel.mainCountText, isDone: viewModel.hasEnoughExercises, unit: unit)
 
-            Spacer()
+                Spacer()
 
-            Button(action: { viewModel.isPickerShown = true }) {
-                HStack(spacing: 1.5 * unit) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 3.6 * unit, weight: .bold))
-                    Text("Add")
-                        .font(.system(size: 3.6 * unit, weight: .bold))
+                Button(action: { viewModel.isPickerShown = true }) {
+                    HStack(spacing: 1.5 * unit) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 3.6 * unit, weight: .bold))
+                        Text("Add")
+                            .font(.system(size: 3.6 * unit, weight: .bold))
+                    }
+                    .foregroundStyle(AppColors.background)
+                    .padding(.horizontal, 3.5 * unit)
+                    .frame(height: 8.5 * unit)
+                    .background(AppColors.textPrimary, in: Capsule())
                 }
-                .foregroundStyle(AppColors.background)
-                .padding(.horizontal, 3.5 * unit)
-                .frame(height: 8.5 * unit)
-                .background(AppColors.textPrimary, in: Capsule())
+                .buttonStyle(.plain)
+                .accessibilityLabel("Add exercises")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Add exercises")
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 1 * unit)
         .padding(.top, 1.5 * unit)
     }
@@ -462,16 +446,12 @@ struct AddPlanView: View {
                     .frame(width: 9.5 * unit, height: 9.5 * unit)
                     .background(AppColors.textPrimary, in: Circle())
 
-                Text("Add at least \(SafetyRules.minExercisesPerPlan) exercises")
-                    .font(.system(size: 3.8 * unit, weight: .bold))
-                    .foregroundStyle(AppColors.textPrimary)
-
                 Text(viewModel.isCatalogReady ? "Pick the exercises for this day" : "Loading the exercise list…")
                     .font(.system(size: 3.2 * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 6 * unit)
+            .padding(.vertical, 4.5 * unit)
             .overlay(
                 RoundedRectangle(cornerRadius: 5 * unit)
                     .strokeBorder(AppColors.divider, style: StrokeStyle(lineWidth: 0.5 * unit, dash: [2 * unit, 1.5 * unit]))
@@ -554,7 +534,7 @@ struct AddPlanView: View {
                 .labelsHidden()
                 .tint(AppColors.greenSoft)
         }
-        .padding(3 * unit)
+        .padding(2.5 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
     }
 
@@ -642,16 +622,6 @@ struct AddPlanView: View {
     }
 
     // A small grey chip, e.g. "Brisk walk · 4 min"
-    private func smallChip(_ text: String, unit: CGFloat) -> some View {
-        Text(text)
-            .font(.system(size: 3.1 * unit, weight: .bold))
-            .foregroundStyle(AppColors.textPrimary)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .padding(.horizontal, 2.8 * unit)
-            .frame(height: 7 * unit)
-            .background(AppColors.cardAlt, in: Capsule())
-    }
 }
 
 // MARK: - Previews
