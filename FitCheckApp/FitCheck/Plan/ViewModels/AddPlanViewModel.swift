@@ -394,6 +394,7 @@ final class AddPlanViewModel {
     // The plan for the Home
     private func makePlan() -> PlanItem {
         PlanItem(
+            id: UUID(),
             name: displayName,
             icon: icon,
             color: color,

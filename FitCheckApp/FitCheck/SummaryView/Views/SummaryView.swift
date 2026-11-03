@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SummaryView: View {
     // The ViewModel owns the data: this View only draws it

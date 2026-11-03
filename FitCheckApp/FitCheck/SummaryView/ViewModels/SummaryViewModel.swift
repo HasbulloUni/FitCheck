@@ -58,7 +58,7 @@ final class SummaryViewModel {
         plans.removeAll { $0.id == plan.id }
         if let context {
             let targetId = plan.id
-            let descriptor = FetchDescriptor<PlanRecord>(predicate: #Predicate { $0.id == targetId })
+            let descriptor = FetchDescriptor<PlanRecord>(predicate: #Predicate<PlanRecord> { $0.id == targetId })
             if let records = try? context.fetch(descriptor) {
                 for record in records { context.delete(record) }
             }

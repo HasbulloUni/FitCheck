@@ -59,10 +59,20 @@ struct AddPlanView: View {
                             }
 
                             cooldownCard(unit: unit)
+
+                            // "Save to My plans" scrolls with the rest of the card: it never
+                            // floats over the tab bar, so the two never look fused together.
+                            if let removed = viewModel.lastRemoved {
+                                undoMessage(removed, unit: unit)
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+
+                            saveButton(unit: unit)
+                                .padding(.top, 1.5 * unit)
                         }
                         .padding(.horizontal, 5 * unit)
                         .padding(.top, 4 * unit)
-                        .padding(.bottom, 2 * unit)
+                        .padding(.bottom, 6 * unit)
                     }
                 }
                 .scrollDismissesKeyboard(.immediately)
@@ -72,11 +82,6 @@ struct AddPlanView: View {
                     scroll.contentOffset.y + scroll.contentInsets.top > 60 * unit
                 } action: { _, isSmall in
                     withAnimation(.easeInOut(duration: 0.2)) { isHeaderSmall = isSmall }
-                }
-                // Reserves real space below the list: the content can never end up
-                // behind "Undo" or the big button, unlike a floating overlay.
-                .safeAreaInset(edge: .bottom) {
-                    bottomArea(unit: unit)
                 }
 
                 if isHeaderSmall {
@@ -553,26 +558,7 @@ struct AddPlanView: View {
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
     }
 
-    // MARK: - Bottom: "Undo" and the big button
-
-    private func bottomArea(unit: CGFloat) -> some View {
-        VStack(spacing: 2.5 * unit) {
-            if let removed = viewModel.lastRemoved {
-                undoMessage(removed, unit: unit)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
-            saveButton(unit: unit)
-        }
-        .padding(.horizontal, 5 * unit)
-        .padding(.top, 2.5 * unit)
-        .background(AppColors.background)
-        .overlay(alignment: .top) {
-            Rectangle()
-                .fill(AppColors.divider)
-                .frame(height: 0.3 * unit)
-        }
-    }
+    // MARK: - "Undo" and the big button (they scroll with the rest of the card)
 
     // "Goblet Squat removed" with the "Undo" button
     private func undoMessage(_ removed: ChosenExercise, unit: CGFloat) -> some View {

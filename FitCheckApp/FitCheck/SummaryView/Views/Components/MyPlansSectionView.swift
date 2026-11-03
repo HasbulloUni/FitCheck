@@ -263,9 +263,9 @@ struct PlanRowView: View {
 // MARK: - Previews
 // Sample data used only by the previews
 private let samplePlans: [PlanItem] = [
-    PlanItem(name: "Legs", icon: "figure.run", color: AppColors.muscleOrange, exerciseCount: 9, minutes: 60),
-    PlanItem(name: "Chest + Back", icon: "figure.strengthtraining.traditional", color: AppColors.musclePurple, exerciseCount: 11, minutes: 90),
-    PlanItem(name: "Full body", icon: "figure.mixed.cardio", color: AppColors.muscleGreen, exerciseCount: 10, minutes: 60)
+    PlanItem(id: UUID(), name: "Legs", icon: "figure.run", color: AppColors.muscleOrange, exerciseCount: 9, minutes: 60),
+    PlanItem(id: UUID(), name: "Chest + Back", icon: "figure.strengthtraining.traditional", color: AppColors.musclePurple, exerciseCount: 11, minutes: 90),
+    PlanItem(id: UUID(), name: "Full body", icon: "figure.mixed.cardio", color: AppColors.muscleGreen, exerciseCount: 10, minutes: 60)
 ]
 
 #Preview("Light") {

@@ -12,7 +12,7 @@ import SwiftUI
 // A plan is one training DAY: legs, chest, shoulders + legs, full body...
 // Each plan has its own color, chosen by the user when the plan is created.
 struct PlanItem: Identifiable {
-    let id = UUID()
+    let id: UUID
     let name: String          // e.g. "Legs" or "Full body"
     let icon: String          // SF Symbol of the plan, e.g. "figure.run"
     let color: Color          // the color of this plan
