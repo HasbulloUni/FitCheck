@@ -215,21 +215,33 @@ struct ExercisePickerView: View {
     // MARK: - The list: in the plan, suggested, and everything else
 
     private func exercisesList(unit: CGFloat) -> some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 3 * unit) {
-                if viewModel.isBrowsing && !viewModel.selectedItems.isEmpty {
-                    inPlanSection(unit: unit)
-                }
+        // A change of filter or search can leave the list scrolled past where the new
+        // results end: ScrollViewReader lets us jump back to the top every time.
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 3 * unit) {
+                    Color.clear.frame(height: 0).id("top")
 
-                if viewModel.isBrowsing && !viewModel.suggestedItems.isEmpty {
-                    suggestedSection(unit: unit)
-                }
+                    if viewModel.isBrowsing && !viewModel.selectedItems.isEmpty {
+                        inPlanSection(unit: unit)
+                    }
 
-                resultsSection(unit: unit)
+                    if viewModel.isBrowsing && !viewModel.suggestedItems.isEmpty {
+                        suggestedSection(unit: unit)
+                    }
+
+                    resultsSection(unit: unit)
+                }
+                .padding(.horizontal, 5 * unit)
+                .padding(.vertical, 2 * unit)
+                .padding(.bottom, 14 * unit)   // room for the "Undo" toast
             }
-            .padding(.horizontal, 5 * unit)
-            .padding(.vertical, 2 * unit)
-            .padding(.bottom, 14 * unit)   // room for the "Undo" toast
+            .onChange(of: viewModel.selectedGroup) {
+                withAnimation { proxy.scrollTo("top", anchor: .top) }
+            }
+            .onChange(of: viewModel.searchText) {
+                withAnimation { proxy.scrollTo("top", anchor: .top) }
+            }
         }
     }
 
@@ -367,22 +379,22 @@ struct ExercisePickerView: View {
         let isSelected = viewModel.isSelected(item)
         let blockedText = viewModel.blockedText(item)   // nil = it can be added
 
-        return HStack(spacing: 3 * unit) {
+        return HStack(spacing: 3.2 * unit) {
             Button(action: { viewModel.previewItem = item }) {
-                HStack(spacing: 3 * unit) {
+                HStack(spacing: 3.2 * unit) {
                     ExerciseImageView(paths: viewModel.details(for: item)?.images ?? [])
-                        .frame(width: 10.5 * unit, height: 10.5 * unit)
-                        .clipShape(RoundedRectangle(cornerRadius: 3.2 * unit))
+                        .frame(width: 17 * unit, height: 17 * unit)
+                        .clipShape(RoundedRectangle(cornerRadius: 3.6 * unit))
 
-                    VStack(alignment: .leading, spacing: 0.5 * unit) {
+                    VStack(alignment: .leading, spacing: 0.8 * unit) {
                         Text(viewModel.name(of: item))
-                            .font(.system(size: 4 * unit, weight: .bold))
+                            .font(.system(size: 4.6 * unit, weight: .bold))
                             .foregroundStyle(AppColors.textPrimary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.8)
 
                         Text(blockedText ?? viewModel.detailText(item))
-                            .font(.system(size: 3.1 * unit, weight: .regular))
+                            .font(.system(size: 3.6 * unit, weight: .regular))
                             .foregroundStyle(AppColors.textSecondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
@@ -398,7 +410,7 @@ struct ExercisePickerView: View {
             addButton(item, isSelected: isSelected, isBlocked: blockedText != nil, unit: unit)
         }
         .padding(.horizontal, 3 * unit)
-        .padding(.vertical, 2.2 * unit)
+        .padding(.vertical, 2.8 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
         .overlay(
             RoundedRectangle(cornerRadius: 5 * unit)
@@ -419,8 +431,8 @@ struct ExercisePickerView: View {
                     Image(systemName: "plus").foregroundStyle(AppColors.background)
                 }
             }
-            .font(.system(size: 4 * unit, weight: .bold))
-            .frame(width: 9 * unit, height: 9 * unit)
+            .font(.system(size: 4.6 * unit, weight: .bold))
+            .frame(width: 11 * unit, height: 11 * unit)
             .background(
                 isSelected ? accent : (isBlocked ? AppColors.cardAlt : AppColors.textPrimary),
                 in: Circle()

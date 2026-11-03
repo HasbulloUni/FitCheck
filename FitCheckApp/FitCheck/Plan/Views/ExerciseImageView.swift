@@ -24,9 +24,11 @@ struct ExerciseImageView: View {
                 ProgressView()
             case .ready:
                 if let image = viewModel.currentImage {
+                    // Fills and crops ("zoom") the whole space the caller gives this view
+                    // (a square in the exercise rows), instead of leaving empty bars
                     Image(uiImage: image)
                         .resizable()
-                        .scaledToFit()
+                        .scaledToFill()
                 }
             case .failed:
                 // No internet and not saved yet: a quiet placeholder, never a crash
@@ -36,9 +38,8 @@ struct ExerciseImageView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .aspectRatio(4.0 / 3.0, contentMode: .fit)
         .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipped()
         .accessibilityLabel("Exercise photo")
         .task {
             await viewModel.load()
