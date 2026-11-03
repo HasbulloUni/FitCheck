@@ -60,6 +60,12 @@ enum SafetyRules {
     // MARK: Warm-up and cool-down
     static let maxStretches = 6
 
+    // MARK: A plan made by hand in "Add your plan" (Peppino decision, 3 Nov 2026)
+    static let minExercisesPerPlan = 4          // the main part needs at least 4 exercises
+    static let minWarmupMoves = 1               // the warm-up has 1 or 2 moves
+    static let maxWarmupMoves = 2
+    static let minutesPerWarmupMove = 4         // Peppino decision: each warm-up move is 4 min
+
     // MARK: Texts
     static let noticeSplitChanged = "We changed the split so each muscle can rest 48 hours."
     static let noticeDaysClose = "Your days are close together: some muscles may not get 48 hours of rest."

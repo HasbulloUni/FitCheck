@@ -108,7 +108,7 @@ enum SplitStyle: String, CaseIterable, Identifiable {
 
 // MARK: - The exercise as the generator sees it
 // A plain copy of the data: the generator does not need SwiftData.
-struct CatalogItem {
+struct CatalogItem: Identifiable {
     let id: String
     let name: String
     let level: String           // "beginner" or "intermediate"

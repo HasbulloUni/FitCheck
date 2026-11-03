@@ -38,14 +38,17 @@ enum WarmupCooldownBuilder {
         "yoga", "hurdler", "superman", "rotation", "twist"
     ]
 
-    // MARK: Warm-up
-    static func warmup(for exercises: [PlannedExercise]) -> WarmupPart {
-        var groups: [String] = []
-        for exercise in exercises where !groups.contains(exercise.group) {
-            groups.append(exercise.group)
-        }
+    // MARK: Moves the user picks by hand ("Add your plan": 1 or 2 moves, see SafetyRules)
 
-        // Mobility for the groups of the day, then a few general moves if there are less than 4
+    // About how long the general warm-up lasts, in minutes
+    static let generalMinutes = 4
+
+    // The general moves to get warm (walk, bike...)
+    static var generalMoves: [String] { generalWarmups }
+
+    // The mobility moves for the muscle groups of the day, each one once (max 6).
+    // With less than 4 moves, a few general mobility moves are added.
+    static func mobilityMoves(for groups: [String]) -> [String] {
         var moves: [String] = []
         for group in groupOrder where groups.contains(group) {
             for move in mobilityOfGroup[group] ?? [] where !moves.contains(move) {
@@ -56,6 +59,18 @@ enum WarmupCooldownBuilder {
             if moves.count >= 4 { break }
             if !moves.contains(move) { moves.append(move) }
         }
+        return Array(moves.prefix(6))
+    }
+
+    // MARK: Warm-up
+    static func warmup(for exercises: [PlannedExercise]) -> WarmupPart {
+        var groups: [String] = []
+        for exercise in exercises where !groups.contains(exercise.group) {
+            groups.append(exercise.group)
+        }
+
+        // Mobility for the groups of the day, then a few general moves if there are less than 4
+        let moves = mobilityMoves(for: groups)
 
         // The general warm-up is chosen with the hash: same day, same choice
         let seed = Fnv1aHash.hash(exercises.map { $0.id }.joined())
@@ -72,7 +87,7 @@ enum WarmupCooldownBuilder {
         return WarmupPart(
             minutes: SafetyRules.warmupMinutes,
             generalName: general,
-            generalMinutes: 4,
+            generalMinutes: generalMinutes,
             mobility: Array(moves.prefix(6)),
             approachSets: approach
         )

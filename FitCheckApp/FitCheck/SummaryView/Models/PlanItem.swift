@@ -23,6 +23,14 @@ struct PlanItem: Identifiable {
     var exerciseIds: [String] = []
     // The position of the color in PlanPalette.colors: it tells which colors are taken
     var colorIndex: Int? = nil
+    // The sets of each exercise, in the same order as exerciseIds
+    var exerciseSets: [Int] = []
+    // The 1 or 2 warm-up moves picked by the user
+    var warmupMoves: [String] = []
+    // False when the user switched the cool-down off
+    var hasCooldown = true
+    // False when the user switched the warm-up off
+    var hasWarmup = true
 
     // The summary shown under the name, e.g. "11 exercises · 60 min"
     var details: String {

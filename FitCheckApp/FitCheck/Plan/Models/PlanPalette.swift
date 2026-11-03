@@ -11,13 +11,15 @@ import SwiftUI
 // Only data. The user picks one when the plan is created.
 // Two plans never share a color: the screen "Add your plan" blocks the colors already taken.
 enum PlanPalette {
+    // The 6 main colors of the app, the rainbow: red, orange, yellow, green, blue, purple.
+    // The green is the "done / selected" green of the app (not the dark green of the labels).
     static let colors: [Color] = [
-        AppColors.muscleBlue,
-        AppColors.musclePurple,
+        AppColors.muscleRed,
         AppColors.muscleOrange,
-        AppColors.muscleGreen,
         AppColors.muscleYellow,
-        AppColors.muscleRed
+        AppColors.greenSoft,
+        AppColors.muscleBlue,
+        AppColors.musclePurple
     ]
 
     // The first color that no plan is using (or the first one if all are taken)

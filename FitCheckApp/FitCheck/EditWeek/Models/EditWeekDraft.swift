@@ -43,4 +43,12 @@ struct EditWeekDraft {
             DayReminder(weekday: $0, minutes: EditWeekRules.defaultStartMinutes)
         }
     }
+
+    // Rebuilds a draft that was saved with SwiftData
+    init(workoutWeekdays: [Int], durationMinutes: Int, remindMe: Bool, reminders: [DayReminder]) {
+        self.workoutWeekdays = workoutWeekdays
+        self.durationMinutes = durationMinutes
+        self.remindMe = remindMe
+        self.reminders = reminders
+    }
 }

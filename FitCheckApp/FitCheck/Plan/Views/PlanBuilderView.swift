@@ -99,7 +99,7 @@ struct PlanBuilderView: View {
 @MainActor
 func planPreviewContainer(withData: Bool) -> ModelContainer {
     let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Exercise.self, configurations: configuration)
+    let container = try! ModelContainer(for: Exercise.self, AppProfile.self, PlanRecord.self, configurations: configuration)
     if withData {
         ExerciseImporter.importIfNeeded(into: container.mainContext)
     }

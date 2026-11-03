@@ -10,6 +10,7 @@ import SwiftUI
 struct SummaryView: View {
     // The ViewModel owns the data: this View only draws it
     @State private var viewModel = SummaryViewModel()
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         // The NavigationStack lets Edit week open INSIDE the tab:
@@ -67,6 +68,7 @@ struct SummaryView: View {
             }
         }
         .background(AppColors.background)
+        .onAppear { viewModel.configure(context: modelContext) }
         // The pencil opens "Edit your week": Back returns here
         .navigationDestination(isPresented: $viewModel.isEditWeekOpen) {
             EditWeekView(
@@ -96,4 +98,5 @@ struct SummaryView: View {
 
 #Preview {
     SummaryView()
+        .modelContainer(planPreviewContainer(withData: true))
 }

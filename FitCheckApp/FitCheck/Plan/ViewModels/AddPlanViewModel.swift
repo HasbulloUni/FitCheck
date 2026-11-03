@@ -8,7 +8,10 @@
 import SwiftUI
 
 // The ViewModel of "Add your plan": one plan is one training DAY (legs, chest + back, full body...).
-// The user names it, picks a category, a color, a length (60 or 90 min) and the exercises.
+// The day has three parts, like the plans of the generator:
+//  1. warm-up: 8 min, always on, the user picks 1 or 2 moves
+//  2. main part: at least 4 exercises, picked by the user (sets can be changed)
+//  3. cool-down: 5 min, it can be switched off
 // The View only draws.
 @Observable
 final class AddPlanViewModel {
@@ -18,8 +21,19 @@ final class AddPlanViewModel {
     var colorIndex: Int                 // position in PlanPalette.colors
     var minutes = EditWeekRules.defaultDuration   // 60 or 90
     private(set) var category: PlanCategory = .gym
-    private(set) var chosen: [CatalogItem] = []   // the exercises of the day, in the order picked
-    var isPickerShown = false           // true while "Pick your exercises" is open
+    private(set) var chosen: [ChosenExercise] = []   // the main part, in order
+    private(set) var warmupMoves: [String] = []      // 1 or 2 moves
+    var hasCooldown = true
+    var hasWarmup = true                // the warm-up can be switched off
+
+    // MARK: What is open on the screen
+    var isPickerShown = false                       // "Add exercises"
+    var isWarmupShown = false                       // "Warm-up"
+    var detailExercise: ChosenExercise? = nil       // the exercise shown in the details sheet
+
+    // The last exercise removed with the × button: the screen shows "Undo" while it is not nil
+    private(set) var lastRemoved: ChosenExercise? = nil
+    private var lastRemovedPosition = 0
 
     // Goal and level are fixed for now (the plan is built by hand, not by the generator).
     // Medium: the picker shows beginner and intermediate exercises.
@@ -28,6 +42,10 @@ final class AddPlanViewModel {
 
     // The exercises copied from the database. It is built once.
     private var catalog: ExerciseCatalog? = nil
+    // The photo paths of each exercise, e.g. "Goblet_Squat/0.jpg"
+    private var imagesById: [String: [String]] = [:]
+    // Photos, secondary muscles and steps: only needed in "Add exercises"
+    private var detailsById: [String: ExercisePickerDetails] = [:]
 
     init(takenColorIndexes: [Int]) {
         colorIndex = PlanPalette.firstFree(taken: takenColorIndexes)
@@ -43,7 +61,18 @@ final class AddPlanViewModel {
     func loadCatalog(from exercises: [Exercise]) {
         if catalog != nil || exercises.isEmpty { return }
         catalog = CatalogBuilder.build(from: exercises)
+        for exercise in exercises {
+            imagesById[exercise.id] = exercise.images
+            detailsById[exercise.id] = ExercisePickerDetails(
+                images: exercise.images,
+                secondaryMuscles: exercise.secondaryMuscles,
+                instructions: exercise.instructions
+            )
+        }
     }
+
+    // What "Add exercises" needs to show the preview of each exercise
+    var pickerDetails: [String: ExercisePickerDetails] { detailsById }
 
     // The safe exercises the user can pick for this category
     var pool: [CatalogItem] {
@@ -58,29 +87,90 @@ final class AddPlanViewModel {
         category = newCategory
         let allowedIds = pool.map { $0.id }
         chosen = chosen.filter { allowedIds.contains($0.id) }
+        lastRemoved = nil
+        keepValidWarmup()
     }
 
-    // The user pressed Done in the picker
+    // The user pressed Done in "Add exercises".
+    // The exercises already in the plan keep their sets, the new ones get the default sets.
     func setExercises(_ items: [CatalogItem]) {
-        chosen = items
+        var newList: [ChosenExercise] = []
+        for item in items {
+            if let old = chosen.first(where: { $0.id == item.id }) {
+                newList.append(old)
+            } else {
+                newList.append(ChosenExercise(item: item, sets: Prescription.sets(for: level)))
+            }
+        }
+        chosen = newList
+        lastRemoved = nil
+        keepValidWarmup()
     }
 
-    func removeExercise(_ item: CatalogItem) {
-        chosen = chosen.filter { $0.id != item.id }
+    // The × button: the exercise goes away, "Undo" can bring it back
+    func removeExercise(_ exercise: ChosenExercise) {
+        guard let position = chosen.firstIndex(where: { $0.id == exercise.id }) else { return }
+        lastRemoved = chosen[position]
+        lastRemovedPosition = position
+        chosen.remove(at: position)
+        if detailExercise?.id == exercise.id {
+            detailExercise = nil
+        }
     }
 
-    // MARK: Texts and numbers
+    // "Undo": the last removed exercise goes back to its place
+    func undoRemove() {
+        guard let exercise = lastRemoved else { return }
+        let position = min(lastRemovedPosition, chosen.count)
+        chosen.insert(exercise, at: position)
+        lastRemoved = nil
+    }
+
+    // The "Undo" message disappears after a few seconds
+    func hideUndo() {
+        lastRemoved = nil
+    }
+
+    // The + and − buttons of the sets (never below the minimum or above the maximum)
+    func changeSets(of exercise: ChosenExercise, by step: Int) {
+        guard let position = chosen.firstIndex(where: { $0.id == exercise.id }) else { return }
+        let newSets = chosen[position].sets + step
+        chosen[position].sets = max(SafetyRules.minSets, min(SafetyRules.maxSets, newSets))
+    }
+
+    func canChangeSets(of exercise: ChosenExercise, by step: Int) -> Bool {
+        let newSets = exercise.sets + step
+        return newSets >= SafetyRules.minSets && newSets <= SafetyRules.maxSets
+    }
+
+    // The user pressed Done in "Warm-up"
+    func setWarmupMoves(_ moves: [String]) {
+        warmupMoves = Array(moves.prefix(SafetyRules.maxWarmupMoves))
+    }
+
+    // The exercise with this id, as it is now (nil if it was removed)
+    func exercise(withId id: String) -> ChosenExercise? {
+        chosen.first(where: { $0.id == id })
+    }
+
+    // The mobility moves depend on the muscles of the day: a move that is not offered anymore goes away
+    private func keepValidWarmup() {
+        let offered = WarmupCooldownBuilder.generalMoves + mobilityMoves
+        warmupMoves = warmupMoves.filter { offered.contains($0) }
+    }
+
+    // MARK: Name, icon and color
 
     private static let groupOrder = ["Legs", "Glutes", "Chest", "Back", "Shoulders", "Arms", "Core"]
 
     // The muscle groups of the chosen exercises, in a fixed order
     private var groups: [String] {
-        Self.groupOrder.filter { group in chosen.contains(where: { $0.group == group }) }
+        Self.groupOrder.filter { group in chosen.contains(where: { $0.item.group == group }) }
     }
 
     // e.g. "Legs", "Chest + Back", or "Full body" with 3 or more groups
     var suggestedName: String {
-        if groups.isEmpty { return "Your workout" }
+        if groups.isEmpty { return "Name the day" }
         if groups.count >= 3 { return "Full body" }
         return groups.joined(separator: " + ")
     }
@@ -88,7 +178,8 @@ final class AddPlanViewModel {
     // The name written by the user, or the suggested one
     var displayName: String {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
-        return trimmed.isEmpty ? suggestedName : trimmed
+        if !trimmed.isEmpty { return trimmed }
+        return groups.isEmpty ? "New plan" : suggestedName
     }
 
     // The SF Symbol of the plan, from its muscle groups
@@ -99,35 +190,221 @@ final class AddPlanViewModel {
         return "figure.strengthtraining.traditional"
     }
 
-    // Time of the whole session: warm-up + exercises + cool-down
-    var estimatedMinutes: Int {
-        var total = SafetyRules.warmupMinutes + SafetyRules.cooldownMinutes
-        let sets = Prescription.sets(for: level)
-        for item in chosen {
-            total += Prescription.minutes(isCompound: item.mechanic == "compound", sets: sets, goal: goal)
-        }
-        return Int(total.rounded())
+    // The color of this plan: the big header and the picked exercises use it
+    var color: Color { PlanPalette.colors[colorIndex] }
+
+    // e.g. "NEW PLAN · GYM · 60 MIN"
+    var headerLabel: String {
+        "NEW PLAN · \(category.title.uppercased()) · \(minutes) MIN"
+    }
+
+    // MARK: Warm-up
+
+    // The mobility moves for the muscles of the day
+    var mobilityMoves: [String] {
+        WarmupCooldownBuilder.mobilityMoves(for: groups)
+    }
+
+    // e.g. "MOBILITY FOR LEGS + GLUTES"
+    var mobilityTitle: String {
+        groups.isEmpty ? "MOBILITY" : "MOBILITY FOR " + groups.joined(separator: " + ").uppercased()
+    }
+
+    // Off counts as ready: the user chose to skip it
+    var isWarmupReady: Bool { !hasWarmup || warmupMoves.count >= SafetyRules.minWarmupMoves }
+
+    // Minutes of the warm-up: 4 for each move, counted only when the plan has exercises
+    var warmupMinutes: Int {
+        if !hasWarmup || chosen.isEmpty { return 0 }
+        return warmupMoves.count * SafetyRules.minutesPerWarmupMove
+    }
+
+    // e.g. "1 / 2"
+    var warmupCountText: String { "\(warmupMoves.count) / \(SafetyRules.maxWarmupMoves)" }
+
+    var warmupSummary: String {
+        if !hasWarmup { return "Off today" }
+        if warmupMoves.isEmpty { return "Pick 1 or 2 moves · 4 min each" }
+        if chosen.isEmpty { return "\(warmupMoves.count * SafetyRules.minutesPerWarmupMove) min · counted with exercises" }
+        return "\(warmupMinutes) min"
+    }
+
+    // The small text of a picked move, e.g. "Brisk walk · 4 min" or "Hip circles"
+    func warmupChipText(_ move: String) -> String {
+        return WarmupPickerViewModel.title(of: move) + " · \(SafetyRules.minutesPerWarmupMove) min"
+    }
+
+    // The ViewModel of the "Warm-up" screen, with the moves picked so far
+    func makeWarmupPicker() -> WarmupPickerViewModel {
+        WarmupPickerViewModel(
+            generalMoves: WarmupCooldownBuilder.generalMoves,
+            mobilityMoves: mobilityMoves,
+            mobilityTitle: mobilityTitle,
+            rampUpExercise: rampUpExercise.map { displayName(of: $0.item) },
+            selected: warmupMoves
+        )
+    }
+
+    // MARK: Main part: texts of one exercise
+
+    // The three parts of the plan as the generator builds them
+    private func planned(_ exercise: ChosenExercise) -> PlannedExercise {
+        Prescription.make(item: exercise.item, goal: goal, level: level, sets: exercise.sets,
+                          slotKey: exercise.item.group)
+    }
+
+    // The name to show (calisthenics exercises have an easier or harder version)
+    func displayName(of item: CatalogItem) -> String {
+        item.variants[level.rawValue] ?? item.name
+    }
+
+    // e.g. "10-12" or "30 s hold"
+    func repsText(_ exercise: ChosenExercise) -> String {
+        let plan = planned(exercise)
+        if let hold = plan.holdSeconds { return "\(hold) s hold" }
+        return "\(plan.repsMin ?? 0)-\(plan.repsMax ?? 0)"
+    }
+
+    // e.g. "75 s"
+    func restText(_ exercise: ChosenExercise) -> String {
+        "\(planned(exercise).restSeconds) s"
+    }
+
+    // e.g. "Stop with 2-3 reps still in the tank"
+    func effortText(_ exercise: ChosenExercise) -> String {
+        planned(exercise).effortText
+    }
+
+    // e.g. "3 × 10-12 · rest 75 s · Quadriceps"
+    func rowDetail(_ exercise: ChosenExercise) -> String {
+        let plan = planned(exercise)
+        let amount = plan.holdSeconds.map { "\($0) s" } ?? "\(plan.repsMin ?? 0)-\(plan.repsMax ?? 0)"
+        return "\(plan.sets) × \(amount) · rest \(plan.restSeconds) s · \(exercise.item.muscle.capitalized)"
     }
 
     // e.g. "Quadriceps · Compound"
-    func detailText(_ item: CatalogItem) -> String {
+    func kindText(_ item: CatalogItem) -> String {
         let kind = item.mechanic == "compound" ? "Compound" : "Isolation"
         return item.muscle.capitalized + " · " + kind
     }
 
-    // A plan needs at least one exercise
-    var canSave: Bool { !chosen.isEmpty }
+    // The photo paths of an exercise (empty if the database has none)
+    func images(of exercise: ChosenExercise) -> [String] {
+        imagesById[exercise.id] ?? []
+    }
+
+    // MARK: Ramp-up sets
+    // The generator adds 2 lighter sets before the first compound exercise (or the first one).
+
+    private var rampUpExercise: ChosenExercise? {
+        chosen.first(where: { $0.item.mechanic == "compound" }) ?? chosen.first
+    }
+
+    func hasRampUp(_ exercise: ChosenExercise) -> Bool {
+        rampUpExercise?.id == exercise.id
+    }
+
+    // e.g. "50% × 8-10, then 75% × 4-6"
+    var rampUpText: String {
+        let warmup = WarmupCooldownBuilder.warmup(for: chosen.map { planned($0) })
+        let parts = warmup.approachSets.map { "\(Int($0.loadShare * 100))% × \($0.reps)" }
+        return parts.joined(separator: ", then ")
+    }
+
+    // MARK: Cool-down
+
+    // How many stretches the cool-down has with the exercises of today
+    private var stretchCount: Int {
+        guard let catalog = catalog, !chosen.isEmpty else { return 0 }
+        let part = WarmupCooldownBuilder.cooldown(for: chosen.map { planned($0) },
+                                                  stretches: catalog.stretches, seed: 0)
+        return part.stretches.count
+    }
+
+    var cooldownSummary: String {
+        let length = "\(Int(SafetyRules.cooldownMinutes)) min"
+        if !hasCooldown { return length + " · off today" }
+        let count = stretchCount
+        if count == 0 { return length + " · slow walk + stretches" }
+        return length + " · slow walk + \(count) " + (count == 1 ? "stretch" : "stretches")
+    }
+
+    // MARK: Time
+
+    // Time of the whole session: warm-up + exercises + cool-down (if it is on)
+    var estimatedMinutes: Int {
+        if chosen.isEmpty { return 0 }
+        var total = Double(warmupMinutes)
+        if hasCooldown {
+            total += SafetyRules.cooldownMinutes
+        }
+        for exercise in chosen {
+            total += Prescription.minutes(isCompound: exercise.item.mechanic == "compound",
+                                          sets: exercise.sets, goal: goal)
+        }
+        return Int(total.rounded())
+    }
+
+    // From 0 to 1: how much of the 60 or 90 minutes is used
+    var timeShare: Double {
+        min(1, Double(estimatedMinutes) / Double(minutes))
+    }
+
+    // e.g. "about 42 of 60 min"
+    var timeText: String { "about \(estimatedMinutes) of \(minutes) min" }
+
+    // MARK: Count and save
+
+    var hasEnoughExercises: Bool { chosen.count >= SafetyRules.minExercisesPerPlan }
+
+    // e.g. "5 exercises"
+    var exerciseCountText: String {
+        chosen.count == 1 ? "1 exercise" : "\(chosen.count) exercises"
+    }
+
+    // "3 / 4" while there are too few exercises, "5 · min 4" when there are enough
+    var mainCountText: String {
+        let minimum = SafetyRules.minExercisesPerPlan
+        return hasEnoughExercises ? "\(chosen.count) · min \(minimum)" : "\(chosen.count) / \(minimum)"
+    }
+
+    // The button works only with at least 4 exercises
+    var isSaveEnabled: Bool { hasEnoughExercises }
+
+    // The text of the big button says what is still missing
+    var saveTitle: String {
+        let missing = SafetyRules.minExercisesPerPlan - chosen.count
+        if chosen.isEmpty { return "Add \(SafetyRules.minExercisesPerPlan) exercises to save" }
+        if missing == 1 { return "Add 1 more exercise" }
+        if missing > 1 { return "Add \(missing) more exercises" }
+        if !isWarmupReady { return "Pick your warm-up" }
+        return "Save to My plans"
+    }
+
+    // The big button: it gives the plan, or opens the warm-up if no move is picked yet
+    func pressSave() -> PlanItem? {
+        if !hasEnoughExercises { return nil }
+        if !isWarmupReady {
+            isWarmupShown = true
+            return nil
+        }
+        return makePlan()
+    }
 
     // The plan for the Home
-    func makePlan() -> PlanItem {
+    private func makePlan() -> PlanItem {
         PlanItem(
             name: displayName,
             icon: icon,
-            color: PlanPalette.colors[colorIndex],
+            color: color,
             exerciseCount: chosen.count,
             minutes: minutes,
             exerciseIds: chosen.map { $0.id },
-            colorIndex: colorIndex
+            colorIndex: colorIndex,
+            exerciseSets: chosen.map { $0.sets },
+            warmupMoves: warmupMoves,
+            hasCooldown: hasCooldown,
+            hasWarmup: hasWarmup
         )
     }
 }

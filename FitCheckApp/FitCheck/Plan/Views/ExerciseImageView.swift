@@ -42,7 +42,6 @@ struct ExerciseImageView: View {
         .accessibilityLabel("Exercise photo")
         .task {
             await viewModel.load()
-            await viewModel.animate()
         }
     }
 }

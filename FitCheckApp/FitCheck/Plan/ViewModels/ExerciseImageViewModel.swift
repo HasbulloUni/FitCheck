@@ -20,8 +20,7 @@ final class ExerciseImageViewModel {
     }
 
     private(set) var state: LoadState = .loading
-    private(set) var frames: [UIImage] = []     // the loaded photos, in order
-    private(set) var frameIndex = 0             // the photo shown now
+    private(set) var image: UIImage? = nil      // the one photo shown (the first of the exercise)
 
     private let paths: [String]
     private let store: ExerciseImageStore
@@ -32,32 +31,18 @@ final class ExerciseImageViewModel {
     }
 
     // The photo to show now (nil while loading or if it failed)
-    var currentImage: UIImage? {
-        frames.isEmpty ? nil : frames[frameIndex % frames.count]
-    }
+    var currentImage: UIImage? { image }
 
-    // Loads all the photos. If at least one arrives, the state is ready.
+    // Loads only the first photo: one still image, never an alternating animation.
     func load() async {
-        if paths.isEmpty { state = .failed; return }
+        guard let path = paths.first else { state = .failed; return }
         state = .loading
 
-        var loaded: [UIImage] = []
-        for path in paths {
-            if let image = try? await store.image(for: path) { loaded.append(image) }
-        }
-
-        frames = loaded
-        state = loaded.isEmpty ? .failed : .ready
-    }
-
-    // Switches between the photos every second to show the movement.
-    // It stops by itself when the view disappears (the task is cancelled).
-    func animate() async {
-        guard frames.count > 1 else { return }
-        while !Task.isCancelled {
-            try? await Task.sleep(for: .seconds(1))
-            if Task.isCancelled { break }
-            frameIndex = (frameIndex + 1) % frames.count
+        if let loaded = try? await store.image(for: path) {
+            image = loaded
+            state = .ready
+        } else {
+            state = .failed
         }
     }
 }
