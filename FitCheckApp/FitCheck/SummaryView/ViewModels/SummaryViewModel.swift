@@ -20,11 +20,33 @@ final class SummaryViewModel {
     // Today's workout: nil means the user has not added one yet
     var todayPlan: TodayPlan? = nil
 
-    // Goals chosen by the user: empty at the start
-    var goals: [GoalItem] = []
+    // The goals of the week and of the month: the Home shows them, the numbers start at zero
+    var goalsViewModel = GoalsViewModel()
 
     // Plans created by the user: empty at the start
     var plans: [PlanItem] = []
+
+    // True while the screen "Add your plan" is open
+    var isAddPlanOpen = false
+
+    func openAddPlan() {
+        isAddPlanOpen = true
+    }
+
+    func closeAddPlan() {
+        isAddPlanOpen = false
+    }
+
+    // Save plan: the new plan goes to My plans and the Home is shown again
+    func addPlan(_ plan: PlanItem) {
+        plans.append(plan)
+        closeAddPlan()
+    }
+
+    // Delete a plan from My plans (the Home asks the user first)
+    func deletePlan(_ plan: PlanItem) {
+        plans.removeAll { $0.id == plan.id }
+    }
 
     // What the user saved in "Edit your week" (days, duration, reminders): nil until the first save
     var savedWeekPlan: EditWeekDraft? = nil

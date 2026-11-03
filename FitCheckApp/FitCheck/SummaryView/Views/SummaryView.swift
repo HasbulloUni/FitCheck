@@ -12,6 +12,9 @@ struct SummaryView: View {
     @State private var viewModel = SummaryViewModel()
 
     var body: some View {
+        // The NavigationStack lets Edit week open INSIDE the tab:
+        // the navbar (RootTabView) stays visible and Back returns to the Home
+        NavigationStack {
         // The only GeometryReader of the screen: it measures the width of the device
         GeometryReader { geo in
             let unit = geo.size.width / 100   // 1% of the screen width
@@ -39,33 +42,54 @@ struct SummaryView: View {
                     if let plan = viewModel.todayPlan {
                         TodayCardView(plan: plan, unit: unit, onStart: {})
                     } else {
-                        TodayEmptyCardView(unit: unit, onAddPlan: {})
+                        TodayEmptyCardView(unit: unit, onAddPlan: { viewModel.openAddPlan() })
                     }
 
-                    // Goals: with no goals this shows only the "Add goal" card
-                    GoalsSectionView(goals: viewModel.goals, unit: unit, onSeeAll: {}, onAddGoal: {})
+                    // Goals: the 3 goals of the week and the 3 of the month (no separate screen)
+                    GoalsSectionView(
+                        weekGoals: viewModel.goalsViewModel.weekGoals,
+                        monthGoals: viewModel.goalsViewModel.monthGoals,
+                        unit: unit
+                    )
 
                     // My plans: with no plans this shows only the "Create your first plan" card
                     MyPlansSectionView(
                         plans: viewModel.plans,
                         unit: unit,
-                        onNewPlan: {},
+                        onNewPlan: { viewModel.openAddPlan() },
                         onOpenPlan: { _ in },
-                        onEditPlan: { _ in }
+                        onEditPlan: { _ in },
+                        onDeletePlan: { viewModel.deletePlan($0) },
+                        onStartPlan: { _ in }
                     )
                 }
                 .padding(6 * unit)
             }
         }
         .background(AppColors.background)
-        // The pencil opens "Edit your week" over the Home: Back returns here
-        .fullScreenCover(isPresented: $viewModel.isEditWeekOpen) {
+        // The pencil opens "Edit your week": Back returns here
+        .navigationDestination(isPresented: $viewModel.isEditWeekOpen) {
             EditWeekView(
                 week: viewModel.weekData,
                 savedPlan: viewModel.savedWeekPlan,
                 onBack: { viewModel.closeEditWeek() },
                 onSave: { viewModel.saveWeek($0) }
             )
+            .navigationBarBackButtonHidden(true)   // the screens have their own Back
+            .toolbar(.hidden, for: .navigationBar)
+        }
+        // "+ New plan" and "Add plan" open "Add your plan": Back returns here
+        .navigationDestination(isPresented: $viewModel.isAddPlanOpen) {
+            AddPlanView(
+                takenColorIndexes: viewModel.plans.compactMap { $0.colorIndex },
+                onBack: { viewModel.closeAddPlan() },
+                onSave: { viewModel.addPlan($0) }
+            )
+            .navigationBarBackButtonHidden(true)   // the screens have their own Back
+            .toolbar(.hidden, for: .navigationBar)
+        }
+        // The Home has its own header: no system title bar
+        .toolbar(.hidden, for: .navigationBar)
         }
     }
 }
