@@ -16,11 +16,6 @@
 			path = FitCheck;
 			sourceTree = "<group>";
 		};
-		46F44F513098994C0080F9C2 /* EditWeek */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = EditWeek;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +32,6 @@
 			children = (
 				469C188F3095227E00763E11 /* FitCheck */,
 				469C188E3095227E00763E11 /* Products */,
-				46F44F513098994C0080F9C2 /* EditWeek */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,7 +58,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				469C188F3095227E00763E11 /* FitCheck */,
-				46F44F513098994C0080F9C2 /* EditWeek */,
 			);
 			name = FitCheck;
 			productName = FitCheck;

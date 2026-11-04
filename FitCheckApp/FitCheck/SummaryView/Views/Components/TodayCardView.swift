@@ -17,22 +17,23 @@ struct TodayCardView: View {
     let onStart: () -> Void   // what happens when the user taps Start
 
     var body: some View {
-        HStack(spacing: 3 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
 
             // Left side: label, plan name, details
-            VStack(alignment: .leading, spacing: 1.5 * unit) {
-                Text("TODAY")
-                    .font(.system(size: 3.2 * unit, weight: .bold))
+            VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
+                // A plan sent with Go replaced the routine of today
+                Text(plan.fromGo ? "TODAY · CHANGED" : "TODAY")
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(.black.opacity(0.7))
 
                 Text(plan.name)
-                    .font(.system(size: 6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
                     .foregroundStyle(.black)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
 
                 Text("\(plan.minutes) min · \(plan.exerciseCount) exercises")
-                    .font(.system(size: 3.6 * unit, weight: .medium))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                     .foregroundStyle(.black.opacity(0.8))
                     .minimumScaleFactor(0.8)   // shrinks a little instead of wrapping
                     .lineLimit(1)
@@ -43,7 +44,7 @@ struct TodayCardView: View {
             // Right side: Start button
             Button(action: onStart) {
                 Text("Start")
-                    .font(.system(size: 4.4 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 6 * unit)
                     .padding(.vertical, 3.5 * unit)
@@ -52,7 +53,7 @@ struct TodayCardView: View {
         }
         .padding(5 * unit)
         // The card stays yellow with black text in light and dark mode, so fixed black and white on purpose
-        .background(AppColors.yellow, in: RoundedRectangle(cornerRadius: 6 * unit))
+        .background(AppColors.yellow, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
     }
 }
 
@@ -63,22 +64,22 @@ struct TodayEmptyCardView: View {
     let onAddPlan: () -> Void   // what happens when the user taps "Add plan"
 
     var body: some View {
-        HStack(spacing: 3 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
 
             // Left side: label, message and hint, one under the other
-            VStack(alignment: .leading, spacing: 1.5 * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
                 Text("TODAY")
-                    .font(.system(size: 3.2 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(AppColors.textSecondary)
 
                 Text("No workout yet")
-                    .font(.system(size: 6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
 
                 Text("Add a plan to see it here")
-                    .font(.system(size: 3.6 * unit, weight: .medium))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                     .foregroundStyle(AppColors.textSecondary)
                     .minimumScaleFactor(0.8)
                     .lineLimit(1)
@@ -89,7 +90,7 @@ struct TodayEmptyCardView: View {
             // Right side: the button that invites the user to add a plan
             Button(action: onAddPlan) {
                 Text("Add plan")
-                    .font(.system(size: 4.4 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(AppColors.background)
                     .padding(.horizontal, 6 * unit)
                     .padding(.vertical, 3.5 * unit)
@@ -99,7 +100,7 @@ struct TodayEmptyCardView: View {
         .padding(5 * unit)
         // Dashed border: it says "something is missing here"
         .overlay(
-            RoundedRectangle(cornerRadius: 6 * unit)
+            RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit)
                 .strokeBorder(
                     AppColors.textSecondary,
                     style: StrokeStyle(lineWidth: 0.4 * unit, dash: [1 * unit, 0.8 * unit])
@@ -110,6 +111,43 @@ struct TodayEmptyCardView: View {
 
 // MARK: - Previews
 // Sample data used only by the previews
+// MARK: - Rest day
+// Today is a rest day of the routine. The hint says how to train anyway (the Go swipe).
+struct TodayRestCardView: View {
+    let unit: CGFloat
+
+    var body: some View {
+        HStack(spacing: AppSizes.Space.group * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
+                Text("TODAY")
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
+                    .foregroundStyle(AppColors.textSecondary)
+
+                Text("Rest day")
+                    .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
+                    .foregroundStyle(AppColors.textPrimary)
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
+
+                Text("Swipe a plan right to train anyway")
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
+                    .foregroundStyle(AppColors.textSecondary)
+                    .minimumScaleFactor(0.8)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            Image(systemName: "moon.zzz.fill")
+                .font(.system(size: AppSizes.Text.display * unit))
+                .foregroundStyle(AppColors.musclePurple)
+        }
+        .padding(5 * unit)
+        .frame(maxWidth: .infinity)
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
+    }
+}
+
 private let samplePlan = TodayPlan(name: "Full body A", minutes: 67, exerciseCount: 11)
 
 // unit 3.9 = an iPhone that is 390 pt wide
@@ -124,6 +162,12 @@ private let samplePlan = TodayPlan(name: "Full body A", minutes: 67, exerciseCou
         .padding(20)
         .background(AppColors.background)
         .preferredColorScheme(.dark)
+}
+
+#Preview("Rest day") {
+    TodayRestCardView(unit: 3.9)
+        .padding(20)
+        .background(AppColors.background)
 }
 
 #Preview("No data") {

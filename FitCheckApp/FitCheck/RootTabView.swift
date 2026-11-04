@@ -12,9 +12,8 @@ struct RootTabView: View {
         TabView {
             SummaryView()
                 .tabItem { Label("Summary", systemImage: "heart.text.clipboard") }
-            ProgressScreen()
+            ProgressScreenView()
                 .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis") }
-            
         }
     }
 }

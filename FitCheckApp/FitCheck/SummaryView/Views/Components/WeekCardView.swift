@@ -10,23 +10,33 @@ import SwiftUI
 // MARK: - The card
 struct WeekCardView: View {
     let days: [WeekDay]
+    let title: String        // "This week", "Next week"...
+    let weekOffset: Int      // 0 = this week: used to animate the change of week
     let unit: CGFloat   // 1% of the screen width
     let onEdit: () -> Void   // what happens when the pencil is tapped
+    let onPreviousWeek: () -> Void   // swipe to the right
+    let onNextWeek: () -> Void       // swipe to the left
+
+    // Moves the days a little to the left and back, to show that the card can be swiped
+    @State private var hintOffset: CGFloat = 0
+
+    // The direction of the last swipe: the new week slides in from this side
+    @State private var goesForward = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
 
             // Title row with the pencil button on the right
             HStack {
-                Text("This week")
-                    .font(.system(size: 3.8 * unit, weight: .semibold))
+                Text(title)
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
 
                 Button(action: onEdit) {
                     Image(systemName: "pencil")
-                        .font(.system(size: 3.4 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
                         .foregroundStyle(AppColors.textSecondary)
                         .padding(2.5 * unit)
                         .background(AppColors.cardAlt, in: Circle())
@@ -40,9 +50,46 @@ struct WeekCardView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
+            .id(weekOffset)
+            .transition(.push(from: goesForward ? .trailing : .leading))
+            .offset(x: hintOffset)
+            // The whole area of the days can be swiped, also the empty spaces between the circles
+            .frame(maxWidth: .infinity)
+            .clipped()   // the week that slides out does not leave the card
+            .contentShape(Rectangle())
+            // Swipe left: next week. Swipe right: back (the Home stops at this week).
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 15).onEnded { drag in
+                    // The weeks slide with a smooth animation, in the direction of the swipe
+                    if drag.translation.width < -30 {
+                        goesForward = true
+                        withAnimation(.smooth(duration: 0.4)) { onNextWeek() }
+                    } else if drag.translation.width > 30 {
+                        goesForward = false
+                        withAnimation(.smooth(duration: 0.4)) { onPreviousWeek() }
+                    }
+                }
+            )
         }
+        .task { await showSwipeHint() }
         .padding(4.5 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 6 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
+    }
+}
+
+// MARK: - The swipe hint
+extension WeekCardView {
+    // When the card appears, the days slide a little to the left and come back.
+    // It is a hint for the user: "swipe to see the next weeks".
+    func showSwipeHint() async {
+        try? await Task.sleep(for: .seconds(0.8))
+        withAnimation(.easeInOut(duration: 0.35)) {
+            hintOffset = -4 * unit
+        }
+        try? await Task.sleep(for: .seconds(0.35))
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+            hintOffset = 0
+        }
     }
 }
 
@@ -53,21 +100,21 @@ struct DayCircleView: View {
     let unit: CGFloat   // 1% of the screen width
 
     var body: some View {
-        VStack(spacing: 1.5 * unit) {
+        VStack(spacing: AppSizes.Space.related * unit) {
             // Fill + border + number, one on top of the other
             ZStack {
                 Circle().fill(fillColor)
                 Circle().strokeBorder(borderColor, style: borderStyle)
                 Text("\(day.number)")
-                    .font(.system(size: 3.6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(numberColor)
             }
             .frame(width: 10 * unit, height: 10 * unit)
 
             // The letter below, bold only for today
             Text(day.letter)
-                .font(.system(size: 3 * unit, weight: day.state == .today ? .bold : .regular))
-                .foregroundStyle(day.state == .today ? AppColors.textPrimary : AppColors.textSecondary)
+                .font(.system(size: AppSizes.Text.small * unit, weight: day.state.isToday ? .bold : .regular))
+                .foregroundStyle(day.state.isToday ? AppColors.textPrimary : AppColors.textSecondary)
         }
     }
 
@@ -77,15 +124,19 @@ struct DayCircleView: View {
         case .done:     return AppColors.green
         case .rest:     return AppColors.musclePurple
         case .planned:  return AppColors.divider
-        case .today:    return .clear
-        case .upcoming: return .clear
+        case .todayWorkout: return AppColors.green.opacity(0.25)
+        case .todayRest:    return AppColors.musclePurple.opacity(0.25)
+        case .today:        return .clear
+        case .upcoming:     return .clear
         }
     }
 
     // Border color
     private var borderColor: Color {
         switch day.state {
-        case .today:    return AppColors.textPrimary
+        case .todayWorkout: return AppColors.green
+        case .todayRest:    return AppColors.musclePurple
+        case .today:        return AppColors.textPrimary
         case .upcoming: return AppColors.divider
         default:        return .clear
         }
@@ -93,7 +144,7 @@ struct DayCircleView: View {
 
     // Dashed border only for today
     private var borderStyle: StrokeStyle {
-        if day.state == .today {
+        if day.state.isToday {
             return StrokeStyle(lineWidth: 0.5 * unit, dash: [1 * unit, 0.8 * unit])
         }
         return StrokeStyle(lineWidth: 0.4 * unit)
@@ -103,7 +154,7 @@ struct DayCircleView: View {
     private var numberColor: Color {
         switch day.state {
         case .done, .rest:         return .white
-        case .today:               return AppColors.textPrimary
+        case .today, .todayWorkout, .todayRest: return AppColors.textPrimary
         case .planned, .upcoming:  return AppColors.textSecondary
         }
     }
@@ -123,13 +174,15 @@ private let sampleData: WeekData = {
 
 // unit 3.9 = an iPhone that is 390 pt wide
 #Preview("Light") {
-    WeekCardView(days: sampleData.days(), unit: 3.9, onEdit: {})
+    WeekCardView(days: sampleData.days(), title: "This week", weekOffset: 0, unit: 3.9,
+                 onEdit: {}, onPreviousWeek: {}, onNextWeek: {})
         .padding(20)
         .background(AppColors.background)
 }
 
 #Preview("Dark") {
-    WeekCardView(days: sampleData.days(), unit: 3.9, onEdit: {})
+    WeekCardView(days: sampleData.days(), title: "This week", weekOffset: 0, unit: 3.9,
+                 onEdit: {}, onPreviousWeek: {}, onNextWeek: {})
         .padding(20)
         .background(AppColors.background)
         .preferredColorScheme(.dark)

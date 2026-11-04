@@ -13,4 +13,6 @@ struct TodayPlan {
     let name: String          // e.g. "Full body A"
     let minutes: Int          // e.g. 67
     let exerciseCount: Int    // e.g. 11
+    var planId: UUID? = nil   // the plan of My plans this card comes from
+    var fromGo = false        // true when the plan was sent with "Go" and replaced the routine
 }

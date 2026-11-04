@@ -1,0 +1,103 @@
+//
+//  CatalogBuilder.swift
+//  FitCheck
+//
+//  Created by AFP FED 11 on 03/11/2026.
+//
+
+import Foundation
+
+// MARK: - Builds the catalog the generator uses
+// Takes the exercises saved in the database (Exercise) and returns plain copies.
+// The database is filled from exercises.json, which is already filtered
+// (no unsafe exercises, no hand-added ones), so nothing else is read here.
+enum CatalogBuilder {
+
+    // The muscles of the database and the group each one belongs to
+    private static let groupOfMuscle: [String: String] = [
+        "chest": "Chest", "shoulders": "Shoulders", "neck": "Shoulders",
+        "lats": "Back", "middle back": "Back", "lower back": "Back", "traps": "Back",
+        "biceps": "Arms", "triceps": "Arms", "forearms": "Arms",
+        "abdominals": "Core", "glutes": "Glutes",
+        "quadriceps": "Legs", "hamstrings": "Legs", "calves": "Legs",
+        "adductors": "Legs", "abductors": "Legs"
+    ]
+
+    // The equipment of the database and the name used by the generator.
+    // An exercise with no equipment is a bodyweight one. Other equipment (balls, foam roll) is not used.
+    private static let equipmentName: [String: String] = [
+        "barbell": "Barbell", "dumbbell": "Dumbbell", "cable": "Cable", "machine": "Machine",
+        "kettlebells": "Kettlebell", "e-z curl bar": "EZ bar", "bands": "Bands",
+        "body only": "Bodyweight", "": "Bodyweight"
+    ]
+
+    static func build(from exercises: [Exercise]) -> ExerciseCatalog {
+        var items: [CatalogItem] = []
+        var stretches: [StretchItem] = []
+
+        for exercise in exercises {
+            guard let muscle = exercise.primaryMuscles.first else { continue }
+
+            if exercise.category == "stretching" {
+                stretches.append(StretchItem(id: exercise.id, name: exercise.name, muscle: muscle))
+                continue
+            }
+
+            // Only strength exercises with a known equipment and a known muscle
+            guard exercise.category == "strength",
+                  let equipment = equipmentName[exercise.equipment],
+                  let group = groupOfMuscle[muscle] else { continue }
+
+            items.append(CatalogItem(
+                id: exercise.id,
+                name: exercise.name,
+                level: exercise.level,
+                mechanic: exercise.mechanic,
+                force: exercise.force,
+                equipment: equipment,
+                muscle: muscle,
+                group: group,
+                variants: [:],
+                needsBar: false
+            ))
+        }
+
+        return ExerciseCatalog(items: items, stretches: stretches)
+    }
+
+    // MARK: The warm-up exercises (Peppino decision, 3 Nov 2026; treadmill added later the same day)
+    // A fixed list of safe moves, no equipment needed except the treadmill. The user picks 1 to 3.
+    static let warmupExerciseIds = [
+        "Standing_Hip_Circles", "Ankle_Circles", "Arm_Circles", "Wrist_Circles", "Single_Leg_Glute_Bridge",
+        "Walking_Treadmill"
+    ]
+
+    // The treadmill walk is longer (8-10 min) than the other moves: AddPlanViewModel gives it
+    // its own minutes instead of the flat SafetyRules.minutesPerWarmupMove.
+    static let treadmillWarmupId = "Walking_Treadmill"
+
+    // Most of these ids are category "stretching" or "cardio", so build(from:) above would not
+    // keep them (it only keeps "strength" items). This builds just these, in the order above.
+    static func warmupItems(from exercises: [Exercise]) -> [CatalogItem] {
+        let byId = Dictionary(uniqueKeysWithValues: exercises.map { ($0.id, $0) })
+        return warmupExerciseIds.compactMap { id -> CatalogItem? in
+            guard let exercise = byId[id],
+                  let muscle = exercise.primaryMuscles.first,
+                  let equipment = equipmentName[exercise.equipment],
+                  let group = groupOfMuscle[muscle] else { return nil }
+
+            return CatalogItem(
+                id: exercise.id,
+                name: exercise.name,
+                level: exercise.level,
+                mechanic: exercise.mechanic,
+                force: exercise.force,
+                equipment: equipment,
+                muscle: muscle,
+                group: group,
+                variants: [:],
+                needsBar: false
+            )
+        }
+    }
+}
