@@ -1,0 +1,3700 @@
+{
+ "programs": [
+  {
+   "level": "beginner",
+   "days": 2,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 43,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_High_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Lunges",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Rear_Delt_Fly",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 2,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Upper",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Dumbbell_Bicep_Curl",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "icon": "figure.run",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Stiff-Legged_Dumbbell_Deadlift",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Split_Squat_with_Dumbbells",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 3,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 43,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_High_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Lunges",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Rear_Delt_Fly",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Smith_Machine_Squat",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "One-Arm_Dumbbell_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 3,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Push",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 38,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Butterfly",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Dumbbell_Bicep_Curl",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Leverage_Iso_Row",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "icon": "figure.run",
+     "minutes": 38,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Split_Squat_with_Dumbbells",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 4,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 43,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_High_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Lunges",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Rear_Delt_Fly",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Smith_Machine_Squat",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "One-Arm_Dumbbell_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body D",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Split_Squat_with_Dumbbells",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "One_Arm_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 4,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Upper A",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Dumbbell_Bicep_Curl",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Lower A",
+     "icon": "figure.run",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Stiff-Legged_Dumbbell_Deadlift",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Split_Squat_with_Dumbbells",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Upper B",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_Front_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_High_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Machine_Preacher_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Lower B",
+     "icon": "figure.run",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Goblet_Squat",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Leg_Curl",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Lunges",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Standing_Calf_Raises",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 5,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 43,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_High_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Lunges",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Rear_Delt_Fly",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Smith_Machine_Squat",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "One-Arm_Dumbbell_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body D",
+     "icon": "figure.mixed.cardio",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Split_Squat_with_Dumbbells",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "One_Arm_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Full body E",
+     "icon": "figure.mixed.cardio",
+     "minutes": 43,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Squat",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "beginner",
+   "days": 5,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Push",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 38,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Butterfly",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Dumbbell_Bicep_Curl",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Leverage_Iso_Row",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "icon": "figure.run",
+     "minutes": 38,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Split_Squat_with_Dumbbells",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Upper",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Bench_Press",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_Front_Lat_Pulldown",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_High_Row",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Machine_Preacher_Curls",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "icon": "figure.run",
+     "minutes": 41,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Goblet_Squat",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Leg_Curl",
+       "sets": 2,
+       "reps": "12-15"
+      },
+      {
+       "id": "Pull_Through",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Lunges",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Standing_Calf_Raises",
+       "sets": 2,
+       "reps": "12-15"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 2,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "30-40 s"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 2,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Upper",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Dumbbell_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 3,
+       "reps": "8-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "icon": "figure.run",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Stiff-Legged_Dumbbell_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 3,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "30-40 s"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Hack_Squat",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Ab_Crunch_Machine",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 3,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Push",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Cable_Crossover",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Tricep_Dumbbell_Kickback",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Dumbbell_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Iso_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Hammer_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "icon": "figure.run",
+     "minutes": 48,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 4,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "30-40 s"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Hack_Squat",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Ab_Crunch_Machine",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body D",
+     "icon": "figure.mixed.cardio",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Underhand_Cable_Pulldowns",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Pallof_Press",
+       "sets": 3,
+       "reps": "10-12 per side"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 4,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Upper A",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Dumbbell_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 3,
+       "reps": "8-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower A",
+     "icon": "figure.run",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Stiff-Legged_Dumbbell_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Upper B",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "V-Bar_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower B",
+     "icon": "figure.run",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Front_Squats_With_Two_Kettlebells",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Leg_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Standing_Calf_Raises",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "30-40 s"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 5,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "30-40 s"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Hack_Squat",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Ab_Crunch_Machine",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body D",
+     "icon": "figure.mixed.cardio",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Underhand_Cable_Pulldowns",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Pallof_Press",
+       "sets": 3,
+       "reps": "10-12 per side"
+      }
+     ]
+    },
+    {
+     "name": "Full body E",
+     "icon": "figure.mixed.cardio",
+     "minutes": 51,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Smith_Machine_Squat",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Dumbbell_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dead_Bug",
+       "sets": 3,
+       "reps": "10-12 per side"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "intermediate",
+   "days": 5,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Push",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Cable_Crossover",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Tricep_Dumbbell_Kickback",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 50,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Bent_Over_Two-Dumbbell_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Iso_Row",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Hammer_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "icon": "figure.run",
+     "minutes": 48,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Upper",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Bench_Press",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "V-Bar_Pulldown",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "icon": "figure.run",
+     "minutes": 49,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Front_Squats_With_Two_Kettlebells",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Seated_Leg_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 3,
+       "reps": "8-12"
+      },
+      {
+       "id": "Standing_Calf_Raises",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "30-40 s"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 2,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "40-45 s"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 2,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Upper",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Crossover",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "icon": "figure.run",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Stiff-Legged_Dumbbell_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 3,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "40-45 s"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Hack_Squat",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Grip_Bent-Over_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Ab_Crunch_Machine",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "EZ-Bar_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 3,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Push",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Crossover",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Tricep_Dumbbell_Kickback",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Iso_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Hammer_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Shrug",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "icon": "figure.run",
+     "minutes": 57,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leg_Extensions",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 4,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "40-45 s"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Hack_Squat",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Grip_Bent-Over_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Ab_Crunch_Machine",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "EZ-Bar_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body D",
+     "icon": "figure.mixed.cardio",
+     "minutes": 65,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "V-Bar_Pulldown",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pallof_Press",
+       "sets": 3,
+       "reps": "12 per side"
+      },
+      {
+       "id": "Dip_Machine",
+       "sets": 4,
+       "reps": "6-10"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 4,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Upper A",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Crossover",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower A",
+     "icon": "figure.run",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Stiff-Legged_Dumbbell_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Upper B",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Cable_Flye",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower B",
+     "icon": "figure.run",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Front_Squats_With_Two_Kettlebells",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Leg_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Standing_Calf_Raises",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "40-45 s"
+      },
+      {
+       "id": "One-Legged_Cable_Kickback",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 5,
+   "style": "fullBody",
+   "plans": [
+    {
+     "name": "Full body A",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body B",
+     "icon": "figure.mixed.cardio",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Incline_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Machine_Flyes",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "40-45 s"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body C",
+     "icon": "figure.mixed.cardio",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Hack_Squat",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Reverse_Grip_Bent-Over_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Leverage_Chest_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Single_Leg_Glute_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Seated_Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Ab_Crunch_Machine",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "EZ-Bar_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Full body D",
+     "icon": "figure.mixed.cardio",
+     "minutes": 65,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "V-Bar_Pulldown",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Pallof_Press",
+       "sets": 3,
+       "reps": "12 per side"
+      },
+      {
+       "id": "Dip_Machine",
+       "sets": 4,
+       "reps": "6-10"
+      }
+     ]
+    },
+    {
+     "name": "Full body E",
+     "icon": "figure.mixed.cardio",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Standing_Hip_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Smith_Machine_Squat",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dead_Bug",
+       "sets": 3,
+       "reps": "12 per side"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": "advanced",
+   "days": 5,
+   "style": "muscleGroups",
+   "plans": [
+    {
+     "name": "Push",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Machine_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Incline_Dumbbell_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Side_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Close-Grip_EZ-Bar_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Crossover",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Tricep_Dumbbell_Kickback",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 63,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Pullups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Bent_Over_Two-Arm_Long_Bar_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Face_Pull",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Barbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leverage_Iso_Row",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Hammer_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Shrug",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "icon": "figure.run",
+     "minutes": 57,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Leg_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Lying_Leg_Curls",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Dumbbell_Rear_Lunge",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Calf_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Butt_Lift_Bridge",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Cable_Crunch",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Leg_Extensions",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Upper",
+     "icon": "figure.strengthtraining.traditional",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Arm_Circles",
+      "Wrist_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Dumbbell_Bench_Press",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Wide-Grip_Lat_Pulldown",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Cable_Rows",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Cable_Seated_Lateral_Raise",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Dumbbell_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Triceps_Pushdown_-_Rope_Attachment",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Incline_Cable_Flye",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "icon": "figure.run",
+     "minutes": 60,
+     "warmup": [
+      "Walking_Treadmill",
+      "Standing_Hip_Circles",
+      "Ankle_Circles"
+     ],
+     "exercises": [
+      {
+       "id": "Front_Squats_With_Two_Kettlebells",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Seated_Leg_Curl",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Kettlebell_One-Legged_Deadlift",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Dumbbell_Step_Ups",
+       "sets": 4,
+       "reps": "6-10"
+      },
+      {
+       "id": "Standing_Calf_Raises",
+       "sets": 3,
+       "reps": "10-12"
+      },
+      {
+       "id": "Plank",
+       "sets": 3,
+       "reps": "40-45 s"
+      },
+      {
+       "id": "One-Legged_Cable_Kickback",
+       "sets": 3,
+       "reps": "10-12"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

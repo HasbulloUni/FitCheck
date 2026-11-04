@@ -16,12 +16,18 @@ struct EditWeekView: View {
 
     let onBack: () -> Void        // the round back button: closes the screen without saving
     let onSave: (EditWeekDraft) -> Void   // "Save changes": gives the chosen week to the Home
+    let onReset: () -> Void       // "Reset week": the Home saves an empty week (after the question)
+
+    // True while the question "Reset your week?" is shown
+    @State private var isResetAsked = false
 
     init(week: WeekData, savedPlan: EditWeekDraft? = nil, plans: [PlanItem] = [],
-         onBack: @escaping () -> Void, onSave: @escaping (EditWeekDraft) -> Void) {
+         onBack: @escaping () -> Void, onSave: @escaping (EditWeekDraft) -> Void,
+         onReset: @escaping () -> Void = {}) {
         _viewModel = State(initialValue: EditWeekViewModel(week: week, savedPlan: savedPlan, plans: plans))
         self.onBack = onBack
         self.onSave = onSave
+        self.onReset = onReset
     }
 
     var body: some View {
@@ -41,6 +47,8 @@ struct EditWeekView: View {
                         rotationSection(unit: unit)
 
                         reminderSection(unit: unit)
+
+                        resetButton(unit: unit)
                     }
                     .padding(.horizontal, 6 * unit)
                     .padding(.top, 4 * unit)
@@ -51,9 +59,29 @@ struct EditWeekView: View {
             }
         }
         .background(AppColors.background)
+        // Reset asks first: it cannot be undone
+        .confirmationDialog("Reset your week?", isPresented: $isResetAsked, titleVisibility: .visible) {
+            Button("Reset week", role: .destructive) { onReset() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Training days, rotation and reminders are cleared. Your plans stay in My plans.")
+        }
     }
 
     // MARK: - Pieces of the screen
+
+    // "Reset week": a quiet red text at the end of the list
+    private func resetButton(unit: CGFloat) -> some View {
+        Button { isResetAsked = true } label: {
+            Text("Reset week")
+                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                .foregroundStyle(AppColors.red)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 3 * unit)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, AppSizes.Space.section * unit)
+    }
 
     // The round back button
     private func backButton(unit: CGFloat) -> some View {

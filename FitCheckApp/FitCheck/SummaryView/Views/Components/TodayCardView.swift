@@ -16,13 +16,23 @@ struct TodayCardView: View {
     let unit: CGFloat   // 1% of the screen width
     let onStart: () -> Void   // what happens when the user taps Start
 
+    // e.g. "58 min · 12 sets · up to 80 kg" when done, "67 min · 11 exercises" before
+    private var detailsText: String {
+        guard let result = plan.result else { return "\(plan.minutes) min · \(plan.exerciseCount) exercises" }
+        var text = "\(result.minutes) min · \(result.sets) sets"
+        if let top = result.topWeight, top > 0 {
+            text += " · up to \(top.formatted(.number.precision(.fractionLength(0...1)))) kg"
+        }
+        return text
+    }
+
     var body: some View {
         HStack(spacing: AppSizes.Space.group * unit) {
 
             // Left side: label, plan name, details
             VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
                 // A plan sent with Go replaced the routine of today
-                Text(plan.fromGo ? "TODAY · CHANGED" : "TODAY")
+                Text(plan.result != nil ? "TODAY · DONE" : (plan.fromGo ? "TODAY · CHANGED" : "TODAY"))
                     .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(.black.opacity(0.7))
 
@@ -32,7 +42,7 @@ struct TodayCardView: View {
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
 
-                Text("\(plan.minutes) min · \(plan.exerciseCount) exercises")
+                Text(detailsText)
                     .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                     .foregroundStyle(.black.opacity(0.8))
                     .minimumScaleFactor(0.8)   // shrinks a little instead of wrapping
@@ -41,7 +51,13 @@ struct TodayCardView: View {
 
             Spacer()
 
-            // Right side: Start button
+            // Right side: a check mark when the workout is done, otherwise the Start button
+            if plan.result != nil {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
+                    .foregroundStyle(.black)
+                    .accessibilityLabel("Workout done")
+            } else {
             Button(action: onStart) {
                 Text("Start")
                     .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
@@ -49,6 +65,7 @@ struct TodayCardView: View {
                     .padding(.horizontal, 6 * unit)
                     .padding(.vertical, 3.5 * unit)
                     .background(.black, in: Capsule())
+            }
             }
         }
         .padding(5 * unit)
@@ -172,6 +189,15 @@ private let samplePlan = TodayPlan(name: "Full body A", minutes: 67, exerciseCou
 
 #Preview("No data") {
     TodayEmptyCardView(unit: 3.9, onAddPlan: {})
+        .padding(20)
+        .background(AppColors.background)
+}
+
+private let doneResult = TodayResult(minutes: 58, sets: 12, topWeight: 80)
+
+#Preview("Done") {
+    TodayCardView(plan: TodayPlan(name: "Full body A", minutes: 67, exerciseCount: 11, result: doneResult),
+                  unit: 3.9, onStart: {})
         .padding(20)
         .background(AppColors.background)
 }

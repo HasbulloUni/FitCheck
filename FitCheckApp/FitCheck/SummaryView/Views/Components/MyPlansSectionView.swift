@@ -20,6 +20,7 @@ struct MyPlansSectionView: View {
     let unit: CGFloat
     let onNewPlan: () -> Void               // "Custom" in the "+ New plan" menu (or tap on the empty card)
     var onReadyMade: () -> Void = {}        // "Ready-made" in the "+ New plan" menu
+    var onDeleteAllPlans: () -> Void = {}   // "Delete all plans" in the "+ New plan" menu (after the question)
     let onOpenPlan: (PlanItem) -> Void      // tap on a plan row
     let onEditPlan: (PlanItem) -> Void      // swipe right-to-left, then Edit
     let onDeletePlan: (PlanItem) -> Void    // swipe right-to-left, then Delete (after the question)
@@ -27,6 +28,8 @@ struct MyPlansSectionView: View {
 
     // The plan the user wants to delete: the question is shown while it is not nil
     @State private var planToDelete: PlanItem? = nil
+    // True while the question "Delete all plans?" is shown
+    @State private var isDeleteAllAsked = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
@@ -46,6 +49,14 @@ struct MyPlansSectionView: View {
                     }
                     Button(action: onNewPlan) {
                         Label("Custom", systemImage: "slider.horizontal.3")
+                    }
+
+                    // Only when there is something to delete
+                    if !plans.isEmpty {
+                        Divider()
+                        Button(role: .destructive) { isDeleteAllAsked = true } label: {
+                            Label("Delete all plans", systemImage: "trash")
+                        }
                     }
                 } label: {
                     Text("+ New plan")
@@ -75,6 +86,17 @@ struct MyPlansSectionView: View {
                     )
                 }
             }
+        }
+        // Delete all asks first too
+        .confirmationDialog(
+            "Delete all \(plans.count) plans?",
+            isPresented: $isDeleteAllAsked,
+            titleVisibility: .visible
+        ) {
+            Button("Delete all", role: .destructive) { onDeleteAllPlans() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("They are also removed from the rotation. Your progress is kept.")
         }
         // Delete asks first: it cannot be undone
         .confirmationDialog(

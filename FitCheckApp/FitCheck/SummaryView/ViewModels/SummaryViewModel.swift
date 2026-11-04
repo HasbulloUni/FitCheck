@@ -47,6 +47,7 @@ final class SummaryViewModel {
             minutes: plan.minutes,
             exerciseCount: plan.exerciseCount,
             planId: plan.id,
+            result: todayResult(of: plan.id),
             fromGo: fromGo
         )
     }
@@ -77,6 +78,29 @@ final class SummaryViewModel {
     // Back from the workout screen
     func closeWorkout() {
         workoutPlan = nil
+        loadTodaySessions()
+    }
+
+    // The completed workouts saved today: the Today card shows the numbers of its plan
+    private var todaySessions: [SessionRecord] = []
+
+    private func loadTodaySessions() {
+        let start = Calendar.current.startOfDay(for: .now)
+        let descriptor = FetchDescriptor<SessionRecord>(
+            predicate: #Predicate { $0.date >= start && $0.isCompleted },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        todaySessions = (try? context?.fetch(descriptor)) ?? []
+    }
+
+    // The numbers of the last completed workout of this plan today (nil = not done yet)
+    private func todayResult(of planId: UUID) -> TodayResult? {
+        guard let session = todaySessions.first(where: { $0.planId == planId.uuidString }) else { return nil }
+        return TodayResult(
+            minutes: session.minutes,
+            sets: session.muscleSets.reduce(0, +),
+            topWeight: session.loadWeights.max()
+        )
     }
 
     // True when a plan sent with Go is active today
@@ -100,6 +124,81 @@ final class SummaryViewModel {
     func openAddPlan() {
         planBeingEdited = nil
         isAddPlanOpen = true
+    }
+
+    // True while the "Ready-made" sheet is open
+    var isReadyMadeOpen = false
+
+    // "+ New plan" > Ready-made: the sheet rises from the bottom
+    func openReadyMade() {
+        readyMadeStyle = .fullBody
+        isReadyMadeOpen = true
+    }
+
+    // Ready-made needs the week: the training days must be saved in "Edit your week" first
+    var hasSavedWeek: Bool {
+        !(savedWeekPlan?.workoutWeekdays.isEmpty ?? true)
+    }
+
+    // True when "Set week" was tapped: Edit week opens as soon as the sheet is closed
+    private var opensEditWeekAfterReadyMade = false
+
+    // True while Edit week is open because of "Set week": after Save the sheet comes back
+    private var resumesReadyMadeAfterWeek = false
+
+    // The style chosen in the sheet: it is still chosen when the sheet comes back
+    var readyMadeStyle: ReadyMadeStyle = .fullBody
+
+    // "Set week" in the sheet: the sheet closes, then Edit week opens
+    func setWeekFromReadyMade(_ style: ReadyMadeStyle) {
+        readyMadeStyle = style
+        opensEditWeekAfterReadyMade = true
+        resumesReadyMadeAfterWeek = true
+        isReadyMadeOpen = false
+    }
+
+    // Called when the sheet is gone (also after a drag down)
+    func readyMadeSheetClosed() {
+        if opensEditWeekAfterReadyMade {
+            opensEditWeekAfterReadyMade = false
+            openEditWeek()
+        }
+    }
+
+    // The level of the ready-made plans. Where the user picks it is not decided yet:
+    // for now it is always Beginner.
+    var readyMadeLevel: ReadyMadeLevel = .beginner
+
+    // The Create button of the sheet: the plans of the program go to My plans
+    // and into the rotation of the training days (one plan for each day, in order).
+    func createReadyMade(_ style: ReadyMadeStyle) {
+        // Without a saved week nothing is created: the sheet asks to set the week first
+        guard hasSavedWeek, let savedWeek = savedWeekPlan else { return }
+        isReadyMadeOpen = false
+
+        // The training days saved in Edit week, Monday first (1 = Sunday ... 7 = Saturday)
+        let weekdays = savedWeek.workoutWeekdays.sorted { ($0 + 5) % 7 < ($1 + 5) % 7 }
+
+        guard let program = ReadyMadeCatalog.program(level: readyMadeLevel, style: style,
+                                                     days: weekdays.count) else { return }
+
+        let newPlans = ReadyMadePlanFactory.makePlans(
+            from: program,
+            takenColorIndexes: plans.compactMap { $0.colorIndex }
+        )
+        guard !newPlans.isEmpty else { return }
+
+        for plan in newPlans {
+            addPlan(plan)
+        }
+
+        // The rotation: day 1 gets plan 1, day 2 plan 2... (with more days than plans, they start again)
+        var draft = savedWeek
+        draft.rotation = weekdays.enumerated().map { position, weekday in
+            RotationSlot(weekday: weekday, planId: newPlans[position % newPlans.count].id)
+        }
+        savedWeekPlan = draft
+        saveProfile()
     }
 
     // The pencil of a plan (or a tap on its row): the same screen opens with the plan filled in
@@ -184,6 +283,43 @@ final class SummaryViewModel {
         saveProfile()
     }
 
+    // "Delete all plans": every plan is deleted the same way as one by one
+    // (rotation and Go are cleaned too). The past workouts in Progress are kept.
+    func deleteAllPlans() {
+        for plan in plans {
+            deletePlan(plan)
+        }
+    }
+
+    // "Reset week" in Edit week: the week is saved empty, like before the first save.
+    // The completed days (history) are kept; the reminders are removed.
+    func resetWeek() {
+        weekData.plannedWeekdays = []
+        weekData.restWeekdays = []
+        weekData.previousPlannedWeekdays = []
+        weekData.previousRestWeekdays = []
+        weekData.ruleStartDate = nil
+        savedWeekPlan = nil
+        goPlanId = nil
+        goDate = nil
+
+        if let profile {
+            profile.hasSavedWeekPlan = false
+            profile.draftWorkoutWeekdays = []
+            profile.draftReminderWeekdays = []
+            profile.draftReminderMinutes = []
+            profile.draftRemindMe = false
+            profile.draftRotationWeekdays = []
+            profile.draftRotationPlanIds = []
+        }
+        saveProfile()
+
+        // An empty draft has "Remind me" off: all the reminders are removed
+        Task { await ReminderScheduler.updateReminders(for: EditWeekDraft()) }
+
+        closeEditWeek()
+    }
+
     // What the user saved in "Edit your week" (days, duration, reminders): nil until the first save
     var savedWeekPlan: EditWeekDraft? = nil
 
@@ -246,12 +382,22 @@ final class SummaryViewModel {
         // The reminders are updated in the background: the permission is asked now
         Task { await ReminderScheduler.updateReminders(for: draft) }
 
+        // Edit week was opened by "Set week" of Ready-made: the sheet comes back by itself
+        let resumesReadyMade = resumesReadyMadeAfterWeek && hasSavedWeek
         closeEditWeek()
+        if resumesReadyMade {
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(450))   // wait until Edit week has gone
+                isReadyMadeOpen = true
+            }
+        }
     }
 
-    // Back (or Save): closes "Edit your week" and the Home is shown again
+    // Back (or Save): closes "Edit your week" and the Home is shown again.
+    // Back without saving does not bring the Ready-made sheet back.
     func closeEditWeek() {
         isEditWeekOpen = false
+        resumesReadyMadeAfterWeek = false
     }
 
     // MARK: - SwiftData
@@ -311,6 +457,8 @@ final class SummaryViewModel {
             planWorkoutsPlanned: record.planWorkoutsPlanned,
             musclesCovered: record.musclesCovered
         )
+
+        loadTodaySessions()
 
         let savedPlans = (try? context.fetch(FetchDescriptor<PlanRecord>())) ?? []
         plans = savedPlans.map { PlanItem(from: $0) }

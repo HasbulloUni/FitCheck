@@ -61,7 +61,8 @@ struct SummaryView: View {
                         plans: viewModel.plans,
                         unit: unit,
                         onNewPlan: { viewModel.openAddPlan() },
-                        onReadyMade: { },   // the Ready-made screens come next
+                        onReadyMade: { viewModel.openReadyMade() },
+                        onDeleteAllPlans: { viewModel.deleteAllPlans() },
                         onOpenPlan: { viewModel.openEditPlan($0) },
                         onEditPlan: { viewModel.openEditPlan($0) },
                         onDeletePlan: { viewModel.deletePlan($0) },
@@ -80,7 +81,8 @@ struct SummaryView: View {
                 savedPlan: viewModel.savedWeekPlan,
                 plans: viewModel.plans,
                 onBack: { viewModel.closeEditWeek() },
-                onSave: { viewModel.saveWeek($0) }
+                onSave: { viewModel.saveWeek($0) },
+                onReset: { viewModel.resetWeek() }
             )
             .navigationBarBackButtonHidden(true)   // the screens have their own Back
             .toolbar(.hidden, for: .navigationBar)
@@ -100,6 +102,18 @@ struct SummaryView: View {
         // Start opens the workout on the whole screen: Back returns here
         .fullScreenCover(item: $viewModel.workoutPlan) { plan in
             WorkoutView(plan: plan, onClose: { viewModel.closeWorkout() })
+        }
+        // "+ New plan" > Ready-made: a short sheet rises from the bottom (drag it down to close)
+        .sheet(isPresented: $viewModel.isReadyMadeOpen, onDismiss: { viewModel.readyMadeSheetClosed() }) {
+            ReadyMadeSheetView(
+                hasWeek: viewModel.hasSavedWeek,
+                initialStyle: viewModel.readyMadeStyle,
+                onCreate: { viewModel.createReadyMade($0) },
+                onSetWeek: { viewModel.setWeekFromReadyMade($0) }
+            )
+                .presentationDetents([.fraction(0.36)])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(AppColors.background)
         }
         // The Home has its own header: no system title bar
         .toolbar(.hidden, for: .navigationBar)

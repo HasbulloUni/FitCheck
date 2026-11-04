@@ -14,11 +14,6 @@ import SwiftData
 @Observable
 final class WorkoutViewModel {
 
-    enum Phase {
-        case working
-        case summary
-    }
-
     // Which number the user is changing with the wheel
     enum PickerKind: Identifiable {
         case reps
@@ -44,7 +39,6 @@ final class WorkoutViewModel {
     private(set) var timedRemaining = 0            // warm-up and cool-down steps
 
     // MARK: What the screen shows
-    private(set) var phase: Phase = .working
     private(set) var summary: WorkoutSummary? = nil
     private(set) var shouldClose = false           // true: the screen can be closed
     var picker: PickerKind? = nil                  // the wheel for reps or weight (nil = closed)
@@ -273,7 +267,7 @@ final class WorkoutViewModel {
         isLeaveConfirmOpen = true
     }
 
-    // Stops the clock, saves what was done and shows the summary.
+    // Stops the clock, saves what was done and closes the screen.
     // With no set done nothing is saved and the screen just closes.
     func finish() {
         ticker?.cancel()
@@ -292,7 +286,7 @@ final class WorkoutViewModel {
             previousWeights: previousWeights,
             context: context
         )
-        phase = .summary
+        shouldClose = true   // no end screen: the numbers appear in the Today card of the Home
     }
 
     // MARK: Clock

@@ -36,10 +36,7 @@ struct WorkoutView: View {
             ZStack {
                 AppColors.background.ignoresSafeArea()
 
-                if viewModel.phase == .summary, let summary = viewModel.summary {
-                    WorkoutSummaryView(planName: viewModel.plan.name, summary: summary,
-                                       unit: unit, onDone: onClose)
-                } else if let step = viewModel.currentStep {
+                if let step = viewModel.currentStep {
                     // The photo height is the same in every state: all the screen minus the other blocks
                     let photoHeight = max(WorkoutRules.minPhotoUnits * unit,
                                           geo.size.height - WorkoutRules.otherBlocksUnits * unit)
