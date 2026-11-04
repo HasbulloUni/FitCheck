@@ -12,7 +12,7 @@ import SwiftData
 //  - a big header in the color of the plan: name, 60 / 90 min, color
 //  - the warm-up card (opens "Warm-up"), the main part with "+ Add" and the × of each exercise,
 //    the cool-down card with its switch
-//  - when the user scrolls, a small header with the minutes bar takes the place of the big one
+//  - when the user scrolls, a small header with the plan name takes the place of the big one
 //  - "Undo" after an exercise is removed, and the big button that says what is still missing
 // It only draws: the data and the logic live in AddPlanViewModel.
 // Every size is a multiple of "unit" (1% of the screen width), like the other screens.
@@ -102,9 +102,6 @@ struct AddPlanView: View {
                         selectedIds: viewModel.chosen.map { $0.id },
                         goal: viewModel.goal,
                         level: viewModel.level,
-                        targetMinutes: viewModel.minutes,
-                        warmupMinutes: viewModel.warmupMinutes,
-                        cooldownMinutes: viewModel.hasCooldown ? Int(SafetyRules.cooldownMinutes) : 0,
                         planName: viewModel.displayName,
                         details: viewModel.pickerDetails
                     ),
@@ -195,12 +192,8 @@ struct AddPlanView: View {
 
             HStack(spacing: AppSizes.Space.related * unit) {
                 statPill(icon: "dumbbell", text: viewModel.exerciseCountText, unit: unit)
-                statPill(icon: "clock", text: "about \(viewModel.estimatedMinutes) min", unit: unit)
             }
             .padding(.top, 3.5 * unit)
-
-            durationSwitch(unit: unit)
-                .padding(.top, 4 * unit)
 
             colorRow(unit: unit)
                 .padding(.top, 3.5 * unit)
@@ -242,35 +235,10 @@ struct AddPlanView: View {
         .background(.white.opacity(0.42), in: Capsule())
     }
 
-    // "60 min" and "90 min" in a black bar: the chosen one is white
-    private func durationSwitch(unit: CGFloat) -> some View {
-        HStack(spacing: 0) {
-            ForEach(SafetyRules.sessionMinutesOptions, id: \.self) { option in
-                let isSelected = viewModel.minutes == option
-
-                Button(action: { viewModel.minutes = option }) {
-                    Text(EditWeekRules.durationTitle(option))
-                        .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
-                        .foregroundStyle(isSelected ? Color.black : Color.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 11.5 * unit)
-                        .background(isSelected ? Color.white : Color.clear, in: Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
-        .padding(1 * unit)
-        .background(.black, in: Capsule())
-    }
-
     // The colors: the ones used by other plans are faded and cannot be tapped
     private func colorRow(unit: CGFloat) -> some View {
-        HStack(spacing: AppSizes.Space.section * unit) {
-            Text("Color")
-                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                .foregroundStyle(.black.opacity(0.7))
-
+        // No label: the circles share the whole width evenly, so they line up with the name above
+        HStack(spacing: 0) {
             ForEach(PlanPalette.colors.indices, id: \.self) { index in
                 let isSelected = viewModel.colorIndex == index
                 // When every color is used (more plans than colors) all of them can be picked again
@@ -290,6 +258,7 @@ struct AddPlanView: View {
                             .padding(1.4 * unit)
                     }
                     .frame(width: 9.5 * unit, height: 9.5 * unit)
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
                 .disabled(isTaken)
@@ -320,26 +289,6 @@ struct AddPlanView: View {
                 }
 
                 Spacer()
-            }
-
-            // The minutes bar: how much of the 60 or 90 minutes is used
-            HStack(spacing: AppSizes.Space.group * unit) {
-                Capsule()
-                    .fill(.white.opacity(0.45))
-                    .frame(width: 56 * unit, height: 2 * unit)
-                    .overlay(alignment: .leading) {
-                        Capsule()
-                            .fill(.black)
-                            .frame(width: 56 * unit * CGFloat(viewModel.timeShare), height: 2 * unit)
-                    }
-
-                Text(viewModel.timeText)
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                    .foregroundStyle(.black)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-
-                Spacer(minLength: 0)
             }
         }
         .padding(.horizontal, 5 * unit)
@@ -402,8 +351,6 @@ struct AddPlanView: View {
                 .foregroundStyle(AppColors.textPrimary)
 
             if !viewModel.chosen.isEmpty {
-                countBadge(viewModel.mainCountText, isDone: viewModel.hasEnoughExercises, unit: unit)
-
                 Spacer()
 
                 Button(action: { viewModel.isPickerShown = true }) {
@@ -600,16 +547,6 @@ struct AddPlanView: View {
             .foregroundStyle(AppColors.textPrimary)
             .frame(width: 9.5 * unit, height: 9.5 * unit)
             .background(AppColors.cardAlt, in: RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
-    }
-
-    // "2 / 2" or "5 · min 4": green when the rule is met, grey otherwise
-    private func countBadge(_ text: String, isDone: Bool, unit: CGFloat) -> some View {
-        Text(text)
-            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-            .foregroundStyle(isDone ? Color.black : AppColors.textPrimary)
-            .padding(.horizontal, 2.2 * unit)
-            .frame(height: 6 * unit)
-            .background(isDone ? AppColors.greenSoft : AppColors.cardAlt, in: Capsule())
     }
 
     // A small grey chip, e.g. "Brisk walk · 4 min"

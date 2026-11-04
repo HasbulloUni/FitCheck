@@ -18,9 +18,6 @@ final class ExercisePickerViewModel {
     let pool: [CatalogItem]
     private let goal: PlanGoal
     private let level: PlanLevel
-    private let targetMinutes: Int?         // 60 or 90 (nil = not shown)
-    private let warmupMinutes: Int          // 0 when the warm-up is off or has no moves
-    private let cooldownMinutes: Int        // 0 when the cool-down is off
     let planName: String                    // e.g. "Leg day": used in texts and in "Add to ..."
     private let detailsById: [String: ExercisePickerDetails]
 
@@ -36,15 +33,11 @@ final class ExercisePickerViewModel {
     private(set) var recentChange: (item: CatalogItem, added: Bool)? = nil
 
     init(pool: [CatalogItem], selectedIds: [String], goal: PlanGoal, level: PlanLevel,
-         targetMinutes: Int? = nil, warmupMinutes: Int = 0, cooldownMinutes: Int = 0,
          planName: String = "your plan", details: [String: ExercisePickerDetails] = [:]) {
         self.pool = pool
         self.selectedIds = selectedIds
         self.goal = goal
         self.level = level
-        self.targetMinutes = targetMinutes
-        self.warmupMinutes = warmupMinutes
-        self.cooldownMinutes = cooldownMinutes
         self.planName = planName
         self.detailsById = details
     }
@@ -85,12 +78,6 @@ final class ExercisePickerViewModel {
     // Why an exercise cannot be added now, e.g. "Quadriceps is full · max 4" (nil = it can be added)
     func blockedText(_ item: CatalogItem) -> String? {
         if canToggle(item) { return nil }
-        if isOverTime && !isSelected(item) {
-            return "Over \(targetMinutes ?? 0) min: remove one to add another"
-        }
-        if selectedIds.count >= SafetyRules.maxExercisesPerSession {
-            return "Max \(SafetyRules.maxExercisesPerSession) exercises in one day"
-        }
         return item.muscle.capitalized + " is full · max \(SafetyRules.maxExercisesPerMuscle)"
     }
 
@@ -113,9 +100,6 @@ final class ExercisePickerViewModel {
     // A new exercise can be added only below the safe limits. A picked one can always be removed.
     func canToggle(_ item: CatalogItem) -> Bool {
         if isSelected(item) { return true }
-        if selectedIds.count >= SafetyRules.maxExercisesPerSession { return false }
-        // The last exercise may go over the chosen minutes, but then no more can be added
-        if isOverTime { return false }
         return picked(forMuscle: item.muscle) < SafetyRules.maxExercisesPerMuscle
     }
 
@@ -201,15 +185,6 @@ final class ExercisePickerViewModel {
     var fullBanner: String? {
         guard !visibleItems.isEmpty, visibleItems.allSatisfy({ blockedText($0) != nil }) else { return nil }
 
-        if selectedIds.count >= SafetyRules.maxExercisesPerSession {
-            let maximum = SafetyRules.maxExercisesPerSession
-            return "This day is full: \(maximum) of \(maximum) exercises. Remove one to add another."
-        }
-
-        if isOverTime {
-            return "Over \(targetMinutes ?? 0) min: remove an exercise to add another."
-        }
-
         var muscles: [String] = []
         for item in visibleItems where !muscles.contains(item.muscle) { muscles.append(item.muscle) }
         let maximum = SafetyRules.maxExercisesPerMuscle
@@ -234,32 +209,5 @@ final class ExercisePickerViewModel {
             return "\(planned.sets) × \(hold) s hold · rest \(planned.restSeconds) s"
         }
         return "\(planned.sets) × \(planned.repsMin ?? 0)-\(planned.repsMax ?? 0) · rest \(planned.restSeconds) s"
-    }
-
-    // MARK: Time
-
-    // Time of the whole session: warm-up + exercises + cool-down
-    var estimatedMinutes: Int {
-        // The warm-up and the cool-down count only when there is at least one exercise
-        var total = selectedItems.isEmpty ? 0.0 : Double(warmupMinutes + cooldownMinutes)
-        let sets = Prescription.sets(for: level)
-        for item in selectedItems {
-            total += Prescription.minutes(isCompound: item.mechanic == "compound", sets: sets, goal: goal)
-        }
-        return Int(total.rounded())
-    }
-
-    // True when the session is already longer than the chosen 60 or 90 minutes
-    var isOverTime: Bool {
-        guard let target = targetMinutes else { return false }
-        return estimatedMinutes > target
-    }
-
-    // e.g. "about 42 of 60 min" (or "about 42 min" with no target)
-    var minutesText: String {
-        if let target = targetMinutes {
-            return "about \(estimatedMinutes) of \(target) min"
-        }
-        return "about \(estimatedMinutes) min"
     }
 }

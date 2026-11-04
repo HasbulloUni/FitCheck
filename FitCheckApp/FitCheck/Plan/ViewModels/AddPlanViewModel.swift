@@ -19,7 +19,8 @@ final class AddPlanViewModel {
     // MARK: The choices of the user
     var name = ""                       // empty = the suggested name is used
     var colorIndex: Int                 // position in PlanPalette.colors
-    var minutes = EditWeekRules.defaultDuration   // 60 or 90
+    // Only an estimate for the Home cards: nobody chooses the length of a plan any more
+    var minutes: Int { estimatedMinutes }
     private(set) var chosen: [ChosenExercise] = []   // the main part, in order
     private(set) var warmupMoves: [String] = []      // 0 or 1 exercise id (mandatory once picked)
     var hasCooldown = true
@@ -63,7 +64,6 @@ final class AddPlanViewModel {
         if let plan {
             name = plan.name
             colorIndex = plan.colorIndex ?? PlanPalette.firstFree(taken: takenColorIndexes)
-            minutes = plan.minutes
             warmupMoves = plan.warmupMoves
             hasCooldown = plan.hasCooldown
         } else {
@@ -229,7 +229,7 @@ final class AddPlanViewModel {
 
     // e.g. "NEW PLAN · 60 MIN"
     var headerLabel: String {
-        "\(isEditing ? "EDIT PLAN" : "NEW PLAN") · \(minutes) MIN"
+        isEditing ? "EDIT PLAN" : "NEW PLAN"
     }
 
     // MARK: Warm-up
@@ -366,40 +366,25 @@ final class AddPlanViewModel {
         return Int(total.rounded())
     }
 
-    // From 0 to 1: how much of the 60 or 90 minutes is used
-    var timeShare: Double {
-        min(1, Double(estimatedMinutes) / Double(minutes))
-    }
-
-    // e.g. "about 42 of 60 min"
-    var timeText: String { "about \(estimatedMinutes) of \(minutes) min" }
-
     // MARK: Count and save
 
     var hasEnoughExercises: Bool { chosen.count >= SafetyRules.minExercisesPerPlan }
-
-    // The chosen 60 or 90 minutes are the maximum: the plan can be shorter, never longer
-    var isWithinTime: Bool { estimatedMinutes <= minutes }
 
     // e.g. "5 exercises"
     var exerciseCountText: String {
         chosen.count == 1 ? "1 exercise" : "\(chosen.count) exercises"
     }
 
-    // "3 / 4" while there are too few exercises, "5 · min 4" when there are enough
-    var mainCountText: String {
-        let minimum = SafetyRules.minExercisesPerPlan
-        return hasEnoughExercises ? "\(chosen.count) · min \(minimum)" : "\(chosen.count) / \(minimum)"
-    }
+    // How many exercises are still missing to reach the minimum of 4
+    var missingExercises: Int { max(0, SafetyRules.minExercisesPerPlan - chosen.count) }
 
-    // The button works only with at least 4 exercises and close enough to the chosen minutes
-    var isSaveEnabled: Bool { hasEnoughExercises && isWithinTime }
+    // The button works only with at least 4 exercises
+    var isSaveEnabled: Bool { hasEnoughExercises }
 
     // The text of the big button says what is still missing
     var saveTitle: String {
-        if !hasEnoughExercises { return "Save to My plans" }
+        if !hasEnoughExercises { return "Add \(missingExercises) more to save" }
         if !isWarmupReady { return "Pick your warm-up" }
-        if !isWithinTime { return "Over \(minutes) min: remove something" }
         return isEditing ? "Save changes" : "Save to My plans"
     }
 
@@ -410,7 +395,6 @@ final class AddPlanViewModel {
             isWarmupShown = true
             return nil
         }
-        if !isWithinTime { return nil }
         return makePlan()
     }
 

@@ -13,7 +13,7 @@ import SwiftUI
 // at the top, "suggested" exercises for muscles not trained yet, then everything else.
 // A tap on a row opens its preview (photos and steps); the round button on the right adds or
 // removes it right away, with a small "Undo" afterwards.
-// A row that breaks a safe limit (max 4 for one muscle, max 12 in a day) is faded and says why,
+// A row that breaks a safe limit (max 4 for one muscle) is faded and says why,
 // and a banner explains it when the whole list is blocked.
 // It only draws: the data and the logic live in ExercisePickerViewModel.
 // Every size is a multiple of "unit" (1% of the screen width), like the other screens.
@@ -473,19 +473,15 @@ struct ExercisePickerView: View {
         .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
-    // MARK: - Bottom: "N selected", the minutes and "Done"
+    // MARK: - Bottom: "N selected" and "Done"
 
-    // "5 selected", "about 42 of 60 min" and the black "Done" button, in a white bar at the bottom
+    // "5 selected" and the black "Done" button, in a white bar at the bottom
     private func bottomBar(unit: CGFloat) -> some View {
         HStack(spacing: AppSizes.Space.group * unit) {
             VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text(viewModel.selectedText)
                     .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
-
-                Text(viewModel.minutesText)
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
-                    .foregroundStyle(AppColors.textSecondary)
             }
 
             Spacer()
@@ -541,7 +537,7 @@ private func previewItems() -> [CatalogItem] {
 #Preview("Light") {
     ExercisePickerView(
         viewModel: ExercisePickerViewModel(pool: previewItems(), selectedIds: ["Goblet_Squat", "Leg_Press"],
-                                           goal: .tone, level: .medium, targetMinutes: 60, planName: "Leg day"),
+                                           goal: .tone, level: .medium, planName: "Leg day"),
         label: "Leg day",
         accent: AppColors.muscleOrange,
         onDone: { _ in }
@@ -551,7 +547,7 @@ private func previewItems() -> [CatalogItem] {
 #Preview("Dark") {
     ExercisePickerView(
         viewModel: ExercisePickerViewModel(pool: previewItems(), selectedIds: ["Goblet_Squat", "Leg_Press"],
-                                           goal: .tone, level: .medium, targetMinutes: 60, planName: "Leg day"),
+                                           goal: .tone, level: .medium, planName: "Leg day"),
         label: "Leg day",
         accent: AppColors.muscleOrange,
         onDone: { _ in }

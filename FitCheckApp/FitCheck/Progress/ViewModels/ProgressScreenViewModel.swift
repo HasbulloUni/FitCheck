@@ -17,9 +17,10 @@ final class ProgressScreenViewModel {
     private(set) var sessions: [SessionRecord] = []
 
     // The period chosen: the unit, and how far back for week, month, 3 months and year
-    // (offset 0 = the current one, -1 = the one before, and so on)
+    // (offset 0 = the current one, -1 = the one before, and so on).
+    // The screen opens on last month: a finished month gives complete numbers.
     var unit: ProgressUnit = .month
-    var offset = 0
+    var offset = -1
 
     // The days chosen with the calendar (only used when the unit is custom)
     var customStart: Date = ProgressPeriodBuilder.today()
