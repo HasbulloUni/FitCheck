@@ -42,7 +42,7 @@ struct SummaryView: View {
 
                     // Today: show the workout if there is one, otherwise invite the user to add it
                     if let plan = viewModel.todayPlan {
-                        TodayCardView(plan: plan, unit: unit, onStart: {})
+                        TodayCardView(plan: plan, unit: unit, onStart: { viewModel.startToday() })
                     } else if viewModel.isTodayRest {
                         TodayRestCardView(unit: unit)
                     } else {
@@ -61,6 +61,7 @@ struct SummaryView: View {
                         plans: viewModel.plans,
                         unit: unit,
                         onNewPlan: { viewModel.openAddPlan() },
+                        onReadyMade: { },   // the Ready-made screens come next
                         onOpenPlan: { viewModel.openEditPlan($0) },
                         onEditPlan: { viewModel.openEditPlan($0) },
                         onDeletePlan: { viewModel.deletePlan($0) },
@@ -95,6 +96,10 @@ struct SummaryView: View {
             )
             .navigationBarBackButtonHidden(true)   // the screens have their own Back
             .toolbar(.hidden, for: .navigationBar)
+        }
+        // Start opens the workout on the whole screen: Back returns here
+        .fullScreenCover(item: $viewModel.workoutPlan) { plan in
+            WorkoutView(plan: plan, onClose: { viewModel.closeWorkout() })
         }
         // The Home has its own header: no system title bar
         .toolbar(.hidden, for: .navigationBar)

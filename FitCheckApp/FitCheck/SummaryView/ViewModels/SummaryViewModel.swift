@@ -64,6 +64,21 @@ final class SummaryViewModel {
         saveProfile()
     }
 
+    // The plan being trained now: not nil while the workout screen is open
+    var workoutPlan: PlanItem? = nil
+
+    // The Start button of the Today card: opens the workout of today's plan
+    func startToday() {
+        guard let id = todayPlan?.planId,
+              let plan = plans.first(where: { $0.id == id }) else { return }
+        workoutPlan = plan
+    }
+
+    // Back from the workout screen
+    func closeWorkout() {
+        workoutPlan = nil
+    }
+
     // True when a plan sent with Go is active today
     private var isGoActiveToday: Bool {
         guard let goPlanId, let goDate else { return false }

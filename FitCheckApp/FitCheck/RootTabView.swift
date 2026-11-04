@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RootTabView: View {
     var body: some View {
@@ -18,6 +19,19 @@ struct RootTabView: View {
     }
 }
 
-#Preview {
+#Preview("Light") {
     RootTabView()
+        .modelContainer(rootPreviewContainer(withData: true))
+        .preferredColorScheme(.light)
+}
+
+#Preview("Dark") {
+    RootTabView()
+        .modelContainer(rootPreviewContainer(withData: true))
+        .preferredColorScheme(.dark)
+}
+
+#Preview("No data") {
+    RootTabView()
+        .modelContainer(rootPreviewContainer(withData: false))
 }

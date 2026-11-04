@@ -31,6 +31,9 @@ final class SessionRecord {
     var loadExerciseNames: [String]
     var loadWeights: [Double]
 
+    // False when the workout was stopped early: the sets are saved, but the plan does not count as done
+    var isCompleted: Bool = true
+
     init(
         date: Date,
         planId: String,
@@ -41,7 +44,8 @@ final class SessionRecord {
         muscleSets: [Int] = [],
         loadExerciseIds: [String] = [],
         loadExerciseNames: [String] = [],
-        loadWeights: [Double] = []
+        loadWeights: [Double] = [],
+        isCompleted: Bool = true
     ) {
         self.id = UUID()
         self.date = date
@@ -54,5 +58,6 @@ final class SessionRecord {
         self.loadExerciseIds = loadExerciseIds
         self.loadExerciseNames = loadExerciseNames
         self.loadWeights = loadWeights
+        self.isCompleted = isCompleted
     }
 }

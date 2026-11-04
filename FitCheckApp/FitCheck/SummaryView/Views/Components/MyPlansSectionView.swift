@@ -18,7 +18,8 @@ import SwiftUI
 struct MyPlansSectionView: View {
     let plans: [PlanItem]
     let unit: CGFloat
-    let onNewPlan: () -> Void               // tap on "+ New plan" (or on the empty card)
+    let onNewPlan: () -> Void               // "Custom" in the "+ New plan" menu (or tap on the empty card)
+    var onReadyMade: () -> Void = {}        // "Ready-made" in the "+ New plan" menu
     let onOpenPlan: (PlanItem) -> Void      // tap on a plan row
     let onEditPlan: (PlanItem) -> Void      // swipe right-to-left, then Edit
     let onDeletePlan: (PlanItem) -> Void    // swipe right-to-left, then Delete (after the question)
@@ -38,7 +39,15 @@ struct MyPlansSectionView: View {
 
                 Spacer()
 
-                Button(action: onNewPlan) {
+                // The standard iOS menu: the user picks how to make the plan
+                Menu {
+                    Button(action: onReadyMade) {
+                        Label("Ready-made", systemImage: "wand.and.stars")
+                    }
+                    Button(action: onNewPlan) {
+                        Label("Custom", systemImage: "slider.horizontal.3")
+                    }
+                } label: {
                     Text("+ New plan")
                         .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                         .foregroundStyle(AppColors.textSecondary)

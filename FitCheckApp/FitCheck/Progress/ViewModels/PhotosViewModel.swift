@@ -107,8 +107,27 @@ final class PhotosViewModel {
         photos.first(where: { $0.id == afterId }) ?? photos.last
     }
 
-    func chooseBefore(_ photo: PhotoRecord) { beforeId = photo.id }
-    func chooseAfter(_ photo: PhotoRecord) { afterId = photo.id }
+    // The photos that can go on the left: never newer than the photo on the right
+    var beforeChoices: [PhotoRecord] {
+        guard let after = afterPhoto else { return photos }
+        return photos.filter { $0.date <= after.date }
+    }
+
+    // The photos that can go on the right: never older than the photo on the left
+    var afterChoices: [PhotoRecord] {
+        guard let before = beforePhoto else { return photos }
+        return photos.filter { $0.date >= before.date }
+    }
+
+    func chooseBefore(_ photo: PhotoRecord) {
+        if let after = afterPhoto, photo.date > after.date { return }
+        beforeId = photo.id
+    }
+
+    func chooseAfter(_ photo: PhotoRecord) {
+        if let before = beforePhoto, photo.date < before.date { return }
+        afterId = photo.id
+    }
 
     func isBefore(_ photo: PhotoRecord) -> Bool { beforePhoto?.id == photo.id }
     func isAfter(_ photo: PhotoRecord) -> Bool { afterPhoto?.id == photo.id }
