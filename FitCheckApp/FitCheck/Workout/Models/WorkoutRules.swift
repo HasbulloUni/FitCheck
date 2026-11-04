@@ -23,4 +23,12 @@ enum WorkoutRules {
     static let warmupMoveSeconds = 60      // a warm-up move (arm circles...)
     static let treadmillSeconds = 8 * 60   // Walking Treadmill: 8 minutes (it can go to 10)
     static let cooldownSeconds = 5 * 60    // the stretching at the end
+
+    // MARK: Layout of the exercise screen (in units: 1 unit = 1% of the screen width)
+    // The photo has a FIXED height: all the screen minus the other blocks.
+    // The card under the chips always has the same height, so rest, edit and "all done"
+    // never move the photo.
+    static let cardHeightUnits: CGFloat = 58        // Reps/Weight card, rest card, all done card
+    static let otherBlocksUnits: CGFloat = 140      // header, title, chips, card, Next button, spaces
+    static let minPhotoUnits: CGFloat = 30          // the photo is never smaller than this
 }

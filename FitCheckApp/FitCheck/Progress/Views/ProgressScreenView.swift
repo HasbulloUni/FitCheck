@@ -49,15 +49,24 @@ struct ProgressScreenView: View {
                             // Photos on the left, minutes and the number stack on the right
                             HStack(alignment: .top, spacing: AppSizes.Space.related * unit) {
                                 PhotosCardView(
-                                    thumbnail: photos.latest?.thumbnailData,
-                                    dateText: photos.latest.map { ProgressFormat.dayMonth($0.date) } ?? "",
+                                    thumbnail: photos.periodPhotos.last?.thumbnailData,
+                                    dateText: photos.periodPhotos.last.map { ProgressFormat.dayMonth($0.date) } ?? "",
                                     countText: photos.countText,
                                     agoText: photos.latestAgoText,
                                     canCompare: photos.canCompare,
+                                    hasPhotosOutsidePeriod: !photos.photos.isEmpty,
                                     unit: unit,
                                     onOpen: { viewModel.isGalleryOpen = true },
-                                    onCompare: { viewModel.isCompareOpen = true },
-                                    onAdd: { photos.add(imageData: $0) }
+                                    onCompare: {
+                                        // Opens the compare screen with Before and After empty
+                                        photos.filter = nil
+                                        photos.startCompare()
+                                    },
+                                    onAdd: {
+                                        // Opens Photos, where the choice "Take photo / Photo library" appears
+                                        photos.pendingAdd = true
+                                        viewModel.isGalleryOpen = true
+                                    }
                                 )
                                 .frame(width: 43 * unit)
 
@@ -106,24 +115,31 @@ struct ProgressScreenView: View {
                 }
             }
             .background(AppColors.background)
-            .onAppear { viewModel.configure(context: modelContext) }
-            // Tapping the photo opens the gallery: Back returns here
+            .onAppear {
+                viewModel.configure(context: modelContext)
+                viewModel.photosViewModel.period = viewModel.period
+            }
+            // Photos follows the period chosen with the capsule
+            .onChange(of: viewModel.period) { _, newPeriod in
+                viewModel.photosViewModel.period = newPeriod
+            }
+            // Tapping the photo opens Photos: Back returns here
             .navigationDestination(isPresented: $viewModel.isGalleryOpen) {
-                PhotoGalleryView(
+                PhotosScreenView(
                     viewModel: viewModel.photosViewModel,
                     onBack: { viewModel.isGalleryOpen = false }
                 )
                 .navigationBarBackButtonHidden(true)   // the screens have their own Back
                 .toolbar(.hidden, for: .navigationBar)
             }
-            // "Compare" opens the compare screen: Back returns here
-            .navigationDestination(isPresented: $viewModel.isCompareOpen) {
-                PhotoCompareView(
-                    viewModel: viewModel.photosViewModel,
-                    onBack: { viewModel.isCompareOpen = false }
-                )
-                .navigationBarBackButtonHidden(true)
-                .toolbar(.hidden, for: .navigationBar)
+            // The compare screen opens on top of everything, from the card or from Photos
+            .navigationDestination(isPresented: Binding(
+                get: { viewModel.photosViewModel.isCompareOpen },
+                set: { viewModel.photosViewModel.isCompareOpen = $0 }
+            )) {
+                PhotoCompareView(viewModel: viewModel.photosViewModel)
+                    .navigationBarBackButtonHidden(true)
+                    .toolbar(.hidden, for: .navigationBar)
             }
             // The screen has its own title: no system title bar
             .toolbar(.hidden, for: .navigationBar)

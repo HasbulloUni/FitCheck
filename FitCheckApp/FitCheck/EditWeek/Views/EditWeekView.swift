@@ -99,6 +99,12 @@ struct EditWeekView: View {
                 unit: unit,
                 onChange: { viewModel.changePlan(weekday: $0, to: $1) }
             )
+
+            if let note = viewModel.rotationLimitNote {
+                Text(note)
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
+                    .foregroundStyle(AppColors.textSecondary)
+            }
         }
     }
 

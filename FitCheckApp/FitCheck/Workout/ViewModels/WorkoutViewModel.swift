@@ -19,6 +19,14 @@ final class WorkoutViewModel {
         case summary
     }
 
+    // Which number the user is changing with the wheel
+    enum PickerKind: Identifiable {
+        case reps
+        case weight
+
+        var id: Int { self == .reps ? 0 : 1 }
+    }
+
     let plan: PlanItem
 
     // MARK: Data of the workout
@@ -39,6 +47,7 @@ final class WorkoutViewModel {
     private(set) var phase: Phase = .working
     private(set) var summary: WorkoutSummary? = nil
     private(set) var shouldClose = false           // true: the screen can be closed
+    var picker: PickerKind? = nil                  // the wheel for reps or weight (nil = closed)
     var isInfoOpen = false                         // "How to do it" sheet
     var isLeaveConfirmOpen = false                 // "Finish the workout?" question
 
@@ -168,6 +177,33 @@ final class WorkoutViewModel {
         let index = activeSetIndex
         let value = sets[stepIndex][index].weight + delta
         sets[stepIndex][index].weight = min(WorkoutRules.maxWeight, max(0, value))
+    }
+
+    // MARK: The wheel (tap on the number of reps or weight)
+
+    // All the values of the wheels: from the smallest to the biggest
+    var repsOptions: [Int] {
+        Array(WorkoutRules.minReps...WorkoutRules.maxReps)
+    }
+
+    var weightOptions: [Double] {
+        Array(stride(from: 0.0, through: WorkoutRules.maxWeight, by: WorkoutRules.weightStep))
+    }
+
+    // The weight of the active set, moved to the nearest value of the wheel
+    var activeWeightOnWheel: Double {
+        let step = WorkoutRules.weightStep
+        return (activeSet.weight / step).rounded() * step
+    }
+
+    func setReps(_ value: Int) {
+        guard stepIndex < sets.count, !currentSets.isEmpty else { return }
+        sets[stepIndex][activeSetIndex].reps = min(WorkoutRules.maxReps, max(WorkoutRules.minReps, value))
+    }
+
+    func setWeight(_ value: Double) {
+        guard stepIndex < sets.count, !currentSets.isEmpty else { return }
+        sets[stepIndex][activeSetIndex].weight = min(WorkoutRules.maxWeight, max(0, value))
     }
 
     // MARK: Sets

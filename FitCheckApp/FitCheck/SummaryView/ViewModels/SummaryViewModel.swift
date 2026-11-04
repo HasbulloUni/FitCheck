@@ -280,8 +280,9 @@ final class SummaryViewModel {
         weekData.previousRestWeekdays = record.previousRestWeekdays
         weekData.ruleStartDate = record.ruleStartDate
 
-        // "Go" counts only on the day it was sent: an old one is forgotten
-        if let savedDate = record.goDate, Calendar.current.isDateInToday(savedDate) {
+        // "Go" replaces the routine only on the day it was sent, but it is kept until the end of the
+        // week: the rotation of the next days is adjusted because that plan was already done
+        if let savedDate = record.goDate, Self.isInCurrentWeek(savedDate) {
             goPlanId = UUID(uuidString: record.goPlanId)
             goDate = savedDate
         }
@@ -313,6 +314,13 @@ final class SummaryViewModel {
 
         let savedPlans = (try? context.fetch(FetchDescriptor<PlanRecord>())) ?? []
         plans = savedPlans.map { PlanItem(from: $0) }
+    }
+
+    // True when the date is in the current week (weeks start on Monday)
+    private static func isInCurrentWeek(_ date: Date) -> Bool {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2
+        return calendar.dateInterval(of: .weekOfYear, for: .now)?.contains(date) ?? false
     }
 
     // Copies weekData and savedWeekPlan onto the AppProfile row and saves it

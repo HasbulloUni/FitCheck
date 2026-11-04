@@ -7,19 +7,14 @@
 
 import SwiftUI
 
-// Compare two photos: drag the line left and right to reveal "before" and "after".
-// Under the slider, the two photos sit side by side in time order (older on the left, newer on the right).
-// Tap one of them to change it: a sheet shows only the photos that keep this order.
-// By default they are the first and the last photo.
+// Compare two photos. It opens with "Before" and "After" empty: the user picks each one
+// from the filmstrip. With both chosen, a yellow line can be dragged to reveal one or the other.
+// Under the filmstrip, a native menu jumps straight to a month or to the end of the list.
 struct PhotoCompareView: View {
-    let viewModel: PhotosViewModel
-    let onBack: () -> Void
+    @Bindable var viewModel: PhotosViewModel
 
     // Where the line is: from 0 (all "after") to 1 (all "before")
     @State private var split: CGFloat = 0.5
-
-    // Which side is being changed (nil = the sheet is closed)
-    @State private var pickingSide: CompareSide?
 
     var body: some View {
         GeometryReader { geo in
@@ -29,36 +24,31 @@ struct PhotoCompareView: View {
                 VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
                     header(unit: unit)
 
-                    if let before = viewModel.beforePhoto, let after = viewModel.afterPhoto, viewModel.canCompare {
-                        slider(before: before, after: after, unit: unit)
-                        choosers(before: before, after: after, unit: unit)
-                    } else {
+                    if viewModel.photos.count < 2 {
                         notEnoughPhotos(unit: unit)
+                    } else {
+                        if let before = viewModel.beforePhoto, let after = viewModel.afterPhoto {
+                            slider(before: before, after: after, unit: unit)
+                            stats(before: before, after: after, unit: unit)
+                        } else {
+                            slots(unit: unit)
+                        }
+                        sidePicker(unit: unit)
+                        filmstrip(unit: unit)
                     }
                 }
                 .padding(6 * unit)
             }
+            .scrollIndicators(.hidden)
         }
         .background(AppColors.background)
-        .sheet(item: $pickingSide) { side in
-            PhotoChoiceSheet(
-                title: side == .before ? "Choose the older photo" : "Choose the newer photo",
-                photos: side == .before ? viewModel.beforeChoices : viewModel.afterChoices,
-                chosenId: side == .before ? viewModel.beforePhoto?.id : viewModel.afterPhoto?.id,
-                onChoose: { photo in
-                    if side == .before { viewModel.chooseBefore(photo) } else { viewModel.chooseAfter(photo) }
-                    pickingSide = nil
-                }
-            )
-            .presentationDetents([.medium, .large])
-        }
     }
 
     // MARK: - Header
 
     private func header(unit: CGFloat) -> some View {
         HStack(spacing: AppSizes.Space.group * unit) {
-            Button(action: onBack) {
+            Button(action: { viewModel.isCompareOpen = false }) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
                     .foregroundStyle(AppColors.textPrimary)
@@ -76,14 +66,14 @@ struct PhotoCompareView: View {
         }
     }
 
-    // MARK: - The two photos with the line
+    // MARK: - Both photos chosen: the slider
 
     private func slider(before: PhotoRecord, after: PhotoRecord, unit: CGFloat) -> some View {
         let width = 88 * unit
-        let height = 100 * unit
+        let height = 108 * unit
 
         return ZStack {
-            // "Before" fills everything, "after" is drawn on top and cut by the line
+            // "Before" fills everything, "After" is drawn on top and cut by the line
             PhotoImageView(data: before.imageData)
                 .frame(width: width, height: height)
 
@@ -95,83 +85,231 @@ struct PhotoCompareView: View {
 
             // The line and the round handle
             Rectangle()
-                .fill(AppColors.background)
-                .frame(width: 0.6 * unit, height: height)
+                .fill(AppColors.yellow)
+                .frame(width: 0.7 * unit, height: height)
                 .offset(x: (split - 0.5) * width)
 
             Image(systemName: "arrow.left.and.right")
                 .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
-                .foregroundStyle(AppColors.background)
-                .frame(width: 10 * unit, height: 10 * unit)
-                .background(AppColors.textPrimary, in: Circle())
+                .foregroundStyle(Color.black)
+                .frame(width: 11 * unit, height: 11 * unit)
+                .background(AppColors.yellow, in: Circle())
                 .offset(x: (split - 0.5) * width)
 
-            // The dates of the two sides
+            // The two labels
             HStack {
-                dateBadge(before.date, unit: unit)
+                label("Before · \(ProgressFormat.dayMonth(before.date))", unit: unit)
                 Spacer()
-                dateBadge(after.date, unit: unit)
+                label("After · \(ProgressFormat.dayMonth(after.date))", unit: unit)
             }
-            .padding(2.4 * unit)
-            .frame(width: width, height: height, alignment: .bottom)
+            .padding(3 * unit)
+            .frame(width: width, height: height, alignment: .top)
         }
         .frame(width: width, height: height)
-        .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
+        .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
         .contentShape(Rectangle())
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
-                    split = min(max(value.location.x / width, 0.02), 0.98)
+                    split = min(max(value.location.x / width, 0.03), 0.97)
                 }
         )
     }
 
-    private func dateBadge(_ date: Date, unit: CGFloat) -> some View {
-        Text(ProgressFormat.dayMonth(date))
-            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-            .foregroundStyle(AppColors.textPrimary)
-            .padding(.horizontal, 2.4 * unit)
-            .padding(.vertical, 1 * unit)
-            .background(AppColors.background, in: Capsule())
+    private func label(_ text: String, unit: CGFloat) -> some View {
+        Text(text)
+            .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 3 * unit)
+            .padding(.vertical, 1.4 * unit)
+            .background(Color.black.opacity(0.6), in: Capsule())
     }
 
-    // MARK: - The two photos to tap, older on the left and newer on the right
-
-    private func choosers(before: PhotoRecord, after: PhotoRecord, unit: CGFloat) -> some View {
-        HStack(spacing: AppSizes.Space.group * unit) {
-            chooserTile(title: "Before", photo: before, side: .before, unit: unit)
-            chooserTile(title: "After", photo: after, side: .after, unit: unit)
+    private func stats(before: PhotoRecord, after: PhotoRecord, unit: CGFloat) -> some View {
+        HStack(spacing: AppSizes.Space.related * unit) {
+            stat(value: viewModel.compareGapText, caption: "between the two", unit: unit)
+            stat(
+                value: before.angle.title,
+                caption: before.angle == after.angle ? "same angle" : "vs \(after.angle.title)",
+                unit: unit
+            )
         }
     }
 
-    private func chooserTile(title: String, photo: PhotoRecord, side: CompareSide, unit: CGFloat) -> some View {
-        Button(action: { pickingSide = side }) {
-            VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
-                Text(title.uppercased())
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
-                    .tracking(0.3 * unit)
-                    .foregroundStyle(AppColors.textPrimary)
+    private func stat(value: String, caption: String, unit: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
+            Text(value)
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .heavy))
+                .foregroundStyle(AppColors.textPrimary)
+            Text(caption)
+                .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
+                .foregroundStyle(AppColors.textSecondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .progressCard(unit: unit)
+    }
 
-                PhotoImageView(data: photo.thumbnailData)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 38 * unit)
-                    .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
-                    .overlay(alignment: .bottomTrailing) {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
-                            .foregroundStyle(AppColors.background)
-                            .frame(width: 8 * unit, height: 8 * unit)
-                            .background(AppColors.textPrimary, in: Circle())
-                            .padding(2 * unit)
+    // MARK: - Not both chosen yet: two empty slots
+
+    private func slots(unit: CGFloat) -> some View {
+        HStack(spacing: AppSizes.Space.related * unit) {
+            slot(title: "Before", photo: viewModel.beforePhoto, side: .before, unit: unit)
+            slot(title: "After", photo: viewModel.afterPhoto, side: .after, unit: unit)
+        }
+    }
+
+    private func slot(title: String, photo: PhotoRecord?, side: PhotosViewModel.CompareSide, unit: CGFloat) -> some View {
+        let isActive = viewModel.activeSide == side
+
+        return Button(action: { viewModel.activeSide = side }) {
+            ZStack {
+                if let photo {
+                    PhotoImageView(data: photo.thumbnailData)
+                } else {
+                    AppColors.card
+                    VStack(spacing: AppSizes.Space.related * unit) {
+                        Image(systemName: "plus")
+                            .font(.system(size: AppSizes.Text.title * unit, weight: .semibold))
+                        Text("Choose \(title)")
+                            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     }
-
-                Text(ProgressFormat.dayMonth(photo.date))
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(AppColors.textSecondary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(3 / 4, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit)
+                    .stroke(isActive ? AppColors.yellow : Color.clear, lineWidth: 0.8 * unit)
+            }
+            .overlay(alignment: .topLeading) {
+                Text(photo.map { "\(title) · \(ProgressFormat.dayMonth($0.date))" } ?? title)
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
+                    .foregroundStyle(isActive ? Color.black : AppColors.textPrimary)
+                    .padding(.horizontal, 2.6 * unit)
+                    .padding(.vertical, 1.2 * unit)
+                    .background(isActive ? AppColors.yellow : AppColors.background, in: Capsule())
+                    .padding(2 * unit)
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(title) photo, \(ProgressFormat.dayMonth(photo.date)). Tap to change")
+    }
+
+    // MARK: - Which side the filmstrip fills
+
+    private func sidePicker(unit: CGFloat) -> some View {
+        HStack(spacing: 0) {
+            sideButton(title: "Before", isSelected: viewModel.activeSide == .before, unit: unit) {
+                viewModel.activeSide = .before
+            }
+            sideButton(title: "After", isSelected: viewModel.activeSide == .after, unit: unit) {
+                viewModel.activeSide = .after
+            }
+        }
+        .padding(unit)
+        .background(AppColors.card, in: Capsule())
+    }
+
+    private func sideButton(title: String, isSelected: Bool, unit: CGFloat, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
+                .foregroundStyle(isSelected ? AppColors.background : AppColors.textSecondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 2.4 * unit)
+                .background(isSelected ? AppColors.textPrimary : Color.clear, in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Filmstrip: all the photos, oldest on the left; the two in use are marked
+
+    private func filmstrip(unit: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
+            ScrollViewReader { proxy in
+                VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
+                    ScrollView(.horizontal) {
+                        HStack(spacing: AppSizes.Space.related * unit) {
+                            ForEach(viewModel.photos) { photo in
+                                filmCell(photo, unit: unit)
+                                    .id(photo.id)
+                            }
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+
+                    jumpMenu(proxy: proxy, unit: unit)
+                }
+            }
+        }
+    }
+
+    private func filmCell(_ photo: PhotoRecord, unit: CGFloat) -> some View {
+        let isBefore = photo.id == viewModel.beforeId
+        let isAfter = photo.id == viewModel.afterId
+
+        return Button(action: { viewModel.choose(photo) }) {
+            PhotoImageView(data: photo.thumbnailData)
+                .aspectRatio(3 / 4, contentMode: .fit)
+                .frame(width: 15 * unit)
+                .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
+                .overlay {
+                    if isBefore || isAfter {
+                        RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit)
+                            .stroke(isBefore ? AppColors.yellow : AppColors.textPrimary, lineWidth: 0.8 * unit)
+                    }
+                }
+                .overlay(alignment: .bottomLeading) {
+                    if isBefore || isAfter {
+                        Text(isBefore ? "Before" : "After")
+                            .font(.system(size: AppSizes.Text.caption * unit, weight: .heavy))
+                            .foregroundStyle(isBefore ? Color.black : AppColors.background)
+                            .padding(.horizontal, 1.4 * unit)
+                            .padding(.vertical, 0.5 * unit)
+                            .background(isBefore ? AppColors.yellow : AppColors.textPrimary, in: Capsule())
+                            .padding(unit)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(ProgressFormat.dayMonth(photo.date))
+    }
+
+    // MARK: - Native menu to jump to the end of the list (or to a month)
+
+    private func jumpMenu(proxy: ScrollViewProxy, unit: CGFloat) -> some View {
+        Menu {
+            if let latest = viewModel.photos.last {
+                Button("Latest photo", systemImage: "arrow.right.to.line") {
+                    withAnimation { proxy.scrollTo(latest.id, anchor: .trailing) }
+                }
+            }
+            ForEach(viewModel.grouped(viewModel.photos)) { group in
+                if let oldestOfMonth = group.photos.last {
+                    Button(group.title, systemImage: "calendar") {
+                        withAnimation { proxy.scrollTo(oldestOfMonth.id, anchor: .leading) }
+                    }
+                }
+            }
+            if let first = viewModel.photos.first {
+                Button("First photo", systemImage: "arrow.left.to.line") {
+                    withAnimation { proxy.scrollTo(first.id, anchor: .leading) }
+                }
+            }
+        } label: {
+            HStack(spacing: AppSizes.Space.related * unit) {
+                Image(systemName: "calendar")
+                Text("Jump to")
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
+            }
+            .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
+            .foregroundStyle(AppColors.textPrimary)
+            .padding(.horizontal, 4 * unit)
+            .padding(.vertical, 2.4 * unit)
+            .background(AppColors.card, in: Capsule())
+        }
     }
 
     // MARK: - Fewer than 2 photos
@@ -193,78 +331,25 @@ struct PhotoCompareView: View {
     }
 }
 
-// The two sides of the comparison
-private enum CompareSide: Identifiable {
-    case before
-    case after
-
-    var id: Int { self == .before ? 0 : 1 }
-}
-
-// MARK: - The sheet with the photos that can be chosen
-// Newest first, the chosen one has a ring. Only the photos that keep "left older than right" are shown.
-private struct PhotoChoiceSheet: View {
-    let title: String
-    let photos: [PhotoRecord]
-    let chosenId: UUID?
-    let onChoose: (PhotoRecord) -> Void
-
-    var body: some View {
-        GeometryReader { geo in
-            let unit = geo.size.width / 100
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
-                    Text(title)
-                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .heavy))
-                        .foregroundStyle(AppColors.textPrimary)
-
-                    LazyVGrid(
-                        columns: Array(repeating: GridItem(.flexible(), spacing: AppSizes.Space.related * unit), count: 3),
-                        spacing: AppSizes.Space.related * unit
-                    ) {
-                        ForEach(photos.reversed()) { photo in
-                            Button(action: { onChoose(photo) }) {
-                                PhotoImageView(data: photo.thumbnailData)
-                                    .frame(height: 40 * unit)
-                                    .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
-                                    .overlay {
-                                        if photo.id == chosenId {
-                                            RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit)
-                                                .stroke(AppColors.textPrimary, lineWidth: 0.8 * unit)
-                                        }
-                                    }
-                                    .overlay(alignment: .bottom) {
-                                        Text(ProgressFormat.dayMonth(photo.date))
-                                            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                                            .foregroundStyle(AppColors.textPrimary)
-                                            .padding(.horizontal, 2 * unit)
-                                            .padding(.vertical, 0.8 * unit)
-                                            .background(AppColors.background, in: Capsule())
-                                            .padding(1.5 * unit)
-                                    }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-                .padding(6 * unit)
-            }
-        }
-        .background(AppColors.background)
-    }
-}
-
 // MARK: - Previews
+private func compareViewModel(withData: Bool, bothChosen: Bool) -> PhotosViewModel {
+    let viewModel = ProgressPreviewData.photosViewModel(withData: withData)
+    viewModel.startCompare(before: bothChosen ? viewModel.photos.first : nil)
+    if bothChosen, let latest = viewModel.photos.last {
+        viewModel.choose(latest)
+    }
+    return viewModel
+}
+
 #Preview("Light") {
-    PhotoCompareView(viewModel: ProgressPreviewData.photosViewModel(withData: true), onBack: {})
+    PhotoCompareView(viewModel: compareViewModel(withData: true, bothChosen: true))
 }
 
 #Preview("Dark") {
-    PhotoCompareView(viewModel: ProgressPreviewData.photosViewModel(withData: true), onBack: {})
+    PhotoCompareView(viewModel: compareViewModel(withData: true, bothChosen: false))
         .preferredColorScheme(.dark)
 }
 
 #Preview("No data") {
-    PhotoCompareView(viewModel: ProgressPreviewData.photosViewModel(withData: false), onBack: {})
+    PhotoCompareView(viewModel: compareViewModel(withData: false, bothChosen: false))
 }

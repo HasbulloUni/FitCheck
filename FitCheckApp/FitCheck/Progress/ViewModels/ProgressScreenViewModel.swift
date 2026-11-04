@@ -29,7 +29,6 @@ final class ProgressScreenViewModel {
     // The sheet "Choose a period" and the screens opened from the Photos card
     var isPeriodSheetOpen = false
     var isGalleryOpen = false
-    var isCompareOpen = false
 
     // The photos have their own ViewModel
     let photosViewModel = PhotosViewModel()

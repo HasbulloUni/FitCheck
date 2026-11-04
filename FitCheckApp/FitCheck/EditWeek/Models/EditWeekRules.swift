@@ -50,6 +50,13 @@ enum EditWeekRules {
     static let rotationNoDaysHint = "Pick your training days to build the rotation."
     static let rotationNoPlansHint = "Create a plan in My plans to start the rotation."
 
+    // One plan for each training day at most: with 3 days the rotation has up to 3 plans
+    static func rotationLimitNote(days: Int) -> String {
+        days == 1
+            ? "1 training day: 1 plan in the rotation at most."
+            : "\(days) training days: up to \(days) plans in the rotation."
+    }
+
     // MARK: Reminder notification
     static let reminderTitle = "Time to train"
 

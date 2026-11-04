@@ -109,6 +109,8 @@ struct PlanRowView: View {
     @State private var restingOffset: CGFloat = 0
     // How far the finger has moved during the swipe
     @State private var dragOffset: CGFloat = 0
+    // Decided at the start of a drag: is it a horizontal swipe? (nil = not decided yet)
+    @State private var isHorizontalSwipe: Bool? = nil
 
     // Sizes of the row and of the buttons
     private var rowHeight: CGFloat { 16 * unit }
@@ -120,48 +122,58 @@ struct PlanRowView: View {
     private var editDeleteReveal: CGFloat { 2 * smallButton + 2 * gap }
     private var goReveal: CGFloat { goButton + gap }
 
-    // The real position of the card, never farther than the buttons
+    // The position of the card follows the finger. Beyond the buttons it gets harder
+    // to pull (rubber band), like the native iOS lists.
     private var offset: CGFloat {
-        min(max(restingOffset + dragOffset, -editDeleteReveal), goReveal)
+        rubberBand(restingOffset + dragOffset)
     }
+
+    // 0...1: how much of the buttons on the right / left is visible
+    private var rightProgress: CGFloat { min(max(-offset / editDeleteReveal, 0), 1) }
+    private var leftProgress: CGFloat { min(max(offset / goReveal, 0), 1) }
+
+    // The spring used by every movement of the card
+    private var rowSpring: Animation { .spring(response: 0.38, dampingFraction: 0.78) }
 
     var body: some View {
         ZStack {
-            // Go button, on the left (visible only when the card moves right)
+            // Go button, on the left (it grows while the card moves right)
             HStack {
                 actionButton(width: goButton, color: AppColors.green, action: onStart) {
                     VStack(spacing: AppSizes.Space.tight * unit) {
-                        Image(systemName: "play.fill")
+                        Image(systemName: "bolt.fill")
                             .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                         Text("Go")
                             .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     }
                     .foregroundStyle(.black)
                 }
+                .scaleEffect(0.6 + 0.4 * leftProgress, anchor: .leading)
+                .opacity(leftProgress)
                 Spacer()
             }
-            .opacity(offset > 0 ? 1 : 0)
-            .allowsHitTesting(offset > 0)
+            .allowsHitTesting(leftProgress > 0.5)
 
-            // Edit and Delete buttons, on the right (visible only when the card moves left)
+            // Edit and Delete buttons, on the right (they grow while the card moves left)
             HStack(spacing: gap) {
                 Spacer()
                 actionButton(width: smallButton, color: AppColors.cardAlt, action: onEdit) {
-                    Image(systemName: "pencil")
+                    Image(systemName: "square.and.pencil")
                         .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                         .foregroundStyle(AppColors.textPrimary)
                 }
                 .accessibilityLabel("Edit \(plan.name)")
 
                 actionButton(width: smallButton, color: AppColors.red, action: onDelete) {
-                    Image(systemName: "trash")
+                    Image(systemName: "trash.fill")
                         .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                         .foregroundStyle(.white)
                 }
                 .accessibilityLabel("Delete \(plan.name)")
             }
-            .opacity(offset < 0 ? 1 : 0)
-            .allowsHitTesting(offset < 0)
+            .scaleEffect(0.6 + 0.4 * rightProgress, anchor: .trailing)
+            .opacity(rightProgress)
+            .allowsHitTesting(rightProgress > 0.5)
 
             // The card itself
             card
@@ -177,11 +189,23 @@ struct PlanRowView: View {
                 .simultaneousGesture(swipe)
         }
         .frame(height: rowHeight)
+        // A soft tap when the row opens or closes
+        .sensoryFeedback(.impact(flexibility: .soft), trigger: restingOffset)
         // The swipe is not possible with VoiceOver, so the same actions are offered here
         .accessibilityElement(children: .combine)
         .accessibilityAction(named: "Go") { onStart() }
         .accessibilityAction(named: "Edit") { onEdit() }
         .accessibilityAction(named: "Delete") { onDelete() }
+    }
+
+    // Resistance beyond the end of the buttons: the card follows the finger only a little
+    private func rubberBand(_ value: CGFloat) -> CGFloat {
+        let limit = value < 0 ? editDeleteReveal : goReveal
+        let distance = abs(value)
+        guard distance > limit else { return value }
+        let extra = distance - limit
+        let damped = limit + extra * 0.25 / (1 + extra / (limit * 2))
+        return value < 0 ? -damped : damped
     }
 
     // MARK: The card: icon, name and summary
@@ -218,22 +242,30 @@ struct PlanRowView: View {
     }
 
     // MARK: The swipe
-    // Only a mostly horizontal movement counts, so the screen can still scroll up and down.
+    // The direction is decided at the start: a mostly horizontal movement moves the card,
+    // a vertical one is left to the scroll view. Once decided, it does not change.
     private var swipe: some Gesture {
-        DragGesture(minimumDistance: 15)
+        DragGesture(minimumDistance: 10)
             .onChanged { value in
-                if abs(value.translation.width) > abs(value.translation.height) {
-                    dragOffset = value.translation.width
+                if isHorizontalSwipe == nil {
+                    isHorizontalSwipe = abs(value.translation.width) > abs(value.translation.height)
                 }
+                guard isHorizontalSwipe == true else { return }
+                dragOffset = value.translation.width
             }
             .onEnded { value in
-                let isHorizontal = abs(value.translation.width) > abs(value.translation.height)
-                let target = restingOffset + (isHorizontal ? value.translation.width : 0)
+                defer { isHorizontalSwipe = nil }
+                guard isHorizontalSwipe == true else { return }
 
-                withAnimation(.spring(duration: 0.25)) {
-                    if target < -editDeleteReveal / 2 {
+                // Where the card would stop if it kept its speed: a quick flick is enough
+                let projected = restingOffset + value.predictedEndTranslation.width * 0.4
+                let target = restingOffset + value.translation.width
+
+                withAnimation(rowSpring) {
+                    let decision = abs(projected - restingOffset) > abs(target - restingOffset) ? projected : target
+                    if decision < -editDeleteReveal / 2 {
                         restingOffset = -editDeleteReveal   // open: Edit and Delete
-                    } else if target > goReveal / 2 {
+                    } else if decision > goReveal / 2 {
                         restingOffset = goReveal            // open: Go
                     } else {
                         restingOffset = 0                   // closed
@@ -244,7 +276,7 @@ struct PlanRowView: View {
     }
 
     private func closeRow() {
-        withAnimation(.spring(duration: 0.25)) {
+        withAnimation(rowSpring) {
             restingOffset = 0
             dragOffset = 0
         }

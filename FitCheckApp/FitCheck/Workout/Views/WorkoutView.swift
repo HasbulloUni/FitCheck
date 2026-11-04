@@ -40,7 +40,10 @@ struct WorkoutView: View {
                     WorkoutSummaryView(planName: viewModel.plan.name, summary: summary,
                                        unit: unit, onDone: onClose)
                 } else if let step = viewModel.currentStep {
-                    stepScreen(step, unit: unit)
+                    // The photo height is the same in every state: all the screen minus the other blocks
+                    let photoHeight = max(WorkoutRules.minPhotoUnits * unit,
+                                          geo.size.height - WorkoutRules.otherBlocksUnits * unit)
+                    stepScreen(step, unit: unit, photoHeight: photoHeight)
                 }
             }
             .sheet(isPresented: $viewModel.isInfoOpen) {
@@ -48,6 +51,12 @@ struct WorkoutView: View {
                     ExerciseInfoSheet(step: step, unit: unit, onClose: { viewModel.isInfoOpen = false })
                         .presentationDetents([.medium, .large])
                 }
+            }
+            // The native iPhone wheel for reps and weight: scrolling is faster than + and -
+            .sheet(item: $viewModel.picker) { kind in
+                ValuePickerSheet(viewModel: viewModel, kind: kind, unit: unit,
+                                 onDone: { viewModel.picker = nil })
+                    .presentationDetents([.height(48 * unit)])
             }
             .confirmationDialog("Finish the workout?",
                                 isPresented: $viewModel.isLeaveConfirmOpen,
@@ -66,7 +75,7 @@ struct WorkoutView: View {
 
     // MARK: One step on the screen
 
-    private func stepScreen(_ step: WorkoutStep, unit: CGFloat) -> some View {
+    private func stepScreen(_ step: WorkoutStep, unit: CGFloat, photoHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
             WorkoutHeaderView(
                 text: viewModel.headerText,
@@ -80,17 +89,27 @@ struct WorkoutView: View {
                 Text(step.name)
                     .font(.system(size: AppSizes.Text.title * unit * 1.1, weight: .heavy))
                     .foregroundStyle(AppColors.textPrimary)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 Text(step.muscles)
                     .font(.system(size: AppSizes.Text.bodyLarge * unit))
                     .foregroundStyle(AppColors.textSecondary)
+                    .lineLimit(1)
             }
+            .frame(maxWidth: .infinity, minHeight: 15 * unit, maxHeight: 15 * unit, alignment: .topLeading)
 
-            // The photo takes all the free space left by the other blocks
-            ExercisePhotoView(paths: step.imagePaths, unit: unit,
+            // The photo has a fixed height (the same in every state).
+            // While a done set is edited, the rest runs in a small bar on the bottom of the photo.
+            ExercisePhotoView(paths: step.imagePaths, height: photoHeight, unit: unit,
                               onHowTo: { viewModel.isInfoOpen = true })
                 .id(step.id)
+                .overlay(alignment: .bottom) {
+                    if viewModel.isEditingDoneSet && viewModel.isResting {
+                        RestBarView(remaining: viewModel.restRemaining, total: viewModel.restTotal,
+                                    unit: unit, onSkip: { viewModel.skipRest() })
+                            .padding(3 * unit)
+                    }
+                }
 
             if step.isTimed {
                 timedBlock(unit: unit)
@@ -127,12 +146,10 @@ struct WorkoutView: View {
                 isEditing: true, unit: unit,
                 onReps: { viewModel.changeReps(by: $0) },
                 onWeight: { viewModel.changeWeight(by: $0) },
+                onTapReps: { viewModel.picker = .reps },
+                onTapWeight: { viewModel.picker = .weight },
                 onMainButton: { viewModel.saveEdit() }
             )
-            if viewModel.isResting {
-                RestBarView(remaining: viewModel.restRemaining, total: viewModel.restTotal,
-                            unit: unit, onSkip: { viewModel.skipRest() })
-            }
         } else if viewModel.isResting {
             RestCardView(
                 remaining: viewModel.restRemaining, total: viewModel.restTotal, unit: unit,
@@ -148,6 +165,8 @@ struct WorkoutView: View {
                 isEditing: false, unit: unit,
                 onReps: { viewModel.changeReps(by: $0) },
                 onWeight: { viewModel.changeWeight(by: $0) },
+                onTapReps: { viewModel.picker = .reps },
+                onTapWeight: { viewModel.picker = .weight },
                 onMainButton: { viewModel.completeSet() }
             )
         }

@@ -15,14 +15,21 @@ import SwiftData
 @Model
 final class PhotoRecord {
     @Attribute(.unique) var id: UUID
-    var date: Date                                  // the day the photo was added
+    var date: Date                                  // the day of the photo (chosen when it is added)
     @Attribute(.externalStorage) var imageData: Data
     var thumbnailData: Data
+    var angleRaw: String = PhotoAngle.front.rawValue   // saved as text; old photos count as "front"
 
-    init(date: Date, imageData: Data, thumbnailData: Data) {
+    var angle: PhotoAngle {
+        get { PhotoAngle(rawValue: angleRaw) ?? .front }
+        set { angleRaw = newValue.rawValue }
+    }
+
+    init(date: Date, imageData: Data, thumbnailData: Data, angle: PhotoAngle = .front) {
         self.id = UUID()
         self.date = date
         self.imageData = imageData
         self.thumbnailData = thumbnailData
+        self.angleRaw = angle.rawValue
     }
 }

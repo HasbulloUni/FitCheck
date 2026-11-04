@@ -36,7 +36,7 @@ struct RestCardView: View {
                     .animation(.linear(duration: 1), value: remaining)
                 VStack(spacing: AppSizes.Space.tight * unit) {
                     Text(WorkoutFormat.clock(remaining))
-                        .font(.system(size: AppSizes.Text.hero * unit, weight: .heavy))
+                        .font(.system(size: AppSizes.Text.display * unit, weight: .heavy))
                         .foregroundStyle(AppColors.textPrimary)
                         .monospacedDigit()
                     Text("next: set \(nextSetNumber)")
@@ -44,7 +44,7 @@ struct RestCardView: View {
                         .foregroundStyle(AppColors.textSecondary)
                 }
             }
-            .frame(width: 38 * unit, height: 38 * unit)
+            .frame(width: 28 * unit, height: 28 * unit)
 
             HStack(spacing: AppSizes.Space.related * unit) {
                 Button(action: onAdd) {
@@ -52,7 +52,7 @@ struct RestCardView: View {
                         .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
                         .foregroundStyle(AppColors.textPrimary)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 13 * unit)
+                        .frame(height: 11 * unit)
                         .background(AppColors.cardAlt, in: Capsule())
                 }
                 .buttonStyle(.plain)
@@ -62,7 +62,7 @@ struct RestCardView: View {
                         .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
                         .foregroundStyle(Color(light: 0x111111, dark: 0x111111))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 13 * unit)
+                        .frame(height: 11 * unit)
                         .background(AppColors.yellow, in: Capsule())
                 }
                 .buttonStyle(.plain)
@@ -72,6 +72,7 @@ struct RestCardView: View {
         }
         .padding(4 * unit)
         .frame(maxWidth: .infinity)
+        .frame(height: WorkoutRules.cardHeightUnits * unit)   // same height as the Reps/Weight card
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 }

@@ -16,10 +16,11 @@ struct PhotosCardView: View {
     let countText: String       // e.g. "8 photos"
     let agoText: String         // e.g. "10 days ago"
     let canCompare: Bool        // at least 2 photos
+    var hasPhotosOutsidePeriod = false   // there are photos, but none in this period
     let unit: CGFloat
     let onOpen: () -> Void
     let onCompare: () -> Void
-    let onAdd: (Data) -> Void
+    let onAdd: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
@@ -76,13 +77,14 @@ struct PhotosCardView: View {
                 .disabled(!canCompare)
                 .opacity(canCompare ? 1 : 0.4)
 
-                AddPhotoButton(onPicked: onAdd) {
+                Button(action: onAdd) {
                     Image(systemName: "plus")
                         .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
                         .foregroundStyle(AppColors.background)
                         .frame(width: 8.4 * unit, height: 7.6 * unit)
                         .background(AppColors.textPrimary, in: Capsule())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("Add photo")
             }
         }
@@ -101,16 +103,16 @@ struct PhotosCardView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
 
-            Text("No photos yet")
+            Text(hasPhotosOutsidePeriod ? "No photos here" : "No photos yet")
                 .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)
 
-            Text("Add your first photo to see results")
+            Text(hasPhotosOutsidePeriod ? "None in this period" : "Add your first photo to see results")
                 .font(.system(size: AppSizes.Text.caption * unit, weight: .regular))
                 .foregroundStyle(AppColors.textSecondary)
                 .lineLimit(2)
 
-            AddPhotoButton(onPicked: onAdd) {
+            Button(action: onAdd) {
                 Text("+ Add photo")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(AppColors.background)
@@ -118,6 +120,7 @@ struct PhotosCardView: View {
                     .padding(.vertical, 2.2 * unit)
                     .background(AppColors.textPrimary, in: Capsule())
             }
+            .buttonStyle(.plain)
         }
     }
 }
@@ -127,7 +130,7 @@ struct PhotosCardView: View {
     PhotosCardView(
         thumbnail: ProgressPreviewData.thumbnailData(),
         dateText: "25 Oct", countText: "8 photos", agoText: "10 days ago",
-        canCompare: true, unit: 3.9, onOpen: {}, onCompare: {}, onAdd: { _ in }
+        canCompare: true, unit: 3.9, onOpen: {}, onCompare: {}, onAdd: {}
     )
     .frame(width: 43 * 3.9)
     .padding(20)
@@ -138,7 +141,7 @@ struct PhotosCardView: View {
     PhotosCardView(
         thumbnail: ProgressPreviewData.thumbnailData(),
         dateText: "25 Oct", countText: "8 photos", agoText: "10 days ago",
-        canCompare: true, unit: 3.9, onOpen: {}, onCompare: {}, onAdd: { _ in }
+        canCompare: true, unit: 3.9, onOpen: {}, onCompare: {}, onAdd: {}
     )
     .frame(width: 43 * 3.9)
     .padding(20)
@@ -150,7 +153,7 @@ struct PhotosCardView: View {
     PhotosCardView(
         thumbnail: nil,
         dateText: "", countText: "", agoText: "",
-        canCompare: false, unit: 3.9, onOpen: {}, onCompare: {}, onAdd: { _ in }
+        canCompare: false, unit: 3.9, onOpen: {}, onCompare: {}, onAdd: {}
     )
     .frame(width: 43 * 3.9)
     .padding(20)

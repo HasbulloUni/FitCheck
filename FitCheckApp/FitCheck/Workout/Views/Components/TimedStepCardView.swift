@@ -39,6 +39,7 @@ struct TimedStepCardView: View {
         }
         .padding(5 * unit)
         .frame(maxWidth: .infinity)
+        .frame(height: WorkoutRules.cardHeightUnits * unit)   // same height as the Reps/Weight card
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 }
@@ -69,6 +70,7 @@ struct SetsDoneCardView: View {
             Spacer()
         }
         .padding(4 * unit)
+        .frame(height: WorkoutRules.cardHeightUnits * unit)   // same height as the Reps/Weight card
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 }
