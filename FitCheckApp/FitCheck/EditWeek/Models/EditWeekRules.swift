@@ -41,6 +41,15 @@ enum EditWeekRules {
     static let notificationsNote = "Notifications are asked after you save your times."
     static let saveButton = "Save changes"
 
+    // MARK: Plan rotation
+    static let rotationQuestion = "Plan rotation"
+    static let rotationCardTitle = "This week's rotation"
+    static let rotationEmptyPlan = "Choose a plan"
+    static let rotationChange = "Change"
+    static let rotationChoose = "Choose"
+    static let rotationNoDaysHint = "Pick your training days to build the rotation."
+    static let rotationNoPlansHint = "Create a plan in My plans to start the rotation."
+
     // MARK: Reminder notification
     static let reminderTitle = "Time to train"
 

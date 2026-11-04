@@ -17,9 +17,22 @@ final class EditWeekViewModel {
 
     // Starts from the choices saved last time. The first time there are none,
     // so it starts from the current week of the Home.
-    init(week: WeekData, savedPlan: EditWeekDraft?) {
+    init(week: WeekData, savedPlan: EditWeekDraft?, plans: [PlanItem] = []) {
+        self.plans = plans
         draft = savedPlan ?? EditWeekDraft(from: week)
+        syncRotation()
+
+        // The first time there is no rotation yet: the days get the plans in the order they were created
+        let hadRotation = !(savedPlan?.rotation.isEmpty ?? true)
+        if !hadRotation && draft.rotation.allSatisfy({ $0.planId == nil }) {
+            for position in draft.rotation.indices where position < plans.count {
+                draft.rotation[position].planId = plans[position].id
+            }
+        }
     }
+
+    // All the plans of My plans: the "Change" menu offers them
+    let plans: [PlanItem]
 
     // MARK: - Training days
 
@@ -48,6 +61,7 @@ final class EditWeekViewModel {
             // The day is removed together with its reminder time
             draft.workoutWeekdays.removeAll { $0 == weekday }
             draft.reminders.removeAll { $0.weekday == weekday }
+            syncRotation()
         } else if !isDayLimitReached {
             // The new day starts with the default time (18:00)
             draft.workoutWeekdays.append(weekday)
@@ -56,6 +70,42 @@ final class EditWeekViewModel {
             )
             // The reminders are always shown Monday first
             draft.reminders.sort { mondayFirstPosition($0.weekday) < mondayFirstPosition($1.weekday) }
+            // The new day gets an empty row in the rotation, in its place
+            syncRotation()
+        }
+    }
+
+    // MARK: - Plan rotation
+
+    private static let dayNames = [1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed", 5: "Thu", 6: "Fri", 7: "Sat"]
+
+    // One row for each training day, Monday first, numbered 1, 2, 3...
+    var rotationRows: [RotationRowItem] {
+        draft.rotation.enumerated().map { position, slot in
+            RotationRowItem(
+                number: position + 1,
+                weekday: slot.weekday,
+                dayName: Self.dayNames[slot.weekday] ?? "",
+                plan: plans.first(where: { $0.id == slot.planId })
+            )
+        }
+    }
+
+    // The "Change" menu: the day keeps its plan until the user picks another one
+    func changePlan(weekday: Int, to planId: UUID) {
+        guard let index = draft.rotation.firstIndex(where: { $0.weekday == weekday }) else { return }
+        draft.rotation[index].planId = planId
+    }
+
+    // Makes the rotation match the training days: a new day gets an empty row, a removed day
+    // loses its row, and a plan that does not exist anymore (deleted) leaves its row empty.
+    // The plans stay tied to their day, so adding a day never moves the others.
+    private func syncRotation() {
+        let orderedDays = [2, 3, 4, 5, 6, 7, 1].filter { draft.workoutWeekdays.contains($0) }
+        draft.rotation = orderedDays.map { weekday in
+            let oldId = draft.rotation.first(where: { $0.weekday == weekday })?.planId
+            let stillExists = plans.contains(where: { $0.id == oldId })
+            return RotationSlot(weekday: weekday, planId: stillExists ? oldId : nil)
         }
     }
 

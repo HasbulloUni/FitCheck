@@ -23,11 +23,16 @@ struct AddPlanView: View {
     @FocusState private var isNameFocused: Bool
 
     let takenColorIndexes: [Int]          // the colors already used by other plans
+    let otherPlanNames: [String]          // the names of the other plans (for the warning)
     let onBack: () -> Void                // the round back button: closes without saving
     let onSave: (PlanItem) -> Void        // "Save to My plans": gives the new plan to the Home
 
-    init(takenColorIndexes: [Int], onBack: @escaping () -> Void, onSave: @escaping (PlanItem) -> Void) {
-        _viewModel = State(initialValue: AddPlanViewModel(takenColorIndexes: takenColorIndexes))
+    // editing: the plan to change (nil = a new plan)
+    init(editing plan: PlanItem? = nil, takenColorIndexes: [Int], otherPlanNames: [String] = [],
+         onBack: @escaping () -> Void, onSave: @escaping (PlanItem) -> Void) {
+        _viewModel = State(initialValue: AddPlanViewModel(takenColorIndexes: takenColorIndexes,
+                                                          otherPlanNames: otherPlanNames, editing: plan))
+        self.otherPlanNames = otherPlanNames
         self.takenColorIndexes = takenColorIndexes
         self.onBack = onBack
         self.onSave = onSave
@@ -148,7 +153,7 @@ struct AddPlanView: View {
             HStack(spacing: 3.5 * unit) {
                 backButton(unit: unit)
 
-                Text("NEW PLAN")
+                Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
                     .font(.system(size: 3 * unit, weight: .bold))
                     .tracking(0.4 * unit)
                     .foregroundStyle(.black)
@@ -181,6 +186,14 @@ struct AddPlanView: View {
                 .accessibilityLabel("Rename")
             }
             .padding(.top, 5 * unit)
+
+            // Same name as another plan: allowed, but the user is told
+            if viewModel.hasDuplicateName {
+                Text("Another plan has this name")
+                    .font(.system(size: 3.2 * unit, weight: .semibold))
+                    .foregroundStyle(.black.opacity(0.7))
+                    .padding(.top, 1 * unit)
+            }
 
             HStack(spacing: 2 * unit) {
                 statPill(icon: "dumbbell", text: viewModel.exerciseCountText, unit: unit)
@@ -284,7 +297,9 @@ struct AddPlanView: View {
 
             ForEach(PlanPalette.colors.indices, id: \.self) { index in
                 let isSelected = viewModel.colorIndex == index
-                let isTaken = takenColorIndexes.contains(index)
+                // When every color is used (more plans than colors) all of them can be picked again
+                let allTaken = PlanPalette.colors.indices.allSatisfy { takenColorIndexes.contains($0) }
+                let isTaken = !allTaken && takenColorIndexes.contains(index)
 
                 Button(action: { viewModel.colorIndex = index }) {
                     ZStack {

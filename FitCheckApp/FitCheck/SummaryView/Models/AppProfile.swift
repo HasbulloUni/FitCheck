@@ -31,12 +31,20 @@ final class AppProfile {
     var draftRemindMe: Bool = false
     var draftReminderWeekdays: [Int] = []   // same order as draftReminderMinutes
     var draftReminderMinutes: [Int] = []
+    // The rotation of the saved draft: the day and the plan id of each row, in the same order
+    // (an empty text means the day has no plan yet)
+    var draftRotationWeekdays: [Int] = []
+    var draftRotationPlanIds: [String] = []
 
     // Today's workout (ignored until hasTodayPlan is true)
     var hasTodayPlan: Bool = false
     var todayPlanName: String = ""
     var todayPlanMinutes: Int = 0
     var todayPlanExerciseCount: Int = 0
+
+    // The plan sent with "Go" and the day it was sent (it replaces the routine only on that day)
+    var goPlanId: String = ""
+    var goDate: Date? = nil
 
     // Goals progress (same fields as GoalProgress)
     var sessionsDone: Int = 0

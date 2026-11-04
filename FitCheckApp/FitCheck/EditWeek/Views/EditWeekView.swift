@@ -17,8 +17,9 @@ struct EditWeekView: View {
     let onBack: () -> Void        // the round back button: closes the screen without saving
     let onSave: (EditWeekDraft) -> Void   // "Save changes": gives the chosen week to the Home
 
-    init(week: WeekData, savedPlan: EditWeekDraft? = nil, onBack: @escaping () -> Void, onSave: @escaping (EditWeekDraft) -> Void) {
-        _viewModel = State(initialValue: EditWeekViewModel(week: week, savedPlan: savedPlan))
+    init(week: WeekData, savedPlan: EditWeekDraft? = nil, plans: [PlanItem] = [],
+         onBack: @escaping () -> Void, onSave: @escaping (EditWeekDraft) -> Void) {
+        _viewModel = State(initialValue: EditWeekViewModel(week: week, savedPlan: savedPlan, plans: plans))
         self.onBack = onBack
         self.onSave = onSave
     }
@@ -37,7 +38,7 @@ struct EditWeekView: View {
 
                         daysSection(unit: unit)
 
-                        durationSection(unit: unit)
+                        rotationSection(unit: unit)
 
                         reminderSection(unit: unit)
                     }
@@ -87,16 +88,16 @@ struct EditWeekView: View {
         }
     }
 
-    // "How long is a session?" and the duration buttons
-    private func durationSection(unit: CGFloat) -> some View {
+    // "Plan rotation" and the card with one row for each training day
+    private func rotationSection(unit: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 3 * unit) {
-            sectionTitle(EditWeekRules.durationQuestion, unit: unit)
+            sectionTitle(EditWeekRules.rotationQuestion, unit: unit)
 
-            DurationPicker(
-                durations: viewModel.durations,
-                selected: viewModel.draft.durationMinutes,
+            RotationCardView(
+                rows: viewModel.rotationRows,
+                plans: viewModel.plans,
                 unit: unit,
-                onSelect: { viewModel.selectDuration($0) }
+                onChange: { viewModel.changePlan(weekday: $0, to: $1) }
             )
         }
     }

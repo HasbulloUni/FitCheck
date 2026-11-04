@@ -46,8 +46,53 @@ final class AddPlanViewModel {
     // Photos, secondary muscles and steps: only needed in "Add exercises"
     private var detailsById: [String: ExercisePickerDetails] = [:]
 
-    init(takenColorIndexes: [Int]) {
-        colorIndex = PlanPalette.firstFree(taken: takenColorIndexes)
+    // When the user edits a saved plan (pencil of My plans): its id stays the same
+    // and the plan waits here until the exercises of the database are loaded
+    private let editingId: UUID?
+    private var planToLoad: PlanItem?
+
+    // True while a saved plan is edited ("Edit plan"), false for a new plan
+    var isEditing: Bool { editingId != nil }
+
+    // The names of the OTHER plans: only used to warn about a name that is already taken
+    private let otherPlanNames: [String]
+
+    init(takenColorIndexes: [Int], otherPlanNames: [String] = [], editing plan: PlanItem? = nil) {
+        self.otherPlanNames = otherPlanNames
+        editingId = plan?.id
+        planToLoad = plan
+        if let plan {
+            name = plan.name
+            colorIndex = plan.colorIndex ?? PlanPalette.firstFree(taken: takenColorIndexes)
+            minutes = plan.minutes
+            warmupMoves = plan.warmupMoves
+            hasCooldown = plan.hasCooldown
+        } else {
+            colorIndex = PlanPalette.firstFree(taken: takenColorIndexes)
+        }
+    }
+
+    // Puts the exercises and the sets of the saved plan back: the category is the one
+    // (Gym or Calisthenics) whose pool contains the exercises of the plan.
+    private func applySavedPlan() {
+        guard let plan = planToLoad else { return }
+        planToLoad = nil
+
+        category = .gym
+        for option in PlanCategory.allCases {
+            category = option
+            let allowedIds = pool.map { $0.id }
+            if plan.exerciseIds.allSatisfy({ allowedIds.contains($0) }) { break }
+            category = .gym   // no match yet: back to Gym if no category contains all of them
+        }
+
+        var list: [ChosenExercise] = []
+        for (position, id) in plan.exerciseIds.enumerated() {
+            guard let item = pool.first(where: { $0.id == id }) else { continue }
+            let sets = position < plan.exerciseSets.count ? plan.exerciseSets[position] : Prescription.sets(for: level)
+            list.append(ChosenExercise(item: item, sets: sets))
+        }
+        chosen = list
     }
 
     // MARK: Database
@@ -69,6 +114,7 @@ final class AddPlanViewModel {
                 instructions: exercise.instructions
             )
         }
+        applySavedPlan()
     }
 
     // What "Add exercises" needs to show the preview of each exercise
@@ -191,12 +237,18 @@ final class AddPlanViewModel {
         return "figure.strengthtraining.traditional"
     }
 
+    // True when another plan already has this name (it is allowed, the screen only warns)
+    var hasDuplicateName: Bool {
+        let mine = displayName.lowercased()
+        return otherPlanNames.contains { $0.lowercased() == mine }
+    }
+
     // The color of this plan: the big header and the picked exercises use it
     var color: Color { PlanPalette.colors[colorIndex] }
 
     // e.g. "NEW PLAN · GYM · 60 MIN"
     var headerLabel: String {
-        "NEW PLAN · \(category.title.uppercased()) · \(minutes) MIN"
+        "\(isEditing ? "EDIT PLAN" : "NEW PLAN") · \(category.title.uppercased()) · \(minutes) MIN"
     }
 
     // MARK: Warm-up
@@ -345,11 +397,8 @@ final class AddPlanViewModel {
 
     var hasEnoughExercises: Bool { chosen.count >= SafetyRules.minExercisesPerPlan }
 
-    // The plan must also get close to the chosen 60 or 90 minutes (same tolerance as the
-    // generator), so picking 90 instead of 60 actually changes how many exercises are needed.
-    var hasEnoughTime: Bool {
-        Double(estimatedMinutes) >= Double(minutes) * (1 - SafetyRules.durationTolerance)
-    }
+    // The chosen 60 or 90 minutes are the maximum: the plan can be shorter, never longer
+    var isWithinTime: Bool { estimatedMinutes <= minutes }
 
     // e.g. "5 exercises"
     var exerciseCountText: String {
@@ -363,14 +412,14 @@ final class AddPlanViewModel {
     }
 
     // The button works only with at least 4 exercises and close enough to the chosen minutes
-    var isSaveEnabled: Bool { hasEnoughExercises && hasEnoughTime }
+    var isSaveEnabled: Bool { hasEnoughExercises && isWithinTime }
 
     // The text of the big button says what is still missing
     var saveTitle: String {
         if !hasEnoughExercises { return "Save to My plans" }
         if !isWarmupReady { return "Pick your warm-up" }
-        if !hasEnoughTime { return "Add more to reach \(minutes) min" }
-        return "Save to My plans"
+        if !isWithinTime { return "Over \(minutes) min: remove something" }
+        return isEditing ? "Save changes" : "Save to My plans"
     }
 
     // The big button: it gives the plan, or opens the warm-up if no move is picked yet
@@ -380,14 +429,14 @@ final class AddPlanViewModel {
             isWarmupShown = true
             return nil
         }
-        if !hasEnoughTime { return nil }
+        if !isWithinTime { return nil }
         return makePlan()
     }
 
     // The plan for the Home
     private func makePlan() -> PlanItem {
         PlanItem(
-            id: UUID(),
+            id: editingId ?? UUID(),
             name: displayName,
             icon: icon,
             color: color,

@@ -20,6 +20,24 @@ struct DayReminder: Identifiable {
 // The user changes this copy while the screen is open.
 // The real week of the Home changes only when the user taps "Save changes".
 // Only data, no logic: the logic lives in EditWeekViewModel.
+// The plan of one training day of the rotation (nil planId = the day has no plan yet)
+struct RotationSlot: Identifiable {
+    let weekday: Int        // 1 = Sunday, 2 = Monday ... 7 = Saturday
+    var planId: UUID?
+
+    var id: Int { weekday }
+}
+
+// One row of the rotation card, ready to be drawn
+struct RotationRowItem: Identifiable {
+    let number: Int         // 1, 2, 3... in the order of the days (Monday first)
+    let weekday: Int
+    let dayName: String     // e.g. "Mon"
+    let plan: PlanItem?     // nil = the row is still empty
+
+    var id: Int { weekday }
+}
+
 struct EditWeekDraft {
     // Training days chosen by the user (1 = Sunday ... 7 = Saturday)
     var workoutWeekdays: [Int] = []
@@ -33,6 +51,9 @@ struct EditWeekDraft {
     // One reminder time for each training day
     var reminders: [DayReminder] = []
 
+    // The plan of each training day, in the same order as the days (Monday first)
+    var rotation: [RotationSlot] = []
+
     init() {}
 
     // Starts from the current week of the Home, so nothing changes until "Save changes".
@@ -45,7 +66,9 @@ struct EditWeekDraft {
     }
 
     // Rebuilds a draft that was saved with SwiftData
-    init(workoutWeekdays: [Int], durationMinutes: Int, remindMe: Bool, reminders: [DayReminder]) {
+    init(workoutWeekdays: [Int], durationMinutes: Int, remindMe: Bool, reminders: [DayReminder],
+         rotation: [RotationSlot] = []) {
+        self.rotation = rotation
         self.workoutWeekdays = workoutWeekdays
         self.durationMinutes = durationMinutes
         self.remindMe = remindMe

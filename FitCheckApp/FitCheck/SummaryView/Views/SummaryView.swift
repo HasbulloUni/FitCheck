@@ -43,6 +43,8 @@ struct SummaryView: View {
                     // Today: show the workout if there is one, otherwise invite the user to add it
                     if let plan = viewModel.todayPlan {
                         TodayCardView(plan: plan, unit: unit, onStart: {})
+                    } else if viewModel.isTodayRest {
+                        TodayRestCardView(unit: unit)
                     } else {
                         TodayEmptyCardView(unit: unit, onAddPlan: { viewModel.openAddPlan() })
                     }
@@ -59,10 +61,10 @@ struct SummaryView: View {
                         plans: viewModel.plans,
                         unit: unit,
                         onNewPlan: { viewModel.openAddPlan() },
-                        onOpenPlan: { _ in },
-                        onEditPlan: { _ in },
+                        onOpenPlan: { viewModel.openEditPlan($0) },
+                        onEditPlan: { viewModel.openEditPlan($0) },
                         onDeletePlan: { viewModel.deletePlan($0) },
-                        onStartPlan: { _ in }
+                        onStartPlan: { viewModel.sendToToday($0) }
                     )
                 }
                 .padding(6 * unit)
@@ -75,6 +77,7 @@ struct SummaryView: View {
             EditWeekView(
                 week: viewModel.weekData,
                 savedPlan: viewModel.savedWeekPlan,
+                plans: viewModel.plans,
                 onBack: { viewModel.closeEditWeek() },
                 onSave: { viewModel.saveWeek($0) }
             )
@@ -84,9 +87,11 @@ struct SummaryView: View {
         // "+ New plan" and "Add plan" open "Add your plan": Back returns here
         .navigationDestination(isPresented: $viewModel.isAddPlanOpen) {
             AddPlanView(
-                takenColorIndexes: viewModel.plans.compactMap { $0.colorIndex },
+                editing: viewModel.planBeingEdited,
+                takenColorIndexes: viewModel.takenColorIndexes,
+                otherPlanNames: viewModel.otherPlanNames,
                 onBack: { viewModel.closeAddPlan() },
-                onSave: { viewModel.addPlan($0) }
+                onSave: { viewModel.savePlan($0) }
             )
             .navigationBarBackButtonHidden(true)   // the screens have their own Back
             .toolbar(.hidden, for: .navigationBar)

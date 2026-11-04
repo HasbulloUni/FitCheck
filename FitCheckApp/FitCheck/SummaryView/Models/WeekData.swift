@@ -51,6 +51,8 @@ struct WeekData {
     var restDays: [Date] = []
     // The current day
     var today: Date = .now
+    // True when a plan was sent with "Go" today: today is a training day even if the routine says rest
+    var hasGoToday = false
 
     // The days chosen BEFORE the last change. They are used for the days before
     // "ruleStartDate", so the past never changes when the user edits the week.
@@ -122,6 +124,9 @@ struct WeekData {
         }
 
         if day == todayStart {
+            if hasGoToday {
+                return .todayWorkout
+            }
             // Today keeps the dashed circle, but its color tells if it is a training or a rest day
             if planned.contains(weekday) {
                 return .todayWorkout
