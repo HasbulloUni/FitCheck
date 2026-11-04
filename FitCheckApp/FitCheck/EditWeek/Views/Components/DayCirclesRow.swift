@@ -21,7 +21,7 @@ struct DayCirclesRow: View {
     ]
 
     var body: some View {
-        HStack(spacing: 1 * unit) {
+        HStack(spacing: AppSizes.Space.tight * unit) {
             ForEach(days, id: \.number) { day in
                 let isSelected = selectedWeekdays.contains(day.number)
 
@@ -35,7 +35,7 @@ struct DayCirclesRow: View {
                         .frame(maxWidth: .infinity)
                         .overlay {
                             Text(day.letter)
-                                .font(.system(size: 3 * unit, weight: .bold))
+                                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
                         }
                 }

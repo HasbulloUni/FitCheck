@@ -34,11 +34,11 @@ enum EditWeekRules {
     static let title = "Edit your week"
     static let subtitle = "Changes apply from today on. Past days stay as they are."
     static let daysQuestion = "Which days? Pick \(minWorkoutDays) to \(maxWorkoutDays)"
-    static let durationQuestion = "How long is a session?"
+    /* UNUSED (commented out, 4 Nov 2026) static let durationQuestion = "How long is a session?" */
     static let startQuestion = "When do you wanna start?"
     static let remindMe = "Remind me"
     static let noDaysHint = "Pick your training days to set the times."
-    static let notificationsNote = "Notifications are asked after you save your times."
+    /* UNUSED (commented out, 4 Nov 2026) static let notificationsNote = "Notifications are asked after you save your times." */
     static let saveButton = "Save changes"
 
     // MARK: Plan rotation

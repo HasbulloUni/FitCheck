@@ -24,19 +24,19 @@ struct WeekCardView: View {
     @State private var goesForward = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
 
             // Title row with the pencil button on the right
             HStack {
                 Text(title)
-                    .font(.system(size: 3.8 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
 
                 Button(action: onEdit) {
                     Image(systemName: "pencil")
-                        .font(.system(size: 3.4 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
                         .foregroundStyle(AppColors.textSecondary)
                         .padding(2.5 * unit)
                         .background(AppColors.cardAlt, in: Circle())
@@ -73,7 +73,7 @@ struct WeekCardView: View {
         }
         .task { await showSwipeHint() }
         .padding(4.5 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 6 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
     }
 }
 
@@ -100,20 +100,20 @@ struct DayCircleView: View {
     let unit: CGFloat   // 1% of the screen width
 
     var body: some View {
-        VStack(spacing: 1.5 * unit) {
+        VStack(spacing: AppSizes.Space.related * unit) {
             // Fill + border + number, one on top of the other
             ZStack {
                 Circle().fill(fillColor)
                 Circle().strokeBorder(borderColor, style: borderStyle)
                 Text("\(day.number)")
-                    .font(.system(size: 3.6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(numberColor)
             }
             .frame(width: 10 * unit, height: 10 * unit)
 
             // The letter below, bold only for today
             Text(day.letter)
-                .font(.system(size: 3 * unit, weight: day.state.isToday ? .bold : .regular))
+                .font(.system(size: AppSizes.Text.small * unit, weight: day.state.isToday ? .bold : .regular))
                 .foregroundStyle(day.state.isToday ? AppColors.textPrimary : AppColors.textSecondary)
         }
     }

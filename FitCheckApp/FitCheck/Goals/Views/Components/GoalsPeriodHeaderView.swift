@@ -15,14 +15,14 @@ struct GoalsPeriodHeaderView: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(period.title.uppercased())
-                .font(.system(size: 3.2 * unit, weight: .heavy))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
                 .tracking(0.3 * unit)   // a little space between the letters
                 .foregroundStyle(AppColors.textPrimary)
 
             Spacer()
 
             Text(period.resetText)
-                .font(.system(size: 3 * unit, weight: .regular))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                 .foregroundStyle(AppColors.textSecondary)
         }
         .padding(.horizontal, unit)

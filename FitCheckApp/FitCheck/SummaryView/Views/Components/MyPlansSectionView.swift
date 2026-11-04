@@ -28,19 +28,19 @@ struct MyPlansSectionView: View {
     @State private var planToDelete: PlanItem? = nil
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
 
             // Title row: "My plans" on the left, "+ New plan" on the right
             HStack {
                 Text("My plans")
-                    .font(.system(size: 6 * unit, weight: .heavy))
+                    .font(.system(size: AppSizes.Text.title * unit, weight: .heavy))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
 
                 Button(action: onNewPlan) {
                     Text("+ New plan")
-                        .font(.system(size: 4 * unit, weight: .medium))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                         .foregroundStyle(AppColors.textSecondary)
                 }
             }
@@ -121,11 +121,11 @@ struct PlanRowView: View {
             // Go button, on the left (visible only when the card moves right)
             HStack {
                 actionButton(width: goButton, color: AppColors.green, action: onStart) {
-                    VStack(spacing: 0.5 * unit) {
+                    VStack(spacing: AppSizes.Space.tight * unit) {
                         Image(systemName: "play.fill")
-                            .font(.system(size: 4.4 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                         Text("Go")
-                            .font(.system(size: 3.4 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     }
                     .foregroundStyle(.black)
                 }
@@ -139,14 +139,14 @@ struct PlanRowView: View {
                 Spacer()
                 actionButton(width: smallButton, color: AppColors.cardAlt, action: onEdit) {
                     Image(systemName: "pencil")
-                        .font(.system(size: 4.6 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                         .foregroundStyle(AppColors.textPrimary)
                 }
                 .accessibilityLabel("Edit \(plan.name)")
 
                 actionButton(width: smallButton, color: AppColors.red, action: onDelete) {
                     Image(systemName: "trash")
-                        .font(.system(size: 4.6 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                         .foregroundStyle(.white)
                 }
                 .accessibilityLabel("Delete \(plan.name)")
@@ -177,24 +177,24 @@ struct PlanRowView: View {
 
     // MARK: The card: icon, name and summary
     private var card: some View {
-        HStack(spacing: 3 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
 
             // Square with the icon, in the color of the plan
             Image(systemName: plan.icon)
-                .font(.system(size: 5 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                 .foregroundStyle(plan.color)
                 .frame(width: 10 * unit, height: 10 * unit)
-                .background(plan.color.opacity(0.25), in: RoundedRectangle(cornerRadius: 2.5 * unit))
+                .background(plan.color.opacity(0.25), in: RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
 
-            VStack(alignment: .leading, spacing: 0.5 * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text(plan.name)
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
                 Text(plan.details)
-                    .font(.system(size: 3.4 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -204,7 +204,7 @@ struct PlanRowView: View {
         }
         .padding(3 * unit)
         .frame(height: rowHeight)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .contentShape(Rectangle())
     }
 
@@ -254,7 +254,7 @@ struct PlanRowView: View {
         } label: {
             label()
                 .frame(width: width, height: rowHeight)
-                .background(color, in: RoundedRectangle(cornerRadius: 5 * unit))
+                .background(color, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         }
         .buttonStyle(.plain)
     }

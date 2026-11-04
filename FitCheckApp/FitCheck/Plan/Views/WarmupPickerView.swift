@@ -33,16 +33,16 @@ struct WarmupPickerView: View {
             let unit = geo.size.width / 100   // 1% of the screen width
 
             VStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 2 * unit) {
+                VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
                     topBar(unit: unit)
 
                     HStack {
                         Text(viewModel.title)
-                            .font(.system(size: 8 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.display * unit, weight: .bold))
                             .foregroundStyle(AppColors.textPrimary)
                         Spacer()
                         Text(viewModel.countText)
-                            .font(.system(size: 3 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                             .foregroundStyle(viewModel.canFinish ? Color.black : AppColors.textPrimary)
                             .padding(.horizontal, 2.2 * unit)
                             .frame(height: 6 * unit)
@@ -54,7 +54,7 @@ struct WarmupPickerView: View {
                 .padding(.top, 4 * unit)
 
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 3 * unit) {
+                    LazyVStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
                         ForEach(viewModel.items, id: \.id) { item in
                             row(item, unit: unit)
                         }
@@ -73,10 +73,10 @@ struct WarmupPickerView: View {
 
     // The round back button and the name of the plan with its color
     private func topBar(unit: CGFloat) -> some View {
-        HStack(spacing: 3.5 * unit) {
+        HStack(spacing: AppSizes.Space.section * unit) {
             Button(action: { dismiss() }) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 4.6 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(AppColors.textPrimary)
                     .frame(width: 11.5 * unit, height: 11.5 * unit)
                     .background(AppColors.card, in: Circle())
@@ -90,7 +90,7 @@ struct WarmupPickerView: View {
                 .frame(width: 3 * unit, height: 3 * unit)
 
             Text(label.uppercased())
-                .font(.system(size: 3 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .tracking(0.4 * unit)
                 .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
@@ -106,20 +106,20 @@ struct WarmupPickerView: View {
         let isAllowed = viewModel.canToggle(item)
 
         return Button(action: { viewModel.toggle(item) }) {
-            HStack(spacing: 3.2 * unit) {
+            HStack(spacing: AppSizes.Space.group * unit) {
                 ExerciseImageView(paths: viewModel.images(of: item))
                     .frame(width: 17 * unit, height: 17 * unit)
-                    .clipShape(RoundedRectangle(cornerRadius: 3.6 * unit))
+                    .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
 
-                VStack(alignment: .leading, spacing: 0.8 * unit) {
+                VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                     Text(item.name)
-                        .font(.system(size: 4.6 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(2)
                         .minimumScaleFactor(0.8)
 
                     Text(item.muscle.capitalized)
-                        .font(.system(size: 3.6 * unit, weight: .regular))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
                         .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)
                 }
@@ -130,9 +130,9 @@ struct WarmupPickerView: View {
             }
             .padding(.horizontal, 3 * unit)
             .padding(.vertical, 2.8 * unit)
-            .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+            .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
             .overlay(
-                RoundedRectangle(cornerRadius: 5 * unit)
+                RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit)
                     .stroke(accent, lineWidth: isSelected ? 0.5 * unit : 0)
             )
         }
@@ -145,7 +145,7 @@ struct WarmupPickerView: View {
     // The round button: plus (black) to add, check (plan color) when chosen
     private func addButton(isSelected: Bool, isBlocked: Bool, unit: CGFloat) -> some View {
         Image(systemName: isSelected ? "checkmark" : "plus")
-            .font(.system(size: 4.6 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
             .foregroundStyle(isSelected ? Color.black : AppColors.background)
             .frame(width: 11 * unit, height: 11 * unit)
             .background(isSelected ? accent : AppColors.textPrimary, in: Circle())
@@ -159,10 +159,10 @@ struct WarmupPickerView: View {
         }) {
             HStack {
                 Text(viewModel.doneTitle)
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                 Spacer()
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(viewModel.canFinish ? AppColors.textPrimary : AppColors.textSecondary)
                     .frame(width: 11 * unit, height: 11 * unit)
                     .background(AppColors.background, in: Circle())

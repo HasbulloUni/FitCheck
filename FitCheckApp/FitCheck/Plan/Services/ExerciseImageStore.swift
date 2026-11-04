@@ -54,9 +54,9 @@ actor ExerciseImageStore {
 
     // Downloads the photos in the background (e.g. all the exercises of today's plan),
     // so in the gym the screen does not wait for the network. Errors are ignored.
-    func prefetch(_ paths: [String]) async {
+    /* UNUSED (commented out, 4 Nov 2026) func prefetch(_ paths: [String]) async {
         for path in paths {
             _ = try? await image(for: path)
         }
-    }
+    } */
 }

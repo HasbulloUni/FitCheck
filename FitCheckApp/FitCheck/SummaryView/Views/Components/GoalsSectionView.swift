@@ -18,11 +18,11 @@ struct GoalsSectionView: View {
     let unit: CGFloat
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
 
             // Title
             Text("Goals")
-                .font(.system(size: 6 * unit, weight: .heavy))
+                .font(.system(size: AppSizes.Text.title * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)
 
             // Week goals
@@ -43,7 +43,7 @@ struct GoalsRowView: View {
     let unit: CGFloat
 
     var body: some View {
-        HStack(spacing: 2 * unit) {
+        HStack(spacing: AppSizes.Space.related * unit) {
             ForEach(goals) { goal in
                 GoalCardView(goal: goal, unit: unit)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -60,20 +60,20 @@ struct GoalCardView: View {
     let unit: CGFloat
 
     var body: some View {
-        VStack(spacing: 1.8 * unit) {
+        VStack(spacing: AppSizes.Space.related * unit) {
             GoalRingView(
                 progress: goal.progress,
                 color: goal.color,
                 centerText: goal.centerText,
                 size: 13 * unit,
                 lineWidth: 1.4 * unit,
-                fontSize: 3.4 * unit,
+                fontSize: AppSizes.Text.small * unit,
                 caption: nil
             )
 
             // Only the name of the goal
             Text(goal.title)
-                .font(.system(size: 3.1 * unit, weight: .heavy))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -81,7 +81,7 @@ struct GoalCardView: View {
         .padding(.vertical, 3 * unit)
         .padding(.horizontal, 1.5 * unit)
         .frame(maxWidth: .infinity, maxHeight: .infinity)   // all cards get the same size
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 }
 
@@ -96,7 +96,7 @@ struct AddGoalCardView: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 3 * unit) {
+            HStack(spacing: AppSizes.Space.group * unit) {
 
                 // Dashed circle with a plus in the middle
                 ZStack {
@@ -107,20 +107,20 @@ struct AddGoalCardView: View {
                         )
 
                     Image(systemName: "plus")
-                        .font(.system(size: 4.5 * unit, weight: .medium))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .medium))
                         .foregroundStyle(AppColors.textSecondary)
                 }
                 .frame(width: 11 * unit, height: 11 * unit)
 
-                VStack(alignment: .leading, spacing: 0.5 * unit) {
+                VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                     Text(title)
-                        .font(.system(size: 4.2 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
 
                     Text(subtitle)
-                        .font(.system(size: 3.4 * unit, weight: .regular))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                         .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
@@ -128,7 +128,7 @@ struct AddGoalCardView: View {
             }
             .padding(3 * unit)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+            .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         }
     }
 }

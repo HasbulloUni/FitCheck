@@ -114,33 +114,33 @@ final class EditWeekViewModel {
     // The durations shown as buttons: they come from EditWeekRules.durations
     var durations: [Int] { EditWeekRules.durations }
 
-    func isSelectedDuration(_ minutes: Int) -> Bool {
+    /* UNUSED (commented out, 4 Nov 2026) func isSelectedDuration(_ minutes: Int) -> Bool {
         draft.durationMinutes == minutes
-    }
+    } */
 
-    func selectDuration(_ minutes: Int) {
+    /* UNUSED (commented out, 4 Nov 2026) func selectDuration(_ minutes: Int) {
         draft.durationMinutes = minutes
-    }
+    } */
 
     // MARK: - Notes under the reminder card
     // They change with the number of days and the length of the session.
 
     // First note, e.g. "3 days picked. 60 minutes is the shortest that covers the whole body."
-    var daysNote: String {
+    /* UNUSED (commented out, 4 Nov 2026) var daysNote: String {
         let days = workoutDayCount == 1 ? "1 day picked." : "\(workoutDayCount) days picked."
         if draft.durationMinutes == EditWeekRules.durations.first {
             return "\(days) \(draft.durationMinutes) minutes is the shortest that covers the whole body."
         }
         return "\(days) \(draft.durationMinutes) minutes leaves room for extra exercises."
-    }
+    } */
 
     // Second note: shown with 3 days or fewer, nil otherwise
-    var fewDaysNote: String? {
+    /* UNUSED (commented out, 4 Nov 2026) var fewDaysNote: String? {
         if workoutDayCount <= 3 {
             return "Fewer than 3 days? That is fine, 2 works too. We suggest 3 for steady progress."
         }
         return nil
-    }
+    } */
 
     // MARK: - Reminder times
 

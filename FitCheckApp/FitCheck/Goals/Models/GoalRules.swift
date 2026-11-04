@@ -21,7 +21,7 @@ enum GoalRules {
     static let muscleGroups = 6           // Muscle coverage: chest, back, legs, shoulders, arms, core
 
     // What makes a workout a "strength session" (all three must be true)
-    static let strengthMinExercises = 3   // at least 3 strength exercises, each with one set done
-    static let strengthMinMinutes = 15    // at least 15 minutes long
+    /* UNUSED (commented out, 4 Nov 2026) static let strengthMinExercises = 3   // at least 3 strength exercises, each with one set done */
+    /* UNUSED (commented out, 4 Nov 2026) static let strengthMinMinutes = 15    // at least 15 minutes long */
     // Also: the workout must be finished, and two workouts in the same day count as one day
 }

@@ -31,7 +31,7 @@ struct EditWeekView: View {
 
             VStack(spacing: 0) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 3 * unit) {
+                    VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
                         backButton(unit: unit)
 
                         header(unit: unit)
@@ -59,7 +59,7 @@ struct EditWeekView: View {
     private func backButton(unit: CGFloat) -> some View {
         Button(action: onBack) {
             Image(systemName: "chevron.left")
-                .font(.system(size: 4 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                 .foregroundStyle(AppColors.textPrimary)
                 .frame(width: 12 * unit, height: 12 * unit)
                 .background(AppColors.card, in: Circle())
@@ -71,13 +71,13 @@ struct EditWeekView: View {
     // The title
     private func header(unit: CGFloat) -> some View {
         Text(EditWeekRules.title)
-            .font(.system(size: 9 * unit, weight: .heavy))
+            .font(.system(size: AppSizes.Text.hero * unit, weight: .heavy))
             .foregroundStyle(AppColors.textPrimary)
     }
 
     // "Which days? Pick 2 to 5" and the seven circles
     private func daysSection(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 3 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
             sectionTitle(EditWeekRules.daysQuestion, unit: unit)
 
             DayCirclesRow(
@@ -90,7 +90,7 @@ struct EditWeekView: View {
 
     // "Plan rotation" and the card with one row for each training day
     private func rotationSection(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 3 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
             sectionTitle(EditWeekRules.rotationQuestion, unit: unit)
 
             RotationCardView(
@@ -104,7 +104,7 @@ struct EditWeekView: View {
 
     // "When do you wanna start?" and the "Remind me" card
     private func reminderSection(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 3 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
             sectionTitle(EditWeekRules.startQuestion, unit: unit)
 
             ReminderCard(
@@ -122,7 +122,7 @@ struct EditWeekView: View {
     private func saveButton(unit: CGFloat) -> some View {
         Button(action: { onSave(viewModel.draft) }) {
             Text(EditWeekRules.saveButton)
-                .font(.system(size: 4.6 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                 .foregroundStyle(AppColors.background)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 4.5 * unit)
@@ -139,7 +139,7 @@ struct EditWeekView: View {
     // The bold title of a section
     private func sectionTitle(_ text: String, unit: CGFloat) -> some View {
         Text(text)
-            .font(.system(size: 4.4 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
             .foregroundStyle(AppColors.textPrimary)
     }
 }

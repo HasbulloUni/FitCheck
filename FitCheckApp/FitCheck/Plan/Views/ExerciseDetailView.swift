@@ -41,23 +41,23 @@ struct ExerciseDetailView: View {
             photo(exercise, unit: unit)
 
             Text(viewModel.displayName(of: exercise.item))
-                .font(.system(size: 6.6 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
                 .padding(.top, 3.5 * unit)
 
             Text(viewModel.kindText(exercise.item))
-                .font(.system(size: 3.6 * unit, weight: .regular))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
                 .foregroundStyle(AppColors.textSecondary)
 
             settingsCard(exercise, unit: unit)
                 .padding(.top, 3.5 * unit)
 
             if viewModel.hasRampUp(exercise) {
-                HStack(alignment: .top, spacing: 2 * unit) {
+                HStack(alignment: .top, spacing: AppSizes.Space.related * unit) {
                     Image(systemName: "info.circle")
-                        .font(.system(size: 3.6 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                     Text("Before this one, 2 ramp-up sets are added for you: \(viewModel.rampUpText).")
-                        .font(.system(size: 3.2 * unit, weight: .regular))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                 }
                 .foregroundStyle(AppColors.textSecondary)
                 .padding(.top, 3 * unit)
@@ -71,14 +71,18 @@ struct ExerciseDetailView: View {
     // The photo of the exercise (downloaded the first time), with the equipment on top
     private func photo(_ exercise: ChosenExercise, unit: CGFloat) -> some View {
         ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: 5.5 * unit)
+            RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit)
                 .fill(viewModel.color.opacity(0.3))
 
-            ExerciseImageView(paths: viewModel.images(of: exercise))
+            // The empty frame gives the size; the photo is drawn on top and cropped to it,
+            // so a wide photo can never push the sheet wider than the screen
+            Color.clear
                 .frame(height: 38 * unit)
                 .frame(maxWidth: .infinity)
+                .overlay { ExerciseImageView(paths: viewModel.images(of: exercise)) }
+                .clipped()
 
-            HStack(spacing: 1.5 * unit) {
+            HStack(spacing: AppSizes.Space.related * unit) {
                 if viewModel.hasRampUp(exercise) {
                     photoChip("Ramp-up sets", unit: unit)
                 }
@@ -88,12 +92,12 @@ struct ExerciseDetailView: View {
             .padding(3 * unit)
         }
         .frame(height: 42 * unit)
-        .clipShape(RoundedRectangle(cornerRadius: 5.5 * unit))
+        .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
     }
 
     private func photoChip(_ text: String, unit: CGFloat) -> some View {
         Text(text)
-            .font(.system(size: 3 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
             .foregroundStyle(Color.black)
             .padding(.horizontal, 2.6 * unit)
             .frame(height: 6.5 * unit)
@@ -104,11 +108,11 @@ struct ExerciseDetailView: View {
     private func settingsCard(_ exercise: ChosenExercise, unit: CGFloat) -> some View {
         VStack(spacing: 0) {
             settingRow("Sets", unit: unit) {
-                HStack(spacing: 2.5 * unit) {
+                HStack(spacing: AppSizes.Space.group * unit) {
                     stepButton("minus", label: "Fewer sets", exercise: exercise, step: -1, unit: unit)
 
                     Text("\(exercise.sets)")
-                        .font(.system(size: 4.4 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .frame(width: 5 * unit)
 
@@ -121,26 +125,26 @@ struct ExerciseDetailView: View {
             settingRow("Rest", unit: unit) { valueText(viewModel.restText(exercise), unit: unit) }
             divider(unit: unit)
 
-            VStack(alignment: .leading, spacing: 1 * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text("Effort")
-                    .font(.system(size: 3.8 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
                 Text(viewModel.effortText(exercise))
-                    .font(.system(size: 3.8 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 3 * unit)
         }
         .padding(.horizontal, 4 * unit)
-        .background(AppColors.background, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.background, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     private func settingRow<Value: View>(_ title: String, unit: CGFloat,
                                          @ViewBuilder value: () -> Value) -> some View {
         HStack {
             Text(title)
-                .font(.system(size: 3.8 * unit, weight: .regular))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
                 .foregroundStyle(AppColors.textSecondary)
             Spacer()
             value()
@@ -150,7 +154,7 @@ struct ExerciseDetailView: View {
 
     private func valueText(_ text: String, unit: CGFloat) -> some View {
         Text(text)
-            .font(.system(size: 3.8 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
             .foregroundStyle(AppColors.textPrimary)
     }
 
@@ -167,7 +171,7 @@ struct ExerciseDetailView: View {
 
         return Button(action: { viewModel.changeSets(of: exercise, by: step) }) {
             Image(systemName: icon)
-                .font(.system(size: 3.4 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
                 .frame(width: 8 * unit, height: 8 * unit)
                 .background(AppColors.card, in: Circle())
@@ -181,10 +185,10 @@ struct ExerciseDetailView: View {
 
     // "Remove from plan" (red text) and the black "Done"
     private func buttons(_ exercise: ChosenExercise, unit: CGFloat) -> some View {
-        HStack(spacing: 2.5 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
             Button(action: { withAnimation { viewModel.removeExercise(exercise) } }) {
                 Text("Remove from plan")
-                    .font(.system(size: 4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.red)
                     .frame(maxWidth: .infinity)
                     .frame(height: 14 * unit)
@@ -195,7 +199,7 @@ struct ExerciseDetailView: View {
 
             Button(action: { dismiss() }) {
                 Text("Done")
-                    .font(.system(size: 4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.background)
                     .frame(width: 32 * unit, height: 14 * unit)
                     .background(AppColors.textPrimary, in: Capsule())

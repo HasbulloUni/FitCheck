@@ -8,43 +8,17 @@
 import Foundation
 
 // MARK: - Step 1: the exercises this user can get
-// Keeps only safe exercises with a level that fits the user.
+// The unsafe exercises are already removed from exercises.json.
+// Here we keep only the ones with a level that fits the user.
 enum ExercisePool {
 
-    // Words that remove an exercise: technical, power or with a doubtful label. To review by hand.
-    private static let excludedWords = [
-        "pullover", "sprint", "rotation", "windmill", "clean", "jerk", "snatch", "swing",
-        "pirate", "hip flexion", "pistol", "bradford", "jump", "pass through"
-    ]
-
-    static func filter(catalog: ExerciseCatalog, category: PlanCategory, level: PlanLevel,
-                       hasBar: Bool) -> [CatalogItem] {
+    static func filter(catalog: ExerciseCatalog, level: PlanLevel) -> [CatalogItem] {
         var pool: [CatalogItem] = []
 
         for item in catalog.items {
-            if CatalogBuilder.excludedIds.contains(item.id) { continue }
             if !level.allowedExerciseLevels.contains(item.level) { continue }
 
-            let lowerName = item.name.lowercased()
-            var hasExcludedWord = false
-            for word in excludedWords where lowerName.contains(word) {
-                hasExcludedWord = true
-            }
-            if hasExcludedWord { continue }
-
-            // Calisthenics: only exercises with no equipment
-            if category == .calisthenics && item.equipment != "Bodyweight" { continue }
-
             pool.append(item)
-        }
-
-        // Calisthenics also gets the exercises added by hand
-        if category == .calisthenics {
-            for extra in CatalogBuilder.calisthenicsExtras {
-                if !level.allowedExerciseLevels.contains(extra.level) { continue }
-                if extra.needsBar && !hasBar { continue }
-                pool.append(extra)
-            }
         }
 
         return pool

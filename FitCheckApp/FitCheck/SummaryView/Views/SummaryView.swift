@@ -22,7 +22,7 @@ struct SummaryView: View {
             let unit = geo.size.width / 100   // 1% of the screen width
 
             ScrollView {
-                VStack(spacing: 4 * unit) {
+                VStack(spacing: AppSizes.Space.section * unit) {
                     HomeHeaderView(
                         name: viewModel.userName,
                         doneThisWeek: viewModel.doneThisWeek,

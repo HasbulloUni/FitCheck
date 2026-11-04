@@ -22,10 +22,10 @@ struct ReminderCard: View {
     private let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     var body: some View {
-        VStack(spacing: 2.5 * unit) {
+        VStack(spacing: AppSizes.Space.group * unit) {
             HStack {
                 Text(EditWeekRules.remindMe)
-                    .font(.system(size: 4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
@@ -39,7 +39,7 @@ struct ReminderCard: View {
             // Switch on but no training day yet: a short hint instead of an empty card
             if remindMe && reminders.isEmpty {
                 Text(EditWeekRules.noDaysHint)
-                    .font(.system(size: 3.4 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -58,7 +58,7 @@ struct ReminderCard: View {
         }
         .padding(.horizontal, 4 * unit)
         .padding(.vertical, 3 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 6 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
         // The list of times appears and disappears smoothly with the switch
         .animation(.easeInOut(duration: 0.25), value: remindMe)
     }

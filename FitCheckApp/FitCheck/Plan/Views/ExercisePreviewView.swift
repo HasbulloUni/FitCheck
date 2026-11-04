@@ -30,7 +30,7 @@ struct ExercisePreviewView: View {
                     photos(details?.images ?? [], unit: unit)
 
                     Text(viewModel.name(of: item))
-                        .font(.system(size: 6.6 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .padding(.top, 3.5 * unit)
 
@@ -49,7 +49,7 @@ struct ExercisePreviewView: View {
 
                     if !viewModel.isSelected(item), let blocked = viewModel.blockedText(item) {
                         Text(blocked)
-                            .font(.system(size: 3.1 * unit, weight: .regular))
+                            .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                             .foregroundStyle(AppColors.textSecondary)
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
@@ -68,14 +68,14 @@ struct ExercisePreviewView: View {
 
     // The 2 photos of the movement (start and end), or a placeholder when the database has none
     private func photos(_ images: [String], unit: CGFloat) -> some View {
-        HStack(spacing: 2 * unit) {
+        HStack(spacing: AppSizes.Space.related * unit) {
             if images.isEmpty {
-                RoundedRectangle(cornerRadius: 5.5 * unit)
+                RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit)
                     .fill(AppColors.cardAlt)
                     .frame(height: 38 * unit)
                     .overlay(
                         Image(systemName: "figure.strengthtraining.traditional")
-                            .font(.system(size: 8 * unit))
+                            .font(.system(size: AppSizes.Text.display * unit))
                             .foregroundStyle(AppColors.textSecondary)
                     )
             } else {
@@ -84,7 +84,7 @@ struct ExercisePreviewView: View {
                         ExerciseImageView(paths: [path])
 
                         Text(index == 0 ? "START" : "END")
-                            .font(.system(size: 2.8 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 2.2 * unit)
                             .frame(height: 5.5 * unit)
@@ -92,7 +92,7 @@ struct ExercisePreviewView: View {
                             .padding(2 * unit)
                     }
                     .frame(height: 38 * unit)
-                    .clipShape(RoundedRectangle(cornerRadius: 4.5 * unit))
+                    .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
                 }
             }
         }
@@ -101,7 +101,7 @@ struct ExercisePreviewView: View {
     // The main muscle (filled), the secondary muscles, the equipment and the level
     private func tagsRow(_ details: ExercisePickerDetails?, unit: CGFloat) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 1.5 * unit) {
+            HStack(spacing: AppSizes.Space.related * unit) {
                 tag(item.muscle.capitalized, filled: true, unit: unit)
                 ForEach(details?.secondaryMuscles ?? [], id: \.self) { muscle in
                     tag(muscle.capitalized, filled: false, unit: unit)
@@ -115,7 +115,7 @@ struct ExercisePreviewView: View {
 
     private func tag(_ text: String, filled: Bool, unit: CGFloat) -> some View {
         Text(text)
-            .font(.system(size: 3 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
             .foregroundStyle(AppColors.textPrimary)
             .lineLimit(1)
             .padding(.horizontal, 2.6 * unit)
@@ -127,38 +127,38 @@ struct ExercisePreviewView: View {
     private func planRow(_ line: String, unit: CGFloat) -> some View {
         HStack {
             Text("In your plan")
-                .font(.system(size: 3.4 * unit, weight: .regular))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                 .foregroundStyle(AppColors.textSecondary)
             Spacer()
             Text(line)
-                .font(.system(size: 3.6 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
         }
         .padding(.horizontal, 3.5 * unit)
         .frame(height: 11 * unit)
-        .background(AppColors.background, in: RoundedRectangle(cornerRadius: 4.5 * unit))
+        .background(AppColors.background, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .padding(.top, 3 * unit)
     }
 
     // The steps: only the first 3 at first, with a button to show the rest
     private func stepsSection(_ steps: [String], unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2.5 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
             Text("HOW TO DO IT")
-                .font(.system(size: 2.8 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
                 .tracking(0.3 * unit)
                 .foregroundStyle(AppColors.textSecondary)
                 .padding(.top, 4 * unit)
 
             ForEach(Array((showsAllSteps ? steps : Array(steps.prefix(3))).enumerated()), id: \.offset) { index, step in
-                HStack(alignment: .top, spacing: 3 * unit) {
+                HStack(alignment: .top, spacing: AppSizes.Space.group * unit) {
                     Text("\(index + 1)")
-                        .font(.system(size: 3.2 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .frame(width: 6 * unit, height: 6 * unit)
-                        .background(accent.opacity(0.3), in: RoundedRectangle(cornerRadius: 2 * unit))
+                        .background(accent.opacity(0.3), in: RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
 
                     Text(step)
-                        .font(.system(size: 3.5 * unit, weight: .regular))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
                         .foregroundStyle(AppColors.textPrimary)
                 }
             }
@@ -166,7 +166,7 @@ struct ExercisePreviewView: View {
             if steps.count > 3 {
                 Button(action: { withAnimation { showsAllSteps.toggle() } }) {
                     Text(showsAllSteps ? "Show less" : "Show all \(steps.count) steps")
-                        .font(.system(size: 3.4 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                         .foregroundStyle(AppColors.muscleGreen)
                 }
                 .buttonStyle(.plain)
@@ -184,11 +184,11 @@ struct ExercisePreviewView: View {
             viewModel.toggle(item)
             if isSelected { dismiss() }
         }) {
-            HStack(spacing: 2 * unit) {
+            HStack(spacing: AppSizes.Space.related * unit) {
                 Image(systemName: isSelected ? "xmark" : "plus")
-                    .font(.system(size: 4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 Text(isSelected ? "Remove from \(viewModel.planName)" : "Add to \(viewModel.planName)")
-                    .font(.system(size: 4.2 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }

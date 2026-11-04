@@ -42,11 +42,11 @@ struct ExercisePickerView: View {
             let unit = geo.size.width / 100   // 1% of the screen width
 
             VStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 3 * unit) {
+                VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
                     topBar(unit: unit)
 
                     Text("Add exercises")
-                        .font(.system(size: 8 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.display * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .minimumScaleFactor(0.7)
                         .lineLimit(1)
@@ -95,10 +95,10 @@ struct ExercisePickerView: View {
 
     // The round back button and the name of the plan with its color
     private func topBar(unit: CGFloat) -> some View {
-        HStack(spacing: 3.5 * unit) {
+        HStack(spacing: AppSizes.Space.section * unit) {
             Button(action: { dismiss() }) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 4.6 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(AppColors.textPrimary)
                     .frame(width: 11.5 * unit, height: 11.5 * unit)
                     .background(AppColors.card, in: Circle())
@@ -112,7 +112,7 @@ struct ExercisePickerView: View {
                 .frame(width: 3 * unit, height: 3 * unit)
 
             Text(label.uppercased())
-                .font(.system(size: 3 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .tracking(0.4 * unit)
                 .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
@@ -123,9 +123,9 @@ struct ExercisePickerView: View {
 
     // The search field: a white rounded bar with a magnifier and a clear button
     private func searchField(text: Binding<String>, unit: CGFloat) -> some View {
-        HStack(spacing: 2.5 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 4.2 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                 .foregroundStyle(AppColors.textSecondary)
 
             TextField(
@@ -134,7 +134,7 @@ struct ExercisePickerView: View {
                 prompt: Text("Search \(viewModel.pool.count) exercises")
                     .foregroundStyle(AppColors.textSecondary)
             )
-            .font(.system(size: 4 * unit, weight: .regular))
+            .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
             .foregroundStyle(AppColors.textPrimary)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -142,7 +142,7 @@ struct ExercisePickerView: View {
             if !text.wrappedValue.isEmpty {
                 Button(action: { text.wrappedValue = "" }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 4.2 * unit))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit))
                         .foregroundStyle(AppColors.textSecondary)
                 }
                 .buttonStyle(.plain)
@@ -151,14 +151,14 @@ struct ExercisePickerView: View {
         }
         .padding(.horizontal, 4 * unit)
         .frame(height: 12.5 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 4.5 * unit))
-        .overlay(RoundedRectangle(cornerRadius: 4.5 * unit).stroke(AppColors.divider, lineWidth: 0.3 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
+        .overlay(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit).stroke(AppColors.divider, lineWidth: 0.3 * unit))
     }
 
     // "All" and one chip for each muscle group; the chosen one is black
     private func chipsRow(unit: CGFloat) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 2 * unit) {
+            HStack(spacing: AppSizes.Space.related * unit) {
                 chip(title: "All", isSelected: viewModel.selectedGroup == nil, unit: unit) {
                     viewModel.selectedGroup = nil
                 }
@@ -178,7 +178,7 @@ struct ExercisePickerView: View {
     private func chip(title: String, isSelected: Bool, unit: CGFloat, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 3.6 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
                 .padding(.horizontal, 4 * unit)
                 .frame(height: 9 * unit)
@@ -198,7 +198,7 @@ struct ExercisePickerView: View {
                 Text("MAX \(SafetyRules.maxExercisesPerMuscle) PER MUSCLE")
             }
         }
-        .font(.system(size: 2.8 * unit, weight: .bold))
+        .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
         .tracking(0.3 * unit)
         .foregroundStyle(AppColors.textSecondary)
         .padding(.horizontal, 1 * unit)
@@ -219,7 +219,7 @@ struct ExercisePickerView: View {
         // results end: ScrollViewReader lets us jump back to the top every time.
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 3 * unit) {
+                LazyVStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
                     Color.clear.frame(height: 0).id("top")
 
                     if viewModel.isBrowsing && !viewModel.selectedItems.isEmpty {
@@ -247,11 +247,11 @@ struct ExercisePickerView: View {
 
     // The exercises already chosen, as small removable chips
     private func inPlanSection(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
             sectionLabel("IN \(label.uppercased()) · \(viewModel.selectedCount)", unit: unit)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 2 * unit) {
+                HStack(spacing: AppSizes.Space.related * unit) {
                     ForEach(viewModel.selectedItems, id: \.id) { item in
                         inPlanChip(item, unit: unit)
                     }
@@ -263,19 +263,19 @@ struct ExercisePickerView: View {
     }
 
     private func inPlanChip(_ item: CatalogItem, unit: CGFloat) -> some View {
-        HStack(spacing: 1.5 * unit) {
+        HStack(spacing: AppSizes.Space.related * unit) {
             ExerciseImageView(paths: Array((viewModel.details(for: item)?.images ?? []).prefix(1)))
                 .frame(width: 7.5 * unit, height: 7.5 * unit)
                 .clipShape(Circle())
 
             Text(viewModel.name(of: item))
-                .font(.system(size: 3.3 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
 
             Button(action: { viewModel.toggle(item) }) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 2.6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
                     .foregroundStyle(AppColors.textSecondary)
                     .frame(width: 6 * unit, height: 6 * unit)
                     .background(AppColors.cardAlt, in: Circle())
@@ -292,7 +292,7 @@ struct ExercisePickerView: View {
 
     // Exercises for the muscles the day does not train yet
     private func suggestedSection(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
             sectionLabel("SUGGESTED · NOT TRAINED YET", unit: unit)
 
             ForEach(viewModel.suggestedItems, id: \.id) { item in
@@ -303,7 +303,7 @@ struct ExercisePickerView: View {
 
     // The results of the search or the filter, or a message when nothing matches
     private func resultsSection(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
             if viewModel.visibleItems.isEmpty {
                 noResults(unit: unit)
             } else {
@@ -319,7 +319,7 @@ struct ExercisePickerView: View {
 
     private func sectionLabel(_ text: String, unit: CGFloat) -> some View {
         Text(text)
-            .font(.system(size: 2.8 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
             .tracking(0.3 * unit)
             .foregroundStyle(AppColors.textSecondary)
             .padding(.horizontal, 1 * unit)
@@ -327,35 +327,35 @@ struct ExercisePickerView: View {
 
     // Explains why every exercise shown is blocked, e.g. "Quadriceps is full: 4 of 4."
     private func fullBanner(_ text: String, unit: CGFloat) -> some View {
-        HStack(alignment: .top, spacing: 2.5 * unit) {
+        HStack(alignment: .top, spacing: AppSizes.Space.group * unit) {
             Image(systemName: "info.circle")
-                .font(.system(size: 4 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
             Text(text)
-                .font(.system(size: 3.2 * unit, weight: .regular))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
         }
         .foregroundStyle(AppColors.textPrimary)
         .padding(3 * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 4.5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     // Nothing matched the search: explains why (when it is worth it) and offers close matches
     private func noResults(unit: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 3 * unit) {
-            VStack(spacing: 1.5 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
+            VStack(spacing: AppSizes.Space.related * unit) {
                 Image(systemName: "shield")
-                    .font(.system(size: 6 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.title * unit, weight: .regular))
                     .foregroundStyle(AppColors.textPrimary)
                     .frame(width: 16 * unit, height: 16 * unit)
                     .background(AppColors.card, in: Circle())
 
                 Text("No results for “\(viewModel.searchText)”")
-                    .font(.system(size: 4.6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                     .multilineTextAlignment(.center)
 
                 Text(viewModel.noResultsNote ?? "Try another word or another muscle.")
-                    .font(.system(size: 3.4 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -379,22 +379,22 @@ struct ExercisePickerView: View {
         let isSelected = viewModel.isSelected(item)
         let blockedText = viewModel.blockedText(item)   // nil = it can be added
 
-        return HStack(spacing: 3.2 * unit) {
+        return HStack(spacing: AppSizes.Space.group * unit) {
             Button(action: { viewModel.previewItem = item }) {
-                HStack(spacing: 3.2 * unit) {
+                HStack(spacing: AppSizes.Space.group * unit) {
                     ExerciseImageView(paths: viewModel.details(for: item)?.images ?? [])
                         .frame(width: 17 * unit, height: 17 * unit)
-                        .clipShape(RoundedRectangle(cornerRadius: 3.6 * unit))
+                        .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
 
-                    VStack(alignment: .leading, spacing: 0.8 * unit) {
+                    VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                         Text(viewModel.name(of: item))
-                            .font(.system(size: 4.6 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                             .foregroundStyle(AppColors.textPrimary)
                             .lineLimit(2)
                             .minimumScaleFactor(0.8)
 
                         Text(blockedText ?? viewModel.detailText(item))
-                            .font(.system(size: 3.6 * unit, weight: .regular))
+                            .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
                             .foregroundStyle(AppColors.textSecondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
@@ -411,9 +411,9 @@ struct ExercisePickerView: View {
         }
         .padding(.horizontal, 3 * unit)
         .padding(.vertical, 2.8 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .overlay(
-            RoundedRectangle(cornerRadius: 5 * unit)
+            RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit)
                 .stroke(accent, lineWidth: isSelected ? 0.5 * unit : 0)
         )
         .opacity(blockedText == nil || isSelected ? 1 : 0.45)
@@ -431,7 +431,7 @@ struct ExercisePickerView: View {
                     Image(systemName: "plus").foregroundStyle(AppColors.background)
                 }
             }
-            .font(.system(size: 4.6 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
             .frame(width: 11 * unit, height: 11 * unit)
             .background(
                 isSelected ? accent : (isBlocked ? AppColors.cardAlt : AppColors.textPrimary),
@@ -450,7 +450,7 @@ struct ExercisePickerView: View {
     private func undoToast(_ change: (item: CatalogItem, added: Bool), unit: CGFloat) -> some View {
         HStack {
             Text("\(viewModel.name(of: change.item)) \(change.added ? "added" : "removed")")
-                .font(.system(size: 3.8 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(AppColors.background)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -459,7 +459,7 @@ struct ExercisePickerView: View {
 
             Button(action: { withAnimation { viewModel.undoRecentChange() } }) {
                 Text("Undo")
-                    .font(.system(size: 3.6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                     .padding(.horizontal, 4 * unit)
                     .frame(height: 9.5 * unit)
@@ -470,21 +470,21 @@ struct ExercisePickerView: View {
         .padding(.leading, 4.5 * unit)
         .padding(.trailing, 2 * unit)
         .frame(height: 13 * unit)
-        .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: 4.5 * unit))
+        .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     // MARK: - Bottom: "N selected", the minutes and "Done"
 
     // "5 selected", "about 42 of 60 min" and the black "Done" button, in a white bar at the bottom
     private func bottomBar(unit: CGFloat) -> some View {
-        HStack(spacing: 3 * unit) {
-            VStack(alignment: .leading, spacing: 0.5 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text(viewModel.selectedText)
-                    .font(.system(size: 4.2 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Text(viewModel.minutesText)
-                    .font(.system(size: 3.3 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
             }
 
@@ -495,7 +495,7 @@ struct ExercisePickerView: View {
                 dismiss()
             }) {
                 Text("Done")
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.background)
                     .frame(width: 35 * unit, height: 14 * unit)
                     .background(AppColors.textPrimary, in: Capsule())

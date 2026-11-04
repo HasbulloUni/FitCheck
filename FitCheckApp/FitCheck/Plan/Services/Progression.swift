@@ -29,7 +29,7 @@ struct ProgressionAdvice {
 // - one thing at a time: more load OR more repetitions, never both.
 enum Progression {
 
-    static func nextTarget(results: [Int], repsMin: Int, repsMax: Int, isBodyweight: Bool,
+    /* UNUSED (commented out, 4 Nov 2026) static func nextTarget(results: [Int], repsMin: Int, repsMax: Int, isBodyweight: Bool,
                            weeksAtTop: Int, sessionsSinceStart: Int, daysSinceLast: Int) -> ProgressionAdvice {
 
         if daysSinceLast > SafetyRules.longBreakDays {
@@ -52,19 +52,19 @@ enum Progression {
         }
         return ProgressionAdvice(action: .sameLoad, percent: 0, loadFactor: 1,
                                  targetReps: min(lowest + 1, repsMax))
-    }
+    } */
 
     // A warning (never a block) when the user sets a load more than 10% over the last one
-    static func loadJumpWarning(previousLoad: Double, newLoad: Double) -> String? {
+    /* UNUSED (commented out, 4 Nov 2026) static func loadJumpWarning(previousLoad: Double, newLoad: Double) -> String? {
         let limit = previousLoad * (1 + SafetyRules.maxLoadIncreasePercent / 100)
         if previousLoad > 0 && newLoad > limit {
             return SafetyRules.bigLoadJumpWarning
         }
         return nil
-    }
+    } */
 
     // A lighter week is proposed (never forced) every 5 weeks
-    static func isLightWeekDue(weeksSinceLastLightWeek: Int) -> Bool {
+    /* UNUSED (commented out, 4 Nov 2026) static func isLightWeekDue(weeksSinceLastLightWeek: Int) -> Bool {
         weeksSinceLastLightWeek >= SafetyRules.lightWeekEveryWeeks
-    }
+    } */
 }

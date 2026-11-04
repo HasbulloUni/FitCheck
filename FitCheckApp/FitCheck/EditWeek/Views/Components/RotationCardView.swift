@@ -25,14 +25,14 @@ struct RotationCardView: View {
             // Title row: "This week's rotation" and how many plans
             HStack {
                 Text(EditWeekRules.rotationCardTitle)
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
 
                 if !rows.isEmpty {
                     Text(rows.count == 1 ? "1 plan" : "\(rows.count) plans")
-                        .font(.system(size: 3.3 * unit, weight: .regular))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                         .foregroundStyle(AppColors.textSecondary)
                 }
             }
@@ -41,12 +41,12 @@ struct RotationCardView: View {
             if rows.isEmpty {
                 // No training day picked yet
                 Text(EditWeekRules.rotationNoDaysHint)
-                    .font(.system(size: 3.6 * unit, weight: .medium))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                     .foregroundStyle(AppColors.textSecondary)
             } else if plans.isEmpty {
                 // Days picked but no plan created yet
                 Text(EditWeekRules.rotationNoPlansHint)
-                    .font(.system(size: 3.6 * unit, weight: .medium))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                     .foregroundStyle(AppColors.textSecondary)
             } else {
                 ForEach(Array(rows.enumerated()), id: \.element.id) { position, row in
@@ -64,27 +64,27 @@ struct RotationCardView: View {
         }
         .padding(4 * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 6 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
     }
 
     // One row: circle, plan and day, "Change"
     private func rowView(_ row: RotationRowItem) -> some View {
-        HStack(spacing: 3 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
             Text("\(row.number)")
-                .font(.system(size: 4.2 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                 .foregroundStyle(row.plan == nil ? AppColors.textSecondary : .white)
                 .frame(width: 12.5 * unit, height: 12.5 * unit)
                 .background(row.plan?.color ?? AppColors.cardAlt, in: Circle())
 
-            VStack(alignment: .leading, spacing: 0.5 * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text(row.plan?.name ?? EditWeekRules.rotationEmptyPlan)
-                    .font(.system(size: 4.2 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(row.plan == nil ? AppColors.textSecondary : AppColors.textPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
                 Text(row.dayName)
-                    .font(.system(size: 3.4 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
             }
 
@@ -115,7 +115,7 @@ struct RotationCardView: View {
             }
         } label: {
             Text(row.plan == nil ? EditWeekRules.rotationChoose : EditWeekRules.rotationChange)
-                .font(.system(size: 3.8 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
                 .padding(.horizontal, 5 * unit)
                 .padding(.vertical, 2.8 * unit)

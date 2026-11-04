@@ -85,6 +85,9 @@ final class ExercisePickerViewModel {
     // Why an exercise cannot be added now, e.g. "Quadriceps is full · max 4" (nil = it can be added)
     func blockedText(_ item: CatalogItem) -> String? {
         if canToggle(item) { return nil }
+        if isOverTime && !isSelected(item) {
+            return "Over \(targetMinutes ?? 0) min: remove one to add another"
+        }
         if selectedIds.count >= SafetyRules.maxExercisesPerSession {
             return "Max \(SafetyRules.maxExercisesPerSession) exercises in one day"
         }
@@ -111,6 +114,8 @@ final class ExercisePickerViewModel {
     func canToggle(_ item: CatalogItem) -> Bool {
         if isSelected(item) { return true }
         if selectedIds.count >= SafetyRules.maxExercisesPerSession { return false }
+        // The last exercise may go over the chosen minutes, but then no more can be added
+        if isOverTime { return false }
         return picked(forMuscle: item.muscle) < SafetyRules.maxExercisesPerMuscle
     }
 
@@ -140,9 +145,9 @@ final class ExercisePickerViewModel {
     }
 
     // True when no more exercises can be added
-    var isLimitReached: Bool {
+    /* UNUSED (commented out, 4 Nov 2026) var isLimitReached: Bool {
         selectedIds.count >= SafetyRules.maxExercisesPerSession
-    }
+    } */
 
     // MARK: "Suggested · not trained yet"
 
@@ -201,6 +206,10 @@ final class ExercisePickerViewModel {
             return "This day is full: \(maximum) of \(maximum) exercises. Remove one to add another."
         }
 
+        if isOverTime {
+            return "Over \(targetMinutes ?? 0) min: remove an exercise to add another."
+        }
+
         var muscles: [String] = []
         for item in visibleItems where !muscles.contains(item.muscle) { muscles.append(item.muscle) }
         let maximum = SafetyRules.maxExercisesPerMuscle
@@ -238,6 +247,12 @@ final class ExercisePickerViewModel {
             total += Prescription.minutes(isCompound: item.mechanic == "compound", sets: sets, goal: goal)
         }
         return Int(total.rounded())
+    }
+
+    // True when the session is already longer than the chosen 60 or 90 minutes
+    var isOverTime: Bool {
+        guard let target = targetMinutes else { return false }
+        return estimatedMinutes > target
     }
 
     // e.g. "about 42 of 60 min" (or "about 42 min" with no target)

@@ -20,7 +20,6 @@ final class AddPlanViewModel {
     var name = ""                       // empty = the suggested name is used
     var colorIndex: Int                 // position in PlanPalette.colors
     var minutes = EditWeekRules.defaultDuration   // 60 or 90
-    private(set) var category: PlanCategory = .gym
     private(set) var chosen: [ChosenExercise] = []   // the main part, in order
     private(set) var warmupMoves: [String] = []      // 0 or 1 exercise id (mandatory once picked)
     var hasCooldown = true
@@ -72,19 +71,10 @@ final class AddPlanViewModel {
         }
     }
 
-    // Puts the exercises and the sets of the saved plan back: the category is the one
-    // (Gym or Calisthenics) whose pool contains the exercises of the plan.
+    // Puts the exercises and the sets of the saved plan back.
     private func applySavedPlan() {
         guard let plan = planToLoad else { return }
         planToLoad = nil
-
-        category = .gym
-        for option in PlanCategory.allCases {
-            category = option
-            let allowedIds = pool.map { $0.id }
-            if plan.exerciseIds.allSatisfy({ allowedIds.contains($0) }) { break }
-            category = .gym   // no match yet: back to Gym if no category contains all of them
-        }
 
         var list: [ChosenExercise] = []
         for (position, id) in plan.exerciseIds.enumerated() {
@@ -123,22 +113,13 @@ final class AddPlanViewModel {
     // The 5 safe warm-up exercises, built once in loadCatalog
     private(set) var warmupItems: [CatalogItem] = []
 
-    // The safe exercises the user can pick for this category
+    // The safe exercises the user can pick (for the level)
     var pool: [CatalogItem] {
         guard let catalog = catalog else { return [] }
-        return ExercisePool.filter(catalog: catalog, category: category, level: level, hasBar: true)
+        return ExercisePool.filter(catalog: catalog, level: level)
     }
 
     // MARK: Actions
-
-    // Changing the category changes the pool: the exercises that are not in it are removed
-    func selectCategory(_ newCategory: PlanCategory) {
-        category = newCategory
-        let allowedIds = pool.map { $0.id }
-        chosen = chosen.filter { allowedIds.contains($0.id) }
-        lastRemoved = nil
-        keepValidWarmup()
-    }
 
     // The user pressed Done in "Add exercises".
     // The exercises already in the plan keep their sets, the new ones get the default sets.
@@ -203,7 +184,7 @@ final class AddPlanViewModel {
     }
 
     // The warm-up pool is fixed (the 5 ids of CatalogBuilder.warmupExerciseIds), so nothing
-    // to drop when the exercises of the day change. Kept so selectCategory/setExercises can call it.
+    // to drop when the exercises of the day change. Kept so setExercises can call it.
     private func keepValidWarmup() {}
 
     // MARK: Name, icon and color
@@ -246,9 +227,9 @@ final class AddPlanViewModel {
     // The color of this plan: the big header and the picked exercises use it
     var color: Color { PlanPalette.colors[colorIndex] }
 
-    // e.g. "NEW PLAN · GYM · 60 MIN"
+    // e.g. "NEW PLAN · 60 MIN"
     var headerLabel: String {
-        "\(isEditing ? "EDIT PLAN" : "NEW PLAN") · \(category.title.uppercased()) · \(minutes) MIN"
+        "\(isEditing ? "EDIT PLAN" : "NEW PLAN") · \(minutes) MIN"
     }
 
     // MARK: Warm-up

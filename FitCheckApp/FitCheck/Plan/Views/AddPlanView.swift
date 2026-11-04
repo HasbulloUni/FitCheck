@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 // The screen "Add your plan" (one training day), design "Color hero":
-//  - a big header in the color of the plan: name, Gym / Calisthenics, 60 / 90 min, color
+//  - a big header in the color of the plan: name, 60 / 90 min, color
 //  - the warm-up card (opens "Warm-up"), the main part with "+ Add" and the × of each exercise,
 //    the cool-down card with its switch
 //  - when the user scrolls, a small header with the minutes bar takes the place of the big one
@@ -51,7 +51,7 @@ struct AddPlanView: View {
                     VStack(spacing: 0) {
                         bigHeader(unit: unit, topInset: topInset)
 
-                        VStack(spacing: 2 * unit) {
+                        VStack(spacing: AppSizes.Space.related * unit) {
                             warmupCard(unit: unit)
                             mainPartTitle(unit: unit)
 
@@ -150,34 +150,32 @@ struct AddPlanView: View {
         @Bindable var viewModel = viewModel
 
         return VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 3.5 * unit) {
+            HStack(spacing: AppSizes.Space.section * unit) {
                 backButton(unit: unit)
 
                 Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
-                    .font(.system(size: 3 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .tracking(0.4 * unit)
                     .foregroundStyle(.black)
 
                 Spacer()
-
-                categorySwitch(unit: unit)
             }
 
             // The name: the suggested one is shown faded until the user writes one
-            HStack(spacing: 3 * unit) {
+            HStack(spacing: AppSizes.Space.group * unit) {
                 TextField(
                     "",
                     text: $viewModel.name,
                     prompt: Text(viewModel.suggestedName).foregroundStyle(.black.opacity(0.45))
                 )
-                .font(.system(size: 10.5 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.hero * unit, weight: .bold))
                 .foregroundStyle(.black)
                 .focused($isNameFocused)
                 .submitLabel(.done)
 
                 Button(action: { isNameFocused = true }) {
                     Image(systemName: "pencil")
-                        .font(.system(size: 4.2 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                         .foregroundStyle(.black)
                         .frame(width: 9.5 * unit, height: 9.5 * unit)
                         .background(.white.opacity(0.5), in: Circle())
@@ -190,12 +188,12 @@ struct AddPlanView: View {
             // Same name as another plan: allowed, but the user is told
             if viewModel.hasDuplicateName {
                 Text("Another plan has this name")
-                    .font(.system(size: 3.2 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
                     .foregroundStyle(.black.opacity(0.7))
                     .padding(.top, 1 * unit)
             }
 
-            HStack(spacing: 2 * unit) {
+            HStack(spacing: AppSizes.Space.related * unit) {
                 statPill(icon: "dumbbell", text: viewModel.exerciseCountText, unit: unit)
                 statPill(icon: "clock", text: "about \(viewModel.estimatedMinutes) min", unit: unit)
             }
@@ -221,7 +219,7 @@ struct AddPlanView: View {
     private func backButton(unit: CGFloat) -> some View {
         Button(action: onBack) {
             Image(systemName: "chevron.left")
-                .font(.system(size: 4.6 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                 .foregroundStyle(.black)
                 .frame(width: 11.5 * unit, height: 11.5 * unit)
                 .background(.white, in: Circle())
@@ -230,35 +228,13 @@ struct AddPlanView: View {
         .accessibilityLabel("Back")
     }
 
-    // "Gym" and "Calisthenics": the chosen one is black
-    private func categorySwitch(unit: CGFloat) -> some View {
-        HStack(spacing: 0) {
-            ForEach(PlanCategory.allCases) { category in
-                let isSelected = viewModel.category == category
-
-                Button(action: { viewModel.selectCategory(category) }) {
-                    Text(category.title)
-                        .font(.system(size: 3.3 * unit, weight: .bold))
-                        .foregroundStyle(isSelected ? Color.white : Color.black)
-                        .padding(.horizontal, 3.3 * unit)
-                        .frame(height: 7.5 * unit)
-                        .background(isSelected ? Color.black : Color.clear, in: Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
-        .padding(0.8 * unit)
-        .background(.white.opacity(0.42), in: Capsule())
-    }
-
     // A small see-through pill, e.g. "5 exercises" or "about 42 min"
     private func statPill(icon: String, text: String, unit: CGFloat) -> some View {
-        HStack(spacing: 1.5 * unit) {
+        HStack(spacing: AppSizes.Space.related * unit) {
             Image(systemName: icon)
-                .font(.system(size: 3.4 * unit, weight: .semibold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
             Text(text)
-                .font(.system(size: 3.3 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
         }
         .foregroundStyle(.black)
         .padding(.horizontal, 3 * unit)
@@ -274,7 +250,7 @@ struct AddPlanView: View {
 
                 Button(action: { viewModel.minutes = option }) {
                     Text(EditWeekRules.durationTitle(option))
-                        .font(.system(size: 4 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                         .foregroundStyle(isSelected ? Color.black : Color.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 11.5 * unit)
@@ -290,9 +266,9 @@ struct AddPlanView: View {
 
     // The colors: the ones used by other plans are faded and cannot be tapped
     private func colorRow(unit: CGFloat) -> some View {
-        HStack(spacing: 3.5 * unit) {
+        HStack(spacing: AppSizes.Space.section * unit) {
             Text("Color")
-                .font(.system(size: 3.3 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .foregroundStyle(.black.opacity(0.7))
 
             ForEach(PlanPalette.colors.indices, id: \.self) { index in
@@ -327,17 +303,17 @@ struct AddPlanView: View {
     // MARK: - Small header (after scrolling)
 
     private func smallHeader(unit: CGFloat, topInset: CGFloat) -> some View {
-        VStack(spacing: 3 * unit) {
-            HStack(spacing: 3.5 * unit) {
+        VStack(spacing: AppSizes.Space.group * unit) {
+            HStack(spacing: AppSizes.Space.section * unit) {
                 backButton(unit: unit)
 
-                VStack(alignment: .leading, spacing: 0.3 * unit) {
+                VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                     Text(viewModel.headerLabel)
-                        .font(.system(size: 2.9 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
                         .tracking(0.3 * unit)
                         .foregroundStyle(.black.opacity(0.7))
                     Text(viewModel.displayName)
-                        .font(.system(size: 6.4 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
                         .foregroundStyle(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
@@ -347,7 +323,7 @@ struct AddPlanView: View {
             }
 
             // The minutes bar: how much of the 60 or 90 minutes is used
-            HStack(spacing: 3 * unit) {
+            HStack(spacing: AppSizes.Space.group * unit) {
                 Capsule()
                     .fill(.white.opacity(0.45))
                     .frame(width: 56 * unit, height: 2 * unit)
@@ -358,7 +334,7 @@ struct AddPlanView: View {
                     }
 
                 Text(viewModel.timeText)
-                    .font(.system(size: 3.2 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(.black)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -381,15 +357,15 @@ struct AddPlanView: View {
     // The warm-up card: mandatory, no on/off switch. A small check shows it is picked.
     private func warmupCard(unit: CGFloat) -> some View {
         return Button(action: { viewModel.isWarmupShown = true }) {
-            HStack(spacing: 3.5 * unit) {
+            HStack(spacing: AppSizes.Space.section * unit) {
                 iconTile("flame", unit: unit)
 
-                VStack(alignment: .leading, spacing: 0.5 * unit) {
+                VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                     Text("Warm-up")
-                        .font(.system(size: 4 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                     Text(viewModel.warmupSummary)
-                        .font(.system(size: 3.2 * unit, weight: .regular))
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                         .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
@@ -399,12 +375,12 @@ struct AddPlanView: View {
 
                 if viewModel.isWarmupReady {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 4.6 * unit, weight: .semibold))
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                         .foregroundStyle(AppColors.greenSoft)
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 3.6 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                     .foregroundStyle(AppColors.textSecondary)
             }
             .contentShape(Rectangle())
@@ -413,16 +389,16 @@ struct AddPlanView: View {
         .accessibilityHint("Pick the warm-up move")
         .padding(2.5 * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     // "Main part" and, once there is at least 1 exercise, the count against the minimum of 4
     // and the black "+ Add" button. While the list is empty, emptyCard below already has its
     // own "+" button and its own "at least 4 exercises" text, so this row stays just the title.
     private func mainPartTitle(unit: CGFloat) -> some View {
-        HStack(spacing: 2.5 * unit) {
+        HStack(spacing: AppSizes.Space.group * unit) {
             Text("Main part")
-                .font(.system(size: 4.6 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
 
             if !viewModel.chosen.isEmpty {
@@ -431,11 +407,11 @@ struct AddPlanView: View {
                 Spacer()
 
                 Button(action: { viewModel.isPickerShown = true }) {
-                    HStack(spacing: 1.5 * unit) {
+                    HStack(spacing: AppSizes.Space.related * unit) {
                         Image(systemName: "plus")
-                            .font(.system(size: 3.6 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                         Text("Add")
-                            .font(.system(size: 3.6 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     }
                     .foregroundStyle(AppColors.background)
                     .padding(.horizontal, 3.5 * unit)
@@ -454,21 +430,21 @@ struct AddPlanView: View {
     // No exercises yet: a dashed card that opens "Add exercises"
     private func emptyCard(unit: CGFloat) -> some View {
         Button(action: { viewModel.isPickerShown = true }) {
-            VStack(spacing: 1.5 * unit) {
+            VStack(spacing: AppSizes.Space.related * unit) {
                 Image(systemName: "plus")
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.background)
                     .frame(width: 9.5 * unit, height: 9.5 * unit)
                     .background(AppColors.textPrimary, in: Circle())
 
                 Text(viewModel.isCatalogReady ? "Pick the exercises for this day" : "Loading the exercise list…")
-                    .font(.system(size: 3.2 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 4.5 * unit)
             .overlay(
-                RoundedRectangle(cornerRadius: 5 * unit)
+                RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit)
                     .strokeBorder(AppColors.divider, style: StrokeStyle(lineWidth: 0.5 * unit, dash: [2 * unit, 1.5 * unit]))
             )
         }
@@ -480,24 +456,24 @@ struct AddPlanView: View {
     private func exerciseRow(_ exercise: ChosenExercise, number: Int, unit: CGFloat) -> some View {
         let name = viewModel.displayName(of: exercise.item)
 
-        return HStack(spacing: 3 * unit) {
+        return HStack(spacing: AppSizes.Space.group * unit) {
             Button(action: { viewModel.detailExercise = exercise }) {
-                HStack(spacing: 3.2 * unit) {
+                HStack(spacing: AppSizes.Space.group * unit) {
                     Text("\(number)")
-                        .font(.system(size: 4 * unit, weight: .bold))
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
                         .frame(width: 9.5 * unit, height: 9.5 * unit)
-                        .background(viewModel.color.opacity(0.3), in: RoundedRectangle(cornerRadius: 3.2 * unit))
+                        .background(viewModel.color.opacity(0.3), in: RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
 
-                    VStack(alignment: .leading, spacing: 0.5 * unit) {
+                    VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                         Text(name)
-                            .font(.system(size: 4 * unit, weight: .bold))
+                            .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                             .foregroundStyle(AppColors.textPrimary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
 
                         Text(viewModel.rowDetail(exercise))
-                            .font(.system(size: 3.1 * unit, weight: .regular))
+                            .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                             .foregroundStyle(AppColors.textSecondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
@@ -512,7 +488,7 @@ struct AddPlanView: View {
 
             Button(action: { withAnimation { viewModel.removeExercise(exercise) } }) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 3.2 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                     .foregroundStyle(AppColors.textSecondary)
                     .frame(width: 8.5 * unit, height: 8.5 * unit)
                     .background(AppColors.cardAlt, in: Circle())
@@ -522,22 +498,22 @@ struct AddPlanView: View {
         }
         .padding(.horizontal, 3 * unit)
         .padding(.vertical, 3.2 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     // The cool-down card: it can be switched off
     private func cooldownCard(unit: CGFloat) -> some View {
         @Bindable var viewModel = viewModel
 
-        return HStack(spacing: 3.5 * unit) {
+        return HStack(spacing: AppSizes.Space.section * unit) {
             iconTile("leaf", unit: unit)
 
-            VStack(alignment: .leading, spacing: 0.5 * unit) {
+            VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text("Cool-down")
-                    .font(.system(size: 4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                 Text(viewModel.cooldownSummary)
-                    .font(.system(size: 3.2 * unit, weight: .regular))
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -550,7 +526,7 @@ struct AddPlanView: View {
                 .tint(AppColors.greenSoft)
         }
         .padding(2.5 * unit)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: 5 * unit))
+        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     // MARK: - "Undo" and the big button (they scroll with the rest of the card)
@@ -559,7 +535,7 @@ struct AddPlanView: View {
     private func undoMessage(_ removed: ChosenExercise, unit: CGFloat) -> some View {
         HStack {
             Text("\(viewModel.displayName(of: removed.item)) removed")
-                .font(.system(size: 3.8 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(AppColors.background)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -568,7 +544,7 @@ struct AddPlanView: View {
 
             Button(action: { withAnimation { viewModel.undoRemove() } }) {
                 Text("Undo")
-                    .font(.system(size: 3.6 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                     .padding(.horizontal, 4 * unit)
                     .frame(height: 9.5 * unit)
@@ -579,7 +555,7 @@ struct AddPlanView: View {
         .padding(.leading, 4.5 * unit)
         .padding(.trailing, 2 * unit)
         .frame(height: 13 * unit)
-        .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: 4.5 * unit))
+        .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
     // The big button: "Save to My plans", or what is still missing (then it is grey)
@@ -593,14 +569,14 @@ struct AddPlanView: View {
         }) {
             HStack {
                 Text(viewModel.saveTitle)
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
                 Spacer()
 
                 Image(systemName: "arrow.right")
-                    .font(.system(size: 4.4 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(isEnabled ? AppColors.textPrimary : AppColors.textSecondary)
                     .frame(width: 11 * unit, height: 11 * unit)
                     .background(AppColors.background, in: Circle())
@@ -620,16 +596,16 @@ struct AddPlanView: View {
     // A square tile with an icon, e.g. the flame of the warm-up
     private func iconTile(_ icon: String, unit: CGFloat) -> some View {
         Image(systemName: icon)
-            .font(.system(size: 4.2 * unit, weight: .semibold))
+            .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
             .foregroundStyle(AppColors.textPrimary)
             .frame(width: 9.5 * unit, height: 9.5 * unit)
-            .background(AppColors.cardAlt, in: RoundedRectangle(cornerRadius: 3.2 * unit))
+            .background(AppColors.cardAlt, in: RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
     }
 
     // "2 / 2" or "5 · min 4": green when the rule is met, grey otherwise
     private func countBadge(_ text: String, isDone: Bool, unit: CGFloat) -> some View {
         Text(text)
-            .font(.system(size: 3 * unit, weight: .bold))
+            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
             .foregroundStyle(isDone ? Color.black : AppColors.textPrimary)
             .padding(.horizontal, 2.2 * unit)
             .frame(height: 6 * unit)

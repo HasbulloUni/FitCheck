@@ -10,14 +10,6 @@ import Foundation
 // MARK: - The choices of the user
 // Only data. The numbers of each goal and level are here, close to the name.
 
-enum PlanCategory: String, CaseIterable, Identifiable {
-    case gym
-    case calisthenics
-
-    var id: String { rawValue }
-    var title: String { self == .gym ? "Gym" : "Calisthenics" }
-}
-
 enum PlanGoal: String, CaseIterable, Identifiable {
     case strength
     case tone
@@ -229,6 +221,7 @@ struct GeneratedDay: Identifiable {
     }
 }
 
+/* UNUSED (commented out, 4 Nov 2026)
 struct GeneratedWeek {
     let days: [GeneratedDay]
     let weeklySets: [String: Int]   // sets of the week for each muscle key
@@ -238,3 +231,4 @@ struct GeneratedWeek {
     let isSimplified: Bool
     let violations: [String]        // empty = the plan respects every rule
 }
+*/

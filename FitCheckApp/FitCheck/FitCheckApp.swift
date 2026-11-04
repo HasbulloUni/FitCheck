@@ -15,7 +15,7 @@ struct FoundationApp: App {
 
     init() {
         do {
-            container = try ModelContainer(for: Exercise.self, AppProfile.self, PlanRecord.self)
+            container = try ModelContainer(for: Exercise.self, AppProfile.self, PlanRecord.self, SessionRecord.self, PhotoRecord.self)
         } catch {
             fatalError("Cannot create the database: \(error)")
         }

@@ -28,15 +28,15 @@ struct HomeHeaderView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 1 * unit) {
+        VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
             Text("Hi, \(displayName)")
-                .font(.system(size: 9 * unit, weight: .heavy))
+                .font(.system(size: AppSizes.Text.hero * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)
                 .minimumScaleFactor(0.6)   // a long name shrinks instead of wrapping
                 .lineLimit(1)
 
             Text(subtitle)
-                .font(.system(size: 4.3 * unit, weight: .medium))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .medium))
                 .foregroundStyle(AppColors.textSecondary)
                 .lineLimit(2)   // the invitation message can use two lines
                 .fixedSize(horizontal: false, vertical: true)   // never cut the text

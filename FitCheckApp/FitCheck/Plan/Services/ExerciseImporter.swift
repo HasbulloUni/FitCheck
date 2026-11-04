@@ -27,11 +27,16 @@ private struct ExerciseRecord: Decodable {
 // MARK: - Fills the database with the exercises
 enum ExerciseImporter {
 
-    // Reads exercises.json and saves the exercises. It does nothing if they are already saved,
-    // so it is safe to call at every launch.
+    // Change this number every time exercises.json changes: the saved exercises are replaced once.
+    private static let dataVersion = 2
+    private static let versionKey = "exercisesDataVersion"
+
+    // Reads exercises.json and saves the exercises. It does nothing if they are already saved
+    // with the current version, so it is safe to call at every launch.
     static func importIfNeeded(into context: ModelContext) {
         let saved = (try? context.fetchCount(FetchDescriptor<Exercise>())) ?? 0
-        if saved > 0 { return }
+        let savedVersion = UserDefaults.standard.integer(forKey: versionKey)
+        if saved > 0 && savedVersion == dataVersion { return }
 
         guard let url = Bundle.main.url(forResource: "exercises", withExtension: "json"),
               let data = try? Data(contentsOf: url),
@@ -39,6 +44,9 @@ enum ExerciseImporter {
             print("ExerciseImporter: exercises.json not found or not readable")
             return
         }
+
+        // Old exercises (from an older exercises.json) are removed first
+        try? context.delete(model: Exercise.self)
 
         for record in records {
             context.insert(Exercise(
@@ -57,5 +65,6 @@ enum ExerciseImporter {
         }
 
         try? context.save()
+        UserDefaults.standard.set(dataVersion, forKey: versionKey)
     }
 }

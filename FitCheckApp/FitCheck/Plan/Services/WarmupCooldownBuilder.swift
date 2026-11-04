@@ -44,7 +44,7 @@ enum WarmupCooldownBuilder {
     static let generalMinutes = 4
 
     // The general moves to get warm (walk, bike...)
-    static var generalMoves: [String] { generalWarmups }
+    /* UNUSED (commented out, 4 Nov 2026) static var generalMoves: [String] { generalWarmups } */
 
     // The mobility moves for the muscle groups of the day, each one once (max 6).
     // With less than 4 moves, a few general mobility moves are added.

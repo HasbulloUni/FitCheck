@@ -20,9 +20,9 @@ struct ReminderTimeRow: View {
     @State private var isPickerOpen = false
 
     var body: some View {
-        HStack(spacing: 2 * unit) {
+        HStack(spacing: AppSizes.Space.related * unit) {
             Text(dayName)
-                .font(.system(size: 3.8 * unit, weight: .bold))
+                .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
 
             Spacer()
@@ -30,7 +30,7 @@ struct ReminderTimeRow: View {
             // Tap on the text: the picker opens
             Button(action: { isPickerOpen = true }) {
                 Text(timeText)
-                    .font(.system(size: 3.8 * unit, weight: .bold))
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
                     .padding(.horizontal, 3.5 * unit)
                     .padding(.vertical, 1.8 * unit)
@@ -45,9 +45,9 @@ struct ReminderTimeRow: View {
 
     // The time picker sheet: a title, the wheels on a card and a "Done" button
     private var timePickerSheet: some View {
-        VStack(spacing: 4 * unit) {
+        VStack(spacing: AppSizes.Space.section * unit) {
             Text("Reminder · \(dayName)")
-                .font(.system(size: 5 * unit, weight: .heavy))
+                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)
                 .padding(.top, 6 * unit)
 
@@ -62,11 +62,11 @@ struct ReminderTimeRow: View {
             .datePickerStyle(.wheel)
             .labelsHidden()
             .frame(maxWidth: .infinity)
-            .background(AppColors.card, in: RoundedRectangle(cornerRadius: 6 * unit))
+            .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
 
             Button(action: { isPickerOpen = false }) {
                 Text("Done")
-                    .font(.system(size: 4.4 * unit, weight: .semibold))
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(AppColors.background)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 3.5 * unit)
