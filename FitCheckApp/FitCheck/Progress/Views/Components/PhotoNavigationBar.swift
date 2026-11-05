@@ -17,7 +17,7 @@ struct PhotoJumpItem: Identifiable {
 
 // The bar used by Photos and by Compare, so the two screens look exactly the same:
 // the native "Jump to" menu on the left, then the angle chips All, Front, Side, Back.
-// If the chips do not fit, the bar scrolls sideways. Every size is a multiple of "unit".
+// If the chips do not fit, they scroll sideways while "Jump to" stays in place. Every size is a multiple of "unit".
 struct PhotoNavigationBar: View {
     let jumpItems: [PhotoJumpItem]
     @Binding var angle: PhotoAngle?
@@ -27,16 +27,23 @@ struct PhotoNavigationBar: View {
     @Namespace private var highlightNamespace
 
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: AppSizes.Space.related * unit) {
-                jumpMenu
-                angleChip(title: "All", value: nil)
-                ForEach(PhotoAngle.allCases) { value in
-                    angleChip(title: value.title, value: value)
+        // The "Jump to" menu stays OUTSIDE the horizontal scroll view: inside it, the touches
+        // were shared with the scrolling and a tap could land on the component above or below.
+        HStack(spacing: AppSizes.Space.related * unit) {
+            jumpMenu
+
+            ScrollView(.horizontal) {
+                HStack(spacing: AppSizes.Space.related * unit) {
+                    angleChip(title: "All", value: nil)
+                    ForEach(PhotoAngle.allCases) { value in
+                        angleChip(title: value.title, value: value)
+                    }
                 }
             }
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
+        // The bar is above its neighbours, so nothing drawn next to it can take its taps
+        .zIndex(1)
     }
 
     // MARK: Jump to (native menu)
@@ -58,7 +65,10 @@ struct PhotoNavigationBar: View {
             .padding(.horizontal, 3.2 * unit)
             .padding(.vertical, 2.4 * unit)
             .background(AppColors.card, in: Capsule())
+            // The tappable area is exactly the visible capsule
+            .contentShape(Capsule())
         }
+        .fixedSize()
         .disabled(jumpItems.isEmpty)
         .opacity(jumpItems.isEmpty ? 0.4 : 1)
     }
@@ -75,6 +85,7 @@ struct PhotoNavigationBar: View {
                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
                 .padding(.horizontal, 2.5 * unit)
                 .padding(.vertical, 2.4 * unit)
+                .contentShape(Capsule())
                 .background {
                     // The grey capsule is always there; the white one slides under the chosen chip
                     ZStack {

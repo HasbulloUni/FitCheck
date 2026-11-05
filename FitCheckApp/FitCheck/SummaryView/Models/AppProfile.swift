@@ -35,6 +35,8 @@ final class AppProfile {
     // (an empty text means the day has no plan yet)
     var draftRotationWeekdays: [Int] = []
     var draftRotationPlanIds: [String] = []
+    // When the rotation started (saving a different order restarts it). nil = since the beginning.
+    var rotationStartDate: Date? = nil
 
     // Today's workout (ignored until hasTodayPlan is true)
     var hasTodayPlan: Bool = false

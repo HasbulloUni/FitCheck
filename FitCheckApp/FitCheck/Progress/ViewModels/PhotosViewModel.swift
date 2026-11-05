@@ -171,14 +171,25 @@ final class PhotosViewModel {
 
     // Called when the user picks a picture: it is prepared and the "Ready to save" sheet opens
     func startDraft(imageData: Data, isFromCamera: Bool = false) {
-        guard let processed = PhotoImageProcessor.process(imageData) else { return }
-        draft = PhotoDraft(
-            big: processed.big,
-            small: processed.small,
-            date: ProgressPeriodBuilder.today(),
-            angle: filter ?? .front,
-            isFromCamera: isFromCamera
-        )
+        let day = ProgressPeriodBuilder.today()
+        let angle = filter ?? .front
+        // A big photo is resized away from the main thread, so the screen never freezes
+        Task { @MainActor in
+            let processed = await Task.detached(priority: .userInitiated) {
+                PhotoImageProcessor.process(imageData)
+            }.value
+            guard let processed else {
+                photoLoadFailed()
+                return
+            }
+            draft = PhotoDraft(
+                big: processed.big,
+                small: processed.small,
+                date: day,
+                angle: angle,
+                isFromCamera: isFromCamera
+            )
+        }
     }
 
     // Photos opens and there are photos, but none in the chosen period: the period moves to the latest photo,
@@ -186,6 +197,11 @@ final class PhotosViewModel {
     func showLatestPhotoIfPeriodIsEmpty() {
         guard periodPhotos.isEmpty, let last = photos.last else { return }
         onShowDate?(last.date)
+    }
+
+    // The picked photo could not be opened: the user is told
+    func photoLoadFailed() {
+        showToast("Couldn't open this photo. Try another one.")
     }
 
     // Opens the sheet "Take photo / Photo library"
@@ -217,14 +233,20 @@ final class PhotosViewModel {
         guard let draft, let context else { return }
         let photo = PhotoRecord(date: draft.date, imageData: draft.big, thumbnailData: draft.small, angle: draft.angle)
         context.insert(photo)
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            showToast("Couldn't save the photo. Try again.")
+            return   // the draft stays open
+        }
         self.draft = nil
         filter = nil
         reload()
         // The new photo must be visible: if its day is outside the chosen period, the period moves to it
         onShowDate?(photo.date)
         newPhotoId = photo.id
-        showToast("Photo saved. It stays on this iPhone.")
+        showToast("Photo saved on this iPhone.")
         Task { @MainActor in
             try? await Task.sleep(for: .seconds(1))
             newPhotoId = nil
@@ -251,7 +273,13 @@ final class PhotosViewModel {
         // The viewer moves to a neighbour before the photo disappears
         let neighbour = list.indices.contains(index + 1) ? list[index + 1] : (index > 0 ? list[index - 1] : nil)
         context.delete(current)
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            showToast("Couldn't delete the photo. Try again.")
+            return
+        }
         reload()
         if let neighbour {
             viewerId = neighbour.id

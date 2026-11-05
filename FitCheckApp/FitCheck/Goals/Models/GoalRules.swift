@@ -8,17 +8,17 @@
 import Foundation
 
 // MARK: - The numbers of the goals
-// The targets of Sessions, Minutes, Strength days and Week active now come from the plan the user
+// The targets of Sessions, Minutes and Week active now come from the plan the user
 // saved in Edit week (see GoalProgressBuilder). The fixed numbers below are only defaults.
 enum GoalRules {
 
     // Minutes of a planned day that has no plan assigned yet
     static let defaultMinutesPerSession = 60
 
-    // Week goals (not used as targets anymore: the targets come from the planned days)
+    // Week goals (Sessions and Minutes: not used as targets anymore, the targets come from the planned days)
     static let sessionsPerWeek = 3        // Sessions: workouts to complete
     static let minutesPerWeek = 180       // Minutes: minutes of training
-    static let strengthDaysPerWeek = 2    // Strength days: days with a strength session
+    static let strengthDaysPerWeek = 2    // Strength days: ALWAYS the target, whatever the planned days
 
     // Month goals (weeksPerMonth is not used as a target anymore; muscleGroups still is)
     static let weeksPerMonth = 4          // Week active: weeks in which the plan was done

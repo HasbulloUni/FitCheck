@@ -10,7 +10,8 @@ import UIKit
 // MARK: - Makes a picked photo small enough to save
 // Photos from the camera are huge. We save a big version (to look at and compare)
 // and a small one (for the grids), both as JPEG.
-enum PhotoImageProcessor {
+// "nonisolated": it runs in a background task, not on the main actor
+nonisolated enum PhotoImageProcessor {
 
     // The longest side of each version, in pixels
     private static let bigSide: CGFloat = 1600

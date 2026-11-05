@@ -16,7 +16,7 @@ enum GoalProgressBuilder {
     // false = the whole month: the plan completion is the MONTHLY plan (all planned days)
     private static let countPlannedUpToToday = false
 
-    // THE rule that decides if a day counts in the targets (Sessions, Minutes, Strength days,
+    // THE rule that decides if a day counts in the targets (Sessions, Minutes,
     // Week active, Plan completion). A day counts when:
     // - it is a planned day by the history rule (days before a week change keep the old days), OR
     // - at least one completed session was done on that day (what was done today always counts).
@@ -34,13 +34,12 @@ enum GoalProgressBuilder {
     private static func minutesTarget(
         of day: Date,
         weekData: WeekData,
-        rotation: [RotationSlot],
+        planId: UUID?,
         plans: [PlanItem],
         completedSessions: [SessionRecord]
     ) -> Int {
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: day)
-        let planId = rotation.first(where: { $0.weekday == weekday })?.planId
         if let plan = plans.first(where: { $0.id == planId }) { return plan.minutes }
 
         if weekData.plannedWeekdays(on: day).contains(weekday) {
@@ -57,6 +56,7 @@ enum GoalProgressBuilder {
         sessions: [SessionRecord],
         weekData: WeekData,
         rotation: [RotationSlot],
+        history: [CompletedWorkout],
         plans: [PlanItem],
         now: Date
     ) -> GoalProgress {
@@ -79,22 +79,50 @@ enum GoalProgressBuilder {
             // Minutes: all saved sessions, also the interrupted ones
             progress.minutesDone = weekSessions.reduce(0) { $0 + $1.minutes }
 
-            // Strength days: different days with at least one COMPLETED session with main exercises done
-            // (only completed sessions, so "done" is always a subset of the days in the target)
+            // Strength days: different days with at least one COMPLETED session with main exercises done.
+            // The target is always the same number (GoalRules), so "done" is capped at the target
+            // (3 days done still shows 2/2)
             let strengthDays = weekSessions
                 .filter { $0.isCompleted && !$0.muscleNames.isEmpty }
                 .map { calendar.startOfDay(for: $0.date) }
-            progress.strengthDaysDone = Set(strengthDays).count
+            progress.strengthDaysTarget = GoalRules.strengthDaysPerWeek
+            progress.strengthDaysDone = min(Set(strengthDays).count, progress.strengthDaysTarget)
 
             // Targets: each day of the week uses the rule that was valid on that day
             var plannedDays = 0
             var plannedMinutes = 0
+
+            // The plans of today and of the next training days come from the rotation cycle (RotationCycle):
+            // today = the plan due before today; the next days continue the order after the workouts
+            // of today. The days already passed keep the plan of their weekday.
+            let todayStart = calendar.startOfDay(for: now)
+            let order = RotationCycle.order(from: rotation)
+            let dueBeforeToday = RotationCycle.dueIndex(order: order, history: history, before: todayStart)
+            let dueAfterToday = RotationCycle.dueIndex(
+                order: order, history: history,
+                before: calendar.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart
+            )
+            let todayWeekday = calendar.component(.weekday, from: todayStart)
+            let todayIsTrainingDay = weekData.plannedWeekdays(on: todayStart).contains(todayWeekday)
+            let todayDone = completedDays.contains(todayStart)
+            // A training day not trained yet uses the plan due today, so the next one is one step further
+            var futureSteps = (todayIsTrainingDay && !todayDone) ? 1 : 0
+
             var day = week.start
             while day < week.end {
                 if countsAsTrainingDay(day, weekData: weekData, completedDays: completedDays) {
                     plannedDays += 1
+                    let weekday = calendar.component(.weekday, from: day)
+                    var dayPlanId = rotation.first(where: { $0.weekday == weekday })?.planId
+                    if day == todayStart, let dueBeforeToday {
+                        dayPlanId = order[dueBeforeToday]
+                    } else if day > todayStart, let dueAfterToday,
+                              weekData.plannedWeekdays(on: day).contains(weekday) {
+                        dayPlanId = order[(dueAfterToday + futureSteps) % order.count]
+                        futureSteps += 1
+                    }
                     plannedMinutes += minutesTarget(
-                        of: day, weekData: weekData, rotation: rotation,
+                        of: day, weekData: weekData, planId: dayPlanId,
                         plans: plans, completedSessions: completedSessions
                     )
                 }
@@ -103,7 +131,6 @@ enum GoalProgressBuilder {
             }
             progress.sessionsTarget = plannedDays
             progress.minutesTarget = plannedMinutes
-            progress.strengthDaysTarget = plannedDays   // 0 planned days = 0, otherwise at least 1
         }
 
         // MARK: This month

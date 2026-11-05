@@ -15,6 +15,10 @@ struct OnboardingFlowView: View {
 
     let onFinish: () -> Void
 
+    // True when the first save failed: the user can try again
+    @State private var saveFailed = false
+    @State private var isSaving = false   // a second tap on the big button is ignored
+
     var body: some View {
         // The only GeometryReader of the flow: it measures the width of the device
         GeometryReader { geo in
@@ -39,15 +43,17 @@ struct OnboardingFlowView: View {
                 bigButton(unit: unit)
             }
             .overlay(alignment: .topTrailing) {
-                // Welcome has no header, so its Skip sits at the top right (over the rainbow)
+                // Welcome has no header, so its Skip sits at the top right, in the centre of the rainbow
                 if viewModel.step == .welcome {
                     Button(action: skip) {
+                        // Visible in light and dark: card color behind, primary text color on top
                         Text("Skip")
                             .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                            .foregroundStyle(.black)
-                            .padding(.horizontal, AppSizes.Space.group * unit)
-                            .padding(.vertical, AppSizes.Space.related * unit)
-                            .background(AppColors.background.opacity(0.85), in: Capsule())
+                            .foregroundStyle(AppColors.textPrimary)
+                            .frame(width: WelcomeStepView.skipWidth * unit,
+                                   height: WelcomeStepView.skipHeight * unit)
+                            .background(AppColors.card, in: Capsule())
+                            .overlay(Capsule().stroke(AppColors.divider, lineWidth: 0.3 * unit))
                     }
                     .buttonStyle(.plain)
                     .padding(.trailing, AppSizes.Space.screen * unit)
@@ -55,6 +61,11 @@ struct OnboardingFlowView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: viewModel.step)
+            .alert("Couldn't save your plan", isPresented: $saveFailed) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Please try again.")
+            }
         }
         .background(AppColors.background)
         // Custom: the plan creator of the app, once for each training day
@@ -106,13 +117,20 @@ struct OnboardingFlowView: View {
 
     // Saves what is chosen and opens the app
     private func finishOnboarding() {
-        OnboardingSaver.save(
+        guard !isSaving else { return }
+        isSaving = true
+        let saved = OnboardingSaver.save(
             name: viewModel.trimmedName,
             draft: viewModel.week.draft,
             plans: viewModel.plans,
             context: modelContext
         )
-        onFinish()
+        if saved {
+            onFinish()
+        } else {
+            isSaving = false
+            saveFailed = true
+        }
     }
 
     // Skip: the whole onboarding is skipped (default week and plan)

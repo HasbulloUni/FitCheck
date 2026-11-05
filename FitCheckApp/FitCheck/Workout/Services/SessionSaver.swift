@@ -38,13 +38,13 @@ enum SessionSaver {
         return Double(counts.done) >= Double(counts.total) * WorkoutRules.completionShare
     }
 
-    // Inserts a SessionRecord in the database and returns the summary to show.
+    // Inserts a SessionRecord in the database and returns the summary to show (nil if it could not be saved).
     static func save(plan: PlanItem,
                      steps: [WorkoutStep],
                      sets: [[WorkoutSet]],
                      minutes: Int,
                      previousWeights: [String: Double],
-                     context: ModelContext?) -> WorkoutSummary {
+                     context: ModelContext?) -> WorkoutSummary? {
 
         var muscleNames: [String] = []
         var muscleSets: [Int] = []
@@ -106,8 +106,16 @@ enum SessionSaver {
             loadWeights: loadWeights,
             isCompleted: completed
         )
-        context?.insert(record)
-        try? context?.save()
+        // If saving fails nothing is kept and nil is returned, so the screen can say it
+        if let context {
+            context.insert(record)
+            do {
+                try context.save()
+            } catch {
+                context.rollback()
+                return nil
+            }
+        }
 
         return WorkoutSummary(
             minutes: minutes,

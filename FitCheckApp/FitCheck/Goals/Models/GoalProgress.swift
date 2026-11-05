@@ -18,7 +18,7 @@ struct GoalProgress {
     // Targets of this week: they come from the planned days (0 = nothing planned)
     var sessionsTarget = 0      // planned training days of the week
     var minutesTarget = 0       // minutes of the plans of those days
-    var strengthDaysTarget = 0  // every planned day is a strength day
+    var strengthDaysTarget = 0  // always GoalRules.strengthDaysPerWeek
 
     // This month
     var weeksActive = 0         // weeks in which the plan was done

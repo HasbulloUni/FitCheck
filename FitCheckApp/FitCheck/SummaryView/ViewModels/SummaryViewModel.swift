@@ -27,12 +27,35 @@ final class SummaryViewModel {
     private(set) var goPlanId: UUID? = nil
     private(set) var goDate: Date? = nil
 
+    // Every completed workout (plan and date): the rotation finds the plan that is due from these
+    private var completedHistory: [CompletedWorkout] = []
+
+    // When the current rotation started: saving a different order of plans restarts the cycle,
+    // so the older workouts do not count any more (nil = they all count)
+    private var rotationStartDate: Date? = nil
+
+    // The workouts the rotation looks at: Home, Goals and Edit week all use these
+    var cycleHistory: [CompletedWorkout] {
+        guard let start = rotationStartDate else { return completedHistory }
+        return completedHistory.filter { $0.date >= start }
+    }
+
+    // The plan the rotation gives to today. Only the workouts of earlier days count, so the answer
+    // does not change during the day (when today's workout is done, the card keeps its plan).
+    private var duePlanIdToday: UUID? {
+        RotationCycle.duePlanId(
+            rotation: savedWeekPlan?.rotation ?? [],
+            history: cycleHistory,
+            before: Calendar.current.startOfDay(for: .now)
+        )
+    }
+
     // What Today shows: the plan of the rotation, the plan sent with Go, a rest day or nothing
     private var todayOutcome: TodayOutcome {
         TodayResolver.resolve(
             today: .now,
             trainingWeekdays: weekData.plannedWeekdays,
-            rotation: savedWeekPlan?.rotation ?? [],
+            duePlanId: duePlanIdToday,
             plans: plans,
             goPlanId: goPlanId,
             goDate: goDate
@@ -71,7 +94,7 @@ final class SummaryViewModel {
         let withoutGo = TodayResolver.resolve(
             today: .now,
             trainingWeekdays: weekData.plannedWeekdays,
-            rotation: savedWeekPlan?.rotation ?? [],
+            duePlanId: duePlanIdToday,
             plans: plans,
             goPlanId: nil,
             goDate: nil
@@ -122,6 +145,30 @@ final class SummaryViewModel {
         goDate = Calendar.current.startOfDay(for: .now)
         saveProfile()
         refreshGoals()
+    }
+
+    // The "Go" of a plan (swipe in My plans). If a workout was already completed today, Today
+    // stays as it is and the Home first asks if the user wants to train more with this plan.
+    func goTapped(_ plan: PlanItem) {
+        if todaySessions.isEmpty {
+            sendToToday(plan)
+        } else {
+            extraWorkoutPlan = plan
+        }
+    }
+
+    // The plan the question "Train again today?" is about (nil = no question open)
+    var extraWorkoutPlan: PlanItem? = nil
+
+    // "Yes": the workout of that plan starts now. It is an extra workout: Today is not changed.
+    func confirmExtraWorkout(_ plan: PlanItem) {
+        extraWorkoutPlan = nil
+        workoutPlan = plan
+    }
+
+    // "Not now": nothing changes
+    func cancelExtraWorkout() {
+        extraWorkoutPlan = nil
     }
 
     // The plan being trained now: not nil while the workout screen is open
@@ -203,6 +250,9 @@ final class SummaryViewModel {
         let allSessions = (try? context?.fetch(allDescriptor)) ?? []
         completedSessionDays = allSessions.map { Calendar.current.startOfDay(for: $0.date) }
         completedSessionColors = allSessions.map { $0.colorIndex }
+        completedHistory = allSessions.compactMap { session in
+            UUID(uuidString: session.planId).map { CompletedWorkout(planId: $0, date: session.date) }
+        }
 
         refreshGoals()
     }
@@ -214,6 +264,7 @@ final class SummaryViewModel {
             sessions: sessions,
             weekData: weekData,
             rotation: savedWeekPlan?.rotation ?? [],
+            history: cycleHistory,
             plans: plans,
             now: .now
         )
@@ -361,13 +412,23 @@ final class SummaryViewModel {
         draft.rotation = weekdays.enumerated().map { position, weekday in
             RotationSlot(weekday: weekday, planId: newPlans[position % newPlans.count].id)
         }
+        rotationStartDate = .now   // a new program: the rotation starts again from the first plan
         savedWeekPlan = draft
         saveProfile()
         refreshGoals()   // the planned days changed: the goals change too
     }
 
+    // The plan whose exercises are shown in the bottom sheet (nil = sheet closed)
+    var planShown: PlanItem? = nil
+
+    // Tap on a plan in My plans: the sheet rises from the bottom
+    func openPlan(_ plan: PlanItem) {
+        planShown = plan
+    }
+
     // The pencil of a plan: the same screen opens with the plan filled in
     func openEditPlan(_ plan: PlanItem) {
+        planShown = nil   // editing closes the sheet
         planBeingEdited = plan
         isAddPlanOpen = true
     }
@@ -469,6 +530,7 @@ final class SummaryViewModel {
 
     // Delete a plan from My plans (the Home asks the user first)
     func deletePlan(_ plan: PlanItem) {
+        planShown = nil   // deleting closes the sheet
         plans.removeAll { $0.id == plan.id }
         if let context {
             let targetId = plan.id
@@ -507,6 +569,7 @@ final class SummaryViewModel {
     func resetWeek() {
         // Empty from today on: the days before today keep the old choice
         weekData.resetWeek()
+        rotationStartDate = .now
         savedWeekPlan = nil
         goPlanId = nil
         goDate = nil
@@ -548,7 +611,41 @@ final class SummaryViewModel {
     var weekDays: [WeekDay] {
         var data = weekDataWithHistory
         data.hasGoToday = isGoActiveToday
-        return data.days(weekOffset: weekOffset)
+        let days = data.days(weekOffset: weekOffset)
+        guard let lastDay = days.last?.date else { return days }
+
+        // The days still to do take the color of the plan the rotation gives them
+        let projected = projectedPlanColors(until: lastDay, data: data)
+        return days.map { day in
+            var day = day
+            if day.state == .planned || day.state == .todayWorkout {
+                day.plannedColorIndex = projected[Calendar.current.startOfDay(for: day.date)]
+            }
+            return day
+        }
+    }
+
+    // The color of the plan of each training day still to do, from today to `lastDay`.
+    // Same rule as Today and Goals (RotationCycle), and a plan sent with Go counts as used.
+    private func projectedPlanColors(until lastDay: Date, data: WeekData) -> [Date: Int] {
+        let calendar = Calendar.current
+        let todayStart = calendar.startOfDay(for: .now)
+        let projected = WeekRotationProjector.projectedPlans(
+            order: RotationCycle.order(from: savedWeekPlan?.rotation ?? []),
+            history: cycleHistory,
+            weekData: data,
+            goPlanId: isGoActiveToday ? goPlanId : nil,
+            todayDone: data.completedDays.contains(todayStart),
+            today: .now,
+            lastDay: lastDay
+        )
+        var colors: [Date: Int] = [:]
+        for (day, planId) in projected {
+            if let colorIndex = plans.first(where: { $0.id == planId })?.colorIndex {
+                colors[day] = colorIndex
+            }
+        }
+        return colors
     }
 
     // The title of the card
@@ -589,6 +686,12 @@ final class SummaryViewModel {
         // Valid from today on: the days before today keep what they had
         weekData.changeWeek(plannedWeekdays: draft.workoutWeekdays)
 
+        // A different order of plans starts a new round of the rotation
+        let oldOrder = RotationCycle.order(from: savedWeekPlan?.rotation ?? [])
+        if RotationCycle.order(from: draft.rotation) != oldOrder {
+            rotationStartDate = .now
+        }
+
         savedWeekPlan = draft
         saveProfile()
         refreshGoals()   // days or rotation changed: the goals change too
@@ -612,6 +715,14 @@ final class SummaryViewModel {
     func closeEditWeek() {
         isEditWeekOpen = false
         resumesReadyMadeAfterWeek = false
+    }
+
+    // Called when the app comes back to the front or the day changes: "today" and everything
+    // that depends on it (week card, Today, goals) are recomputed
+    func refreshForNewDay() {
+        guard context != nil else { return }
+        weekData.today = .now
+        loadTodaySessions()   // also refreshes the goals
     }
 
     // MARK: - SwiftData
@@ -639,6 +750,7 @@ final class SummaryViewModel {
         weekData.previousPlannedWeekdays = record.previousPlannedWeekdays
         weekData.previousRestWeekdays = record.previousRestWeekdays
         weekData.ruleStartDate = record.ruleStartDate
+        rotationStartDate = record.rotationStartDate
 
         // "Go" replaces the routine only on the day it was sent, but it is kept until the end of the
         // week: the rotation of the next days is adjusted because that plan was already done
@@ -689,6 +801,7 @@ final class SummaryViewModel {
         profile.previousPlannedWeekdays = weekData.previousPlannedWeekdays
         profile.previousRestWeekdays = weekData.previousRestWeekdays
         profile.ruleStartDate = weekData.ruleStartDate
+        profile.rotationStartDate = rotationStartDate
 
         profile.goPlanId = goPlanId?.uuidString ?? ""
         profile.goDate = goDate

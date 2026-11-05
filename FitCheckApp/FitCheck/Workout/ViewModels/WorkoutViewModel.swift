@@ -51,6 +51,11 @@ final class WorkoutViewModel {
     private var ticker: Task<Void, Never>? = nil
     private var hasStarted = false
     private var startDate = Date()
+    private var restEndDate: Date? = nil      // when the rest ends (the clock, not a counter)
+    private var timedEndDate: Date? = nil     // when the warm-up / cool-down countdown ends
+    var isResumeAsked = false                 // true: "Continue your workout?" is shown
+    private var pendingDraft: WorkoutDraft? = nil
+    var saveFailed = false                    // true: the workout could not be saved, the screen asks to try again
 
     init(plan: PlanItem) {
         self.plan = plan
@@ -70,7 +75,47 @@ final class WorkoutViewModel {
 
         previousWeights = LastWeightsFinder.lastWeights(in: context)
         load(steps: WorkoutBuilder.makeSteps(plan: plan, exercises: exercises))
+
+        // A workout of this plan was stopped by the closing of the app: ask if it continues
+        if let draft = WorkoutDraftStore.load(planId: plan.id.uuidString, steps: steps) {
+            pendingDraft = draft
+            isResumeAsked = true
+        } else {
+            startClock()
+        }
+    }
+
+    // "Continue": the sets done and the step come back, the clock goes on from the saved time
+    func resumeDraft() {
+        isResumeAsked = false
+        guard let draft = pendingDraft else { startClock(); return }
+        pendingDraft = nil
+        sets = draft.sets
+        stepIndex = draft.stepIndex
+        prepareStep()
         startClock()
+        startDate = Date().addingTimeInterval(-Double(draft.elapsedSeconds))
+        elapsedSeconds = draft.elapsedSeconds
+    }
+
+    // "Start over": the old draft is thrown away
+    func discardDraft() {
+        isResumeAsked = false
+        pendingDraft = nil
+        WorkoutDraftStore.clear()
+        startClock()
+    }
+
+    // Keeps the workout so far (called after each set and each step)
+    private func saveDraft() {
+        guard !shouldClose, SessionSaver.setsDone(in: sets) > 0 else { return }
+        WorkoutDraftStore.save(WorkoutDraft(
+            planId: plan.id.uuidString,
+            savedAt: Date(),
+            stepIndex: stepIndex,
+            elapsedSeconds: Int(Date().timeIntervalSince(startDate)),
+            sets: sets
+        ))
     }
 
     // Used by the previews: steps made by hand, no database
@@ -222,23 +267,28 @@ final class WorkoutViewModel {
             sets[stepIndex][next].weight = sets[stepIndex][index].weight
             restTotal = WorkoutRules.restSeconds
             restRemaining = restTotal
+            restEndDate = Date().addingTimeInterval(Double(restTotal))
         }
+        saveDraft()
     }
 
     // "Save changes" of a set that was already done
     func saveEdit() {
         editingSetIndex = nil
+        saveDraft()
     }
 
     // MARK: Rest
 
     func skipRest() {
         restRemaining = 0
+        restEndDate = nil
     }
 
     func addRest() {
         restRemaining += WorkoutRules.restExtraSeconds
         restTotal = max(restTotal, restRemaining)
+        restEndDate = Date().addingTimeInterval(Double(restRemaining))
     }
 
     // MARK: Moving between steps
@@ -248,6 +298,7 @@ final class WorkoutViewModel {
         if stepIndex + 1 < steps.count {
             stepIndex += 1
             prepareStep()
+            saveDraft()
         } else {
             finish()
         }
@@ -257,6 +308,8 @@ final class WorkoutViewModel {
         editingSetIndex = nil
         restRemaining = 0
         restTotal = 0
+        restEndDate = nil
+        timedEndDate = nil
         timedRemaining = currentStep?.durationSeconds ?? 0
         isTimedRunning = false
     }
@@ -265,6 +318,7 @@ final class WorkoutViewModel {
     func startTimed() {
         guard currentStep?.isTimed == true, timedRemaining > 0 else { return }
         isTimedRunning = true
+        timedEndDate = Date().addingTimeInterval(Double(timedRemaining))
     }
 
     // MARK: Leaving and finishing
@@ -277,29 +331,47 @@ final class WorkoutViewModel {
     // Stops the clock, saves what was done and closes the screen.
     // With no set done nothing is saved and the screen just closes.
     func finish() {
-        ticker?.cancel()
-        ticker = nil
-        restRemaining = 0
+        // A second tap on Finish must not save the workout twice
+        guard !shouldClose else { return }
 
         if SessionSaver.setsDone(in: sets) == 0 {
+            WorkoutDraftStore.clear()
+            stopClock()
             shouldClose = true
             return
         }
-        summary = SessionSaver.save(
+        let minutes = max(1, Int(Date().timeIntervalSince(startDate)) / 60)
+        guard let saved = SessionSaver.save(
             plan: plan,
             steps: steps,
             sets: sets,
-            minutes: max(1, elapsedSeconds / 60),
+            minutes: minutes,
             previousWeights: previousWeights,
             context: context
-        )
+        ) else {
+            saveFailed = true   // the sets are still here: the user can try again
+            return
+        }
+        summary = saved
+        WorkoutDraftStore.clear()
+        stopClock()
         shouldClose = true   // no end screen: the numbers appear in the Today card of the Home
+    }
+
+    // Stops the clock and lets the screen lock again
+    private func stopClock() {
+        ticker?.cancel()
+        ticker = nil
+        restRemaining = 0
+        restEndDate = nil
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 
     // MARK: Clock
 
     private func startClock() {
         startDate = Date()
+        UIApplication.shared.isIdleTimerDisabled = true   // the screen stays on during the workout
         ticker?.cancel()
         ticker = Task { [weak self] in
             while !Task.isCancelled {
@@ -311,7 +383,13 @@ final class WorkoutViewModel {
 
     private func tick() {
         elapsedSeconds = Int(Date().timeIntervalSince(startDate))
-        if restRemaining > 0 { restRemaining -= 1 }
-        if isTimedRunning, timedRemaining > 0, currentStep?.isTimed == true { timedRemaining -= 1 }
+        // The rest and the countdown come from the clock, so they stay right after the phone was locked
+        if let end = restEndDate {
+            restRemaining = max(0, Int(end.timeIntervalSinceNow.rounded(.up)))
+            if restRemaining == 0 { restEndDate = nil }
+        }
+        if isTimedRunning, let end = timedEndDate, currentStep?.isTimed == true {
+            timedRemaining = max(0, Int(end.timeIntervalSinceNow.rounded(.up)))
+        }
     }
 }

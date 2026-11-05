@@ -143,13 +143,20 @@ final class ProgressScreenViewModel {
         }
 
         // Look for the offset of the current unit that contains the day (this one, then back in time)
-        for candidate in stride(from: 0, through: -240, by: -1) {
+        // (only as far back as the wheel goes)
+        let oldest = -(ProgressPeriodBuilder.wheelCount(for: unit) - 1)
+        for candidate in stride(from: 0, through: oldest, by: -1) {
             let found = ProgressPeriodBuilder.period(unit: unit, offset: candidate)
             if ProgressPeriodBuilder.contains(found, date) {
                 offset = candidate
                 return
             }
         }
+
+        // Older than the wheel: a custom range from that day to today shows the photo
+        customStart = ProgressPeriodBuilder.startOfDay(date)
+        customEnd = ProgressPeriodBuilder.today()
+        unit = .custom
     }
 
     // MARK: - The sheet "Choose a period"

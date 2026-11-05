@@ -64,7 +64,20 @@ struct WorkoutView: View {
                 Text(viewModel.leaveMessage)
             }
         }
+        .alert("Continue your workout?", isPresented: $viewModel.isResumeAsked) {
+            Button("Continue") { viewModel.resumeDraft() }
+            Button("Start over", role: .destructive) { viewModel.discardDraft() }
+        } message: {
+            Text("The app was closed during your last workout of this plan. Your sets were kept.")
+        }
+        .alert("Couldn't save your workout", isPresented: $viewModel.saveFailed) {
+            Button("Try again") { viewModel.finish() }
+            Button("Keep going", role: .cancel) {}
+        } message: {
+            Text("Your sets are still here. Try saving again.")
+        }
         .onAppear { viewModel.begin(context: modelContext) }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .onChange(of: viewModel.shouldClose) { _, shouldClose in
             if shouldClose { onClose() }
         }

@@ -135,8 +135,8 @@ struct DayCircleView: View {
         switch day.state {
         case .done:     return doneColor
         case .rest:     return AppColors.restBlue
-        case .planned:  return AppColors.divider
-        case .todayWorkout: return AppColors.green.opacity(0.25)
+        case .planned:  return plannedColor ?? AppColors.divider
+        case .todayWorkout: return (plannedColor ?? AppColors.green).opacity(0.25)
         case .todayRest:    return AppColors.restBlue.opacity(0.25)
         case .today:        return .clear
         case .upcoming:     return .clear
@@ -149,10 +149,16 @@ struct DayCircleView: View {
         return PlanPalette.colors[index]
     }
 
+    // A day still to do takes the color of the plan the rotation gives it (nil when it is not known)
+    private var plannedColor: Color? {
+        guard let index = day.plannedColorIndex, PlanPalette.colors.indices.contains(index) else { return nil }
+        return PlanPalette.colors[index]
+    }
+
     // Border color
     private var borderColor: Color {
         switch day.state {
-        case .todayWorkout: return AppColors.green
+        case .todayWorkout: return plannedColor ?? AppColors.green
         case .todayRest:    return AppColors.restBlue
         case .today:        return AppColors.textPrimary
         case .upcoming: return AppColors.divider
@@ -174,7 +180,8 @@ struct DayCircleView: View {
         case .done:                return day.colorIndex == nil ? .white : .black   // black reads well on every plan color
         case .rest:                return Color.white
         case .today, .todayWorkout, .todayRest: return AppColors.textPrimary
-        case .planned, .upcoming:  return AppColors.textSecondary
+        case .planned:             return plannedColor == nil ? AppColors.textSecondary : .black   // like a day done
+        case .upcoming:            return AppColors.textSecondary
         }
     }
 }

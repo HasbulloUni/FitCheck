@@ -175,7 +175,7 @@ final class ExercisePickerViewModel {
     // Why nothing matched, when it is worth explaining (nil = no special reason)
     var noResultsNote: String? {
         searchText.lowercased().contains("barbell")
-            ? "Heavy barbell lifts are not in FitCheck: they are not safe to do alone."
+            ? "Heavy barbell lifts are not included in FitLook."
             : nil
     }
 
@@ -189,7 +189,7 @@ final class ExercisePickerViewModel {
         for item in visibleItems where !muscles.contains(item.muscle) { muscles.append(item.muscle) }
         let maximum = SafetyRules.maxExercisesPerMuscle
         if muscles.count == 1, let muscle = muscles.first {
-            return "\(muscle.capitalized) is full: \(maximum) of \(maximum). To keep the day safe, remove one to add another."
+            return "\(muscle.capitalized) is full: \(maximum) of \(maximum). Each muscle has a limit per day: remove one to add another."
         }
         return "These exercises are full for today. Remove one to add another."
     }

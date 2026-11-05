@@ -11,6 +11,7 @@ struct HomeHeaderView: View {
     let name: String
     let plannedThisWeek: Int
     let unit: CGFloat   // 1% of the screen width
+    var onInfo: (() -> Void)? = nil   // the info button (nil = not shown)
 
     // If the user has not set a name yet, we show "User"
     private var displayName: String {
@@ -25,11 +26,23 @@ struct HomeHeaderView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
-            Text("Hi, \(displayName)")
-                .font(.system(size: AppSizes.Text.hero * unit, weight: .heavy))
-                .foregroundStyle(AppColors.textPrimary)
-                .minimumScaleFactor(0.6)   // a long name shrinks instead of wrapping
-                .lineLimit(1)
+            HStack {
+                Text("Hi, \(displayName)")
+                    .font(.system(size: AppSizes.Text.hero * unit, weight: .heavy))
+                    .foregroundStyle(AppColors.textPrimary)
+                    .minimumScaleFactor(0.6)   // a long name shrinks instead of wrapping
+                    .lineLimit(1)
+
+                if let onInfo {
+                    Spacer()
+                    Button(action: onInfo) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: AppSizes.Text.bodyLarge * unit * 1.3))
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    .accessibilityLabel("Info")
+                }
+            }
 
             if let subtitle {
                 Text(subtitle)

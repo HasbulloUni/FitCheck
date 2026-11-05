@@ -43,4 +43,11 @@ enum AppSizes {
         static let section: CGFloat = 4        // blocks of a screen
         static let screen: CGFloat = 6         // big separations
     }
+
+    // MARK: Launch screen
+    // Fixed in points (NOT a multiple of unit): the static launch screen of iOS
+    // cannot use unit, and SplashView must match it exactly so nothing jumps.
+    enum Launch {
+        static let iconWidth: CGFloat = 120
+    }
 }

@@ -12,6 +12,8 @@ struct SummaryView: View {
     // The ViewModel owns the data: this View only draws it
     @State private var viewModel = SummaryViewModel()
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isInfoOpen = false
 
     var body: some View {
         // The NavigationStack lets Edit week open INSIDE the tab:
@@ -26,7 +28,8 @@ struct SummaryView: View {
                     HomeHeaderView(
                         name: viewModel.userName,
                         plannedThisWeek: viewModel.plannedThisWeek,
-                        unit: unit
+                        unit: unit,
+                        onInfo: { isInfoOpen = true }
                     )
 
                     WeekCardView(
@@ -63,17 +66,32 @@ struct SummaryView: View {
                         onNewPlan: { viewModel.openAddPlan() },
                         onReadyMade: { viewModel.openReadyMade() },
                         onDeleteAllPlans: { viewModel.deleteAllPlans() },
-                        exerciseLines: { viewModel.exerciseLines(for: $0) },
+                        onOpenPlan: { viewModel.openPlan($0) },
                         onEditPlan: { viewModel.openEditPlan($0) },
                         onDeletePlan: { viewModel.deletePlan($0) },
-                        onStartPlan: { viewModel.sendToToday($0) }
+                        onStartPlan: { viewModel.goTapped($0) }
                     )
                 }
                 .padding(AppSizes.Space.screen * unit)
             }
+            // A tap on a plan: its exercises rise from the bottom (pull up for more, drag down to close)
+            .sheet(item: $viewModel.planShown) { plan in
+                PlanExercisesSheetView(plan: plan, lines: viewModel.exerciseLines(for: plan), unit: unit)
+                    .presentationDetents([.fraction(0.5), .large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(8 * unit)
+                    .presentationBackground(AppColors.background)
+            }
         }
         .background(AppColors.background)
         .onAppear { viewModel.configure(context: modelContext) }
+        // Back to the front (maybe on a new day) or midnight passed: "today" is updated
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { viewModel.refreshForNewDay() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+            viewModel.refreshForNewDay()
+        }
         // The pencil opens "Edit your week": Back returns here
         .navigationDestination(isPresented: $viewModel.isEditWeekOpen) {
             EditWeekView(
@@ -114,6 +132,24 @@ struct SummaryView: View {
                 .presentationDetents([.fraction(0.36)])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(AppColors.background)
+        }
+        // Info: the notice, where the data is, and "Delete all my data"
+        .sheet(isPresented: $isInfoOpen) {
+            InfoView()
+        }
+        // Go after a workout already done today: asks if the user wants to train more
+        .alert(
+            "You already trained today",
+            isPresented: Binding(
+                get: { viewModel.extraWorkoutPlan != nil },
+                set: { if !$0 { viewModel.cancelExtraWorkout() } }
+            ),
+            presenting: viewModel.extraWorkoutPlan
+        ) { plan in
+            Button("Not now", role: .cancel) { viewModel.cancelExtraWorkout() }
+            Button("Yes, start") { viewModel.confirmExtraWorkout(plan) }
+        } message: { plan in
+            Text("Do you want to keep training with \(plan.name)?")
         }
         // The limit of plans: a native alert with one button
         .alert(

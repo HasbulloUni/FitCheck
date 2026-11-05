@@ -9,8 +9,8 @@ import SwiftUI
 
 // The photo of the exercise, with a FIXED height: it never grows or shrinks when the card
 // below changes (set, rest, edit...). The screen gives it the height.
-// Tap the photo, or the switch "1 | 2" under "How to do it", to see the second photo:
-// the two photos show the start and the end of the movement.
+// Tap the photo to see the other photo (a small hand icon tells it): the two photos
+// show the start and the end of the movement.
 struct ExercisePhotoView: View {
 
     @State private var viewModel: ExercisePhotoViewModel
@@ -40,12 +40,22 @@ struct ExercisePhotoView: View {
                 withAnimation(.easeInOut(duration: 0.2)) { viewModel.toggle() }
             }
             .overlay(alignment: .topTrailing) {
-                // "How to do it" with the photo switch right under it
-                VStack(alignment: .trailing, spacing: AppSizes.Space.related * unit) {
-                    if let onHowTo { howToButton(action: onHowTo) }
-                    photoSwitch
+                if let onHowTo {
+                    howToButton(action: onHowTo)
+                        .padding(AppSizes.Space.group * unit)
                 }
-                .padding(AppSizes.Space.group * unit)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                // Small transparent hint that the photo can be tapped (same as the detail screen)
+                if viewModel.hasTwoPhotos {
+                    Image(systemName: "hand.tap")
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .shadow(color: .black.opacity(0.4), radius: 2)
+                        .padding(AppSizes.Space.group * unit)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel(viewModel.hasTwoPhotos
@@ -83,32 +93,6 @@ struct ExercisePhotoView: View {
                 .overlay(Capsule().stroke(AppColors.textPrimary, lineWidth: 2))
         }
         .buttonStyle(.plain)
-    }
-
-    // The switch of the two photos: "1" and "2". The selected one is black.
-    // It is always shown when the exercise has 2 photos (it does not wait for the download).
-    @ViewBuilder
-    private var photoSwitch: some View {
-        if viewModel.hasTwoPhotos {
-            HStack(spacing: 0) {
-                ForEach(0..<2, id: \.self) { position in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) { viewModel.select(position) }
-                    } label: {
-                        Text("\(position + 1)")
-                            .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
-                            .foregroundStyle(position == viewModel.index ? AppColors.background : AppColors.textPrimary)
-                            .frame(width: 9 * unit, height: 9 * unit)
-                            .background(position == viewModel.index ? AppColors.textPrimary : Color.clear, in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Photo \(position + 1)")
-                }
-            }
-            .padding(AppSizes.Space.tight * unit)
-            .background(AppColors.card, in: Capsule())
-            .overlay(Capsule().stroke(AppColors.textPrimary, lineWidth: 2))
-        }
     }
 }
 

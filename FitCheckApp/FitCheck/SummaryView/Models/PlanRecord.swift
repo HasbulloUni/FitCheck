@@ -62,7 +62,7 @@ extension PlanItem {
             id: record.id,
             name: record.name,
             icon: record.icon,
-            color: PlanPalette.colors[record.colorIndex],
+            color: PlanPalette.color(at: record.colorIndex),
             exerciseCount: record.exerciseCount,
             minutes: record.minutes,
             exerciseIds: record.exerciseIds,

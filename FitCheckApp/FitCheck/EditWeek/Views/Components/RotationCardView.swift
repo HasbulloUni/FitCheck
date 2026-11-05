@@ -120,6 +120,7 @@ struct RotationCardView: View {
                 .padding(.horizontal, 5 * unit)
                 .padding(.vertical, 2.8 * unit)
                 .background(AppColors.cardAlt, in: Capsule())
+                .contentShape(Capsule())
         }
         .accessibilityLabel("\(EditWeekRules.rotationChange) plan for \(row.dayName)")
     }

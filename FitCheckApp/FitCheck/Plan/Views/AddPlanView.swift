@@ -204,6 +204,10 @@ struct AddPlanView: View {
                 .foregroundStyle(.black)
                 .focused($isNameFocused)
                 .submitLabel(.done)
+                .onChange(of: viewModel.name) { _, value in
+                    // The name is cut at 30 characters
+                    if value.count > 30 { viewModel.name = String(value.prefix(30)) }
+                }
 
                 Button(action: { isNameFocused = true }) {
                     Image(systemName: "pencil")

@@ -82,6 +82,8 @@ struct PhotosScreenView: View {
             Task {
                 if let data = try? await newItem.loadTransferable(type: Data.self) {
                     viewModel.startDraft(imageData: data)
+                } else {
+                    viewModel.photoLoadFailed()
                 }
                 pickedItem = nil   // ready for the next photo
             }

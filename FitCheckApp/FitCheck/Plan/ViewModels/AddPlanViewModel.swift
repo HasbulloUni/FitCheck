@@ -232,7 +232,7 @@ final class AddPlanViewModel {
     }
 
     // The color of this plan: the big header and the picked exercises use it
-    var color: Color { PlanPalette.colors[colorIndex] }
+    var color: Color { PlanPalette.color(at: colorIndex) }
 
     // e.g. "NEW PLAN · 60 MIN"
     var headerLabel: String {

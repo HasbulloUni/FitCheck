@@ -10,8 +10,8 @@ import SwiftUI
 // BLOCK 5 - The "My plans" section: title with "+ New plan" and one row for each plan.
 // Every size is a multiple of "unit" (1% of the screen width), like the other blocks.
 //
-// Each row is one training day. Tap it: it opens a dropdown with the exercises of the day
-// (one plan open at a time). Swipe it:
+// Each row is one training day. Tap it: a bottom sheet with the exercises of the day opens
+// (the sheet is shown by the Home). Swipe it:
 //   - from right to left: the Edit and Delete buttons appear
 //   - from left to right: the Go button appears (it starts the workout)
 
@@ -22,7 +22,7 @@ struct MyPlansSectionView: View {
     let onNewPlan: () -> Void               // "Custom" in the "+ New plan" menu (or tap on the empty card)
     var onReadyMade: () -> Void = {}        // "Ready-made" in the "+ New plan" menu
     var onDeleteAllPlans: () -> Void = {}   // "Delete all plans" in the "+ New plan" menu (after the question)
-    let exerciseLines: (PlanItem) -> [PlanExerciseLine]   // the exercises shown in the dropdown of a plan
+    let onOpenPlan: (PlanItem) -> Void      // tap on a row: the sheet with the exercises opens
     let onEditPlan: (PlanItem) -> Void      // swipe right-to-left, then Edit
     let onDeletePlan: (PlanItem) -> Void    // swipe right-to-left, then Delete (after the question)
     let onStartPlan: (PlanItem) -> Void     // swipe left-to-right, then Go
@@ -33,24 +33,21 @@ struct MyPlansSectionView: View {
     @State private var isDeleteAllAsked = false
     // The row that is swiped open right now: when another row is swiped, this one closes
     @State private var openPlanId: UUID? = nil
-    // The plan whose dropdown is open (nil = all closed): only one at a time
-    @State private var expandedPlanId: UUID?
 
     init(plans: [PlanItem], unit: CGFloat, onNewPlan: @escaping () -> Void,
          onReadyMade: @escaping () -> Void = {}, onDeleteAllPlans: @escaping () -> Void = {},
-         exerciseLines: @escaping (PlanItem) -> [PlanExerciseLine],
+         onOpenPlan: @escaping (PlanItem) -> Void,
          onEditPlan: @escaping (PlanItem) -> Void, onDeletePlan: @escaping (PlanItem) -> Void,
-         onStartPlan: @escaping (PlanItem) -> Void, startExpandedId: UUID? = nil) {
+         onStartPlan: @escaping (PlanItem) -> Void) {
         self.plans = plans
         self.unit = unit
         self.onNewPlan = onNewPlan
         self.onReadyMade = onReadyMade
         self.onDeleteAllPlans = onDeleteAllPlans
-        self.exerciseLines = exerciseLines
+        self.onOpenPlan = onOpenPlan
         self.onEditPlan = onEditPlan
         self.onDeletePlan = onDeletePlan
         self.onStartPlan = onStartPlan
-        _expandedPlanId = State(initialValue: startExpandedId)   // only the previews pass a value
     }
 
     var body: some View {
@@ -81,10 +78,17 @@ struct MyPlansSectionView: View {
                         }
                     }
                 } label: {
+                    // The tappable area is bigger than the text (a text alone is a very small target)
                     Text("+ New plan")
                         .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
                         .foregroundStyle(AppColors.textSecondary)
+                        .padding(.horizontal, 3 * unit)
+                        .padding(.vertical, 3 * unit)
+                        .contentShape(Rectangle())
                 }
+                // The same space taken away outside, so the text stays where it was
+                .padding(.horizontal, -3 * unit)
+                .padding(.vertical, -3 * unit)
             }
 
             if plans.isEmpty {
@@ -102,13 +106,8 @@ struct MyPlansSectionView: View {
                         plan: plan,
                         unit: unit,
                         openPlanId: $openPlanId,
-                        isExpanded: expandedPlanId == plan.id,
-                        lines: expandedPlanId == plan.id ? exerciseLines(plan) : [],
-                        onToggle: { toggleExpanded(plan) },
-                        onEdit: {
-                            expandedPlanId = nil   // editing closes the dropdown
-                            onEditPlan(plan)
-                        },
+                        onOpen: { onOpenPlan(plan) },
+                        onEdit: { onEditPlan(plan) },
                         onDelete: { planToDelete = plan },
                         onStart: { onStartPlan(plan) }
                     )
@@ -121,10 +120,7 @@ struct MyPlansSectionView: View {
             isPresented: $isDeleteAllAsked,
             titleVisibility: .visible
         ) {
-            Button("Delete all", role: .destructive) {
-                expandedPlanId = nil
-                onDeleteAllPlans()
-            }
+            Button("Delete all", role: .destructive) { onDeleteAllPlans() }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("They are also removed from the rotation. Your progress is kept.")
@@ -140,21 +136,11 @@ struct MyPlansSectionView: View {
         ) {
             Button("Delete", role: .destructive) {
                 if let plan = planToDelete {
-                    if expandedPlanId == plan.id { expandedPlanId = nil }   // deleting closes the dropdown
                     onDeletePlan(plan)
                 }
                 planToDelete = nil
             }
             Button("Cancel", role: .cancel) { planToDelete = nil }
-        }
-    }
-}
-
-extension MyPlansSectionView {
-    // Tap on a row: it opens, a tap on the open one (or on another one) closes it
-    fileprivate func toggleExpanded(_ plan: PlanItem) {
-        withAnimation(.spring(response: 0.38, dampingFraction: 0.85)) {
-            expandedPlanId = expandedPlanId == plan.id ? nil : plan.id
         }
     }
 }
@@ -166,9 +152,7 @@ struct PlanRowView: View {
     let plan: PlanItem
     let unit: CGFloat
     @Binding var openPlanId: UUID?   // the row swiped open in the list (shared by all the rows)
-    let isExpanded: Bool       // true while the dropdown with the exercises is open
-    let lines: [PlanExerciseLine]   // the exercises of the dropdown (empty while it is closed)
-    let onToggle: () -> Void   // tap on the row
+    let onOpen: () -> Void     // tap on the row
     let onEdit: () -> Void     // Edit button
     let onDelete: () -> Void   // Delete button
     let onStart: () -> Void    // Go button
@@ -204,13 +188,7 @@ struct PlanRowView: View {
     private var rowSpring: Animation { .spring(response: 0.38, dampingFraction: 0.78) }
 
     var body: some View {
-        VStack(spacing: AppSizes.Space.related * unit) {
-            swipeRow
-            if isExpanded {
-                exercisesList
-                    .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .top)))
-            }
-        }
+        swipeRow
     }
 
     // The row with the swipe buttons behind the card
@@ -258,11 +236,11 @@ struct PlanRowView: View {
             card
                 .offset(x: offset)
                 .onTapGesture {
-                    // An open row closes first, a closed row opens the plan
+                    // An open row closes first, a closed row opens the sheet of the plan
                     if restingOffset != 0 {
                         closeRow()
                     } else {
-                        onToggle()
+                        onOpen()
                     }
                 }
                 .simultaneousGesture(swipe)
@@ -279,8 +257,7 @@ struct PlanRowView: View {
         // The swipe is not possible with VoiceOver, so the same actions are offered here
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
-        .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-        .accessibilityHint(isExpanded ? "Hides the exercises" : "Shows the exercises")
+        .accessibilityHint("Shows the exercises")
         .accessibilityAction(named: "Go") { onStart() }
         .accessibilityAction(named: "Edit") { onEdit() }
         .accessibilityAction(named: "Delete") { onDelete() }
@@ -322,50 +299,11 @@ struct PlanRowView: View {
             }
 
             Spacer()
-
-            // The chevron turns when the dropdown opens
-            Image(systemName: "chevron.down")
-                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                .foregroundStyle(AppColors.textSecondary)
-                .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                .animation(.spring(response: 0.38, dampingFraction: 0.85), value: isExpanded)
         }
         .padding(AppSizes.Space.group * unit)
         .frame(height: rowHeight)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .contentShape(Rectangle())
-    }
-
-    // MARK: The dropdown: one line for each exercise, name on the left and sets x reps on the right
-    private var exercisesList: some View {
-        VStack(spacing: AppSizes.Space.related * unit) {
-            if lines.isEmpty {
-                Text("No exercises")
-                    .font(.system(size: AppSizes.Text.body * unit, weight: .regular))
-                    .foregroundStyle(AppColors.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                ForEach(lines) { line in
-                    HStack(spacing: AppSizes.Space.group * unit) {
-                        Text(line.name)
-                            .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
-                            .foregroundStyle(AppColors.textPrimary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                        Spacer(minLength: 0)
-                        Text(line.setsRepsText)
-                            .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                            .foregroundStyle(AppColors.textSecondary)
-                            .lineLimit(1)
-                    }
-                }
-            }
-        }
-        .padding(AppSizes.Space.group * unit)
-        .frame(maxWidth: .infinity)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(lines.isEmpty ? "No exercises" : lines.map { "\($0.name), \($0.setsRepsText)" }.joined(separator: ". "))
     }
 
     // MARK: The swipe
@@ -438,20 +376,12 @@ private let samplePlans: [PlanItem] = [
     PlanItem(id: UUID(), name: "Full body", icon: "figure.mixed.cardio", color: AppColors.muscleGreen, exerciseCount: 10, minutes: 60)
 ]
 
-private let sampleLines: [PlanExerciseLine] = [
-    PlanExerciseLine(id: "0-a", name: "Goblet squat", setsRepsText: "3 × 10"),
-    PlanExerciseLine(id: "1-b", name: "Romanian deadlift", setsRepsText: "3 × 8-12"),
-    PlanExerciseLine(id: "2-c", name: "Plank", setsRepsText: "3 × 30 s")
-]
-
-// The preview of an open dropdown: the first plan starts expanded
-private struct ExpandedPreview: View {
+private struct PlansPreview: View {
     var body: some View {
         MyPlansSectionView(
             plans: samplePlans, unit: 3.9,
-            onNewPlan: {}, exerciseLines: { _ in sampleLines },
-            onEditPlan: { _ in }, onDeletePlan: { _ in }, onStartPlan: { _ in },
-            startExpandedId: samplePlans[0].id
+            onNewPlan: {}, onOpenPlan: { _ in },
+            onEditPlan: { _ in }, onDeletePlan: { _ in }, onStartPlan: { _ in }
         )
         .padding(20)
         .background(AppColors.background)
@@ -459,18 +389,18 @@ private struct ExpandedPreview: View {
 }
 
 #Preview("Light") {
-    ExpandedPreview()
+    PlansPreview()
 }
 
 #Preview("Dark") {
-    ExpandedPreview()
+    PlansPreview()
         .preferredColorScheme(.dark)
 }
 
 #Preview("No data") {
     MyPlansSectionView(
         plans: [], unit: 3.9,
-        onNewPlan: {}, exerciseLines: { _ in [] }, onEditPlan: { _ in },
+        onNewPlan: {}, onOpenPlan: { _ in }, onEditPlan: { _ in },
         onDeletePlan: { _ in }, onStartPlan: { _ in }
     )
     .padding(20)

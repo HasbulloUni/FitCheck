@@ -32,6 +32,7 @@ struct WeekDay: Identifiable {
     let date: Date       // the actual date
     let state: DayState  // how it should be drawn
     var colorIndex: Int? = nil   // for a day done: the color of the plan (position in PlanPalette.colors)
+    var plannedColorIndex: Int? = nil   // for a day still to do: the color of the plan the rotation gives (nil = not known)
 
     // The day of the month (e.g. 29), written inside the circle.
     var number: Int {
@@ -154,7 +155,7 @@ struct WeekData {
         let day = Calendar.current.startOfDay(for: date)
 
         // Days before the last change keep the choice that was valid then
-        var planned = plannedWeekdays(on: day)
+        let planned = plannedWeekdays(on: day)
         var rest = restWeekdays
         if let start = ruleStartDate, day < start {
             rest = previousRestWeekdays

@@ -22,6 +22,11 @@ enum PlanPalette {
         AppColors.musclePurple
     ]
 
+    // The color at a position; a wrong position gives the first color instead of a crash
+    static func color(at index: Int) -> Color {
+        colors.indices.contains(index) ? colors[index] : colors[0]
+    }
+
     // The first color that no plan is using (or the first one if all are taken)
     static func firstFree(taken: [Int]) -> Int {
         for index in colors.indices where !taken.contains(index) {

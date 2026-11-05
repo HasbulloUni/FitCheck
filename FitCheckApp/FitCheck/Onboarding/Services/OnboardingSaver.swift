@@ -12,7 +12,9 @@ import SwiftData
 
 enum OnboardingSaver {
 
-    static func save(name: String, draft: EditWeekDraft, plans: [PlanItem], context: ModelContext) {
+    // Returns false if the data could not be saved (nothing is kept in that case)
+    @discardableResult
+    static func save(name: String, draft: EditWeekDraft, plans: [PlanItem], context: ModelContext) -> Bool {
         // The profile is the same one that Home uses: it is created here if it does not exist yet
         let profile = (try? context.fetch(FetchDescriptor<AppProfile>()))?.first ?? {
             let created = AppProfile()
@@ -52,9 +54,15 @@ enum OnboardingSaver {
         profile.draftRotationWeekdays = saved.rotation.map { $0.weekday }
         profile.draftRotationPlanIds = saved.rotation.map { $0.planId?.uuidString ?? "" }
 
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            return false
+        }
 
         // The reminders ask the notification permission only if "Remind me" is on
         Task { await ReminderScheduler.updateReminders(for: saved) }
+        return true
     }
 }

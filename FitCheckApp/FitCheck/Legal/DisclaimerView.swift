@@ -11,14 +11,15 @@ import SwiftUI
 // A native iPhone sheet: a NavigationStack with a List, system fonts and SF Symbols.
 // It opens once, the first time the app is launched, and the user must tap "I understand".
 struct DisclaimerView: View {
-    let onAccept: () -> Void
+    // nil = the notice is only read (opened from Info): no button
+    let onAccept: (() -> Void)?
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
                     row(icon: "cross.case", title: "Not medical advice",
-                        text: "FitCheck is not a medical device and does not give medical advice. Talk to a doctor before you start any training program.")
+                        text: "FitLook is not a medical device and does not give medical advice. Talk to a doctor before you start any training program.")
 
                     row(icon: "figure.strengthtraining.traditional", title: "Training has risks",
                         text: "Exercises with weights can cause injuries. Use a load you can control, stop if you feel pain, and ask a coach if you are unsure about a movement.")
@@ -33,6 +34,7 @@ struct DisclaimerView: View {
             .navigationBarTitleDisplayMode(.large)
             // The big button stays at the bottom, above the home indicator
             .safeAreaInset(edge: .bottom) {
+                if let onAccept {
                 Button(action: onAccept) {
                     Text("I understand")
                         .font(.headline)
@@ -43,6 +45,7 @@ struct DisclaimerView: View {
                 .controlSize(.large)
                 .padding(.horizontal)
                 .padding(.bottom, 8)
+                }
             }
         }
     }
