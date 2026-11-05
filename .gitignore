@@ -32,3 +32,6 @@ fastlane/test_output
 *.log
 .idea/
 .vscode/
+.DS_Store
+xcuserdata/
+*.xcuserstate
