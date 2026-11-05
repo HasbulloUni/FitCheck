@@ -7,45 +7,17 @@
 
 import SwiftUI
 
-// The rest between two sets: a big ring with the time left, "+15 s" and "Skip rest".
+// The rest between two sets: the same countdown card of the warm-up, with "+15 s" and "Skip rest".
 struct RestCardView: View {
     let remaining: Int
-    let total: Int
     let unit: CGFloat
     let nextSetNumber: Int
     let onAdd: () -> Void
     let onSkip: () -> Void
 
-    // 1 = full ring, 0 = empty ring
-    private var progress: Double {
-        total > 0 ? min(1, Double(remaining) / Double(total)) : 0
-    }
-
     var body: some View {
-        VStack(spacing: AppSizes.Space.group * unit) {
-            Text("REST")
-                .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
-                .foregroundStyle(AppColors.textSecondary)
-
-            ZStack {
-                Circle().stroke(AppColors.cardAlt, lineWidth: 3 * unit)
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(AppColors.textPrimary, style: StrokeStyle(lineWidth: 3 * unit, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 1), value: remaining)
-                VStack(spacing: AppSizes.Space.tight * unit) {
-                    Text(WorkoutFormat.clock(remaining))
-                        .font(.system(size: AppSizes.Text.display * unit, weight: .heavy))
-                        .foregroundStyle(AppColors.textPrimary)
-                        .monospacedDigit()
-                    Text("next: set \(nextSetNumber)")
-                        .font(.system(size: AppSizes.Text.caption * unit))
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-            }
-            .frame(width: 28 * unit, height: 28 * unit)
-
+        CountdownCardView(title: "REST", remaining: remaining,
+                          subtitle: "next: set \(nextSetNumber)", unit: unit) {
             HStack(spacing: AppSizes.Space.related * unit) {
                 Button(action: onAdd) {
                     Text("+15 s")
@@ -66,14 +38,9 @@ struct RestCardView: View {
                         .background(AppColors.yellow, in: Capsule())
                 }
                 .buttonStyle(.plain)
-                .frame(maxWidth: .infinity)
                 .layoutPriority(1)
             }
         }
-        .padding(AppSizes.Space.section * unit)
-        .frame(maxWidth: .infinity)
-        .frame(height: WorkoutRules.cardHeightUnits * unit)   // same height as the Reps/Weight card
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 }
 
@@ -123,7 +90,7 @@ struct RestBarView: View {
 
 #Preview("Light") {
     VStack {
-        RestCardView(remaining: 45, total: 90, unit: 3.9, nextSetNumber: 3, onAdd: {}, onSkip: {})
+        RestCardView(remaining: 45, unit: 3.9, nextSetNumber: 3, onAdd: {}, onSkip: {})
         RestBarView(remaining: 38, total: 90, unit: 3.9, onSkip: {})
     }
     .padding()
@@ -133,7 +100,7 @@ struct RestBarView: View {
 
 #Preview("Dark") {
     VStack {
-        RestCardView(remaining: 45, total: 90, unit: 3.9, nextSetNumber: 3, onAdd: {}, onSkip: {})
+        RestCardView(remaining: 45, unit: 3.9, nextSetNumber: 3, onAdd: {}, onSkip: {})
         RestBarView(remaining: 38, total: 90, unit: 3.9, onSkip: {})
     }
     .padding()

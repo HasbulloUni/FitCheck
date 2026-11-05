@@ -24,6 +24,10 @@ enum WorkoutRules {
     static let treadmillSeconds = 8 * 60   // Walking Treadmill: 8 minutes (it can go to 10)
     static let cooldownSeconds = 5 * 60    // the stretching at the end
 
+    // A workout counts as done when at least this share of the sets of the main exercises is done
+    // (warm-up and cool-down do not count). 0.5 = half of the sets.
+    static let completionShare = 0.5
+
     // MARK: Layout of the exercise screen (in units: 1 unit = 1% of the screen width)
     // The photo has a FIXED height: all the screen minus the other blocks.
     // The card under the chips always has the same height, so rest, edit and "all done"

@@ -142,9 +142,9 @@ private let sampleWeekGoals: [GoalItem] = [
 ]
 
 private let sampleMonthGoals: [GoalItem] = [
-    GoalItem(title: "Week active", centerText: "3/4", subtitle: "1 to go", progress: 0.75, color: AppColors.muscleOrange),
+    GoalItem(title: "Week active", centerText: "75%", subtitle: "3 of 4 weeks", progress: 0.75, color: AppColors.muscleOrange),
     GoalItem(title: "Plan completion", centerText: "75%", subtitle: "6 left", progress: 0.75, color: AppColors.muscleRed),
-    GoalItem(title: "Muscle coverage", centerText: "4/6", subtitle: "2 to go", progress: 4.0 / 6.0, color: AppColors.muscleYellow)
+    GoalItem(title: "Muscle coverage", centerText: "67%", subtitle: "4 of 6 muscles", progress: 4.0 / 6.0, color: AppColors.muscleYellow)
 ]
 
 #Preview("Light") {

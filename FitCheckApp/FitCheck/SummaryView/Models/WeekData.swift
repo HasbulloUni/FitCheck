@@ -83,6 +83,29 @@ struct WeekData {
         restWeekdays = [2, 3, 4, 5, 6, 7, 1].filter { !newPlanned.contains($0) }
     }
 
+    // Empties the week from today on (today included). The old choice is kept for the past,
+    // exactly like in changeWeek, so the days before today never change.
+    mutating func resetWeek() {
+        let todayStart = Calendar.current.startOfDay(for: today)
+        if ruleStartDate != todayStart {
+            previousPlannedWeekdays = plannedWeekdays
+            previousRestWeekdays = restWeekdays
+        }
+        ruleStartDate = todayStart
+        plannedWeekdays = []
+        restWeekdays = []
+    }
+
+    // The training weekdays that were valid on a date: days before "ruleStartDate"
+    // keep the old choice, from "ruleStartDate" on the current choice is used.
+    func plannedWeekdays(on date: Date) -> [Int] {
+        let day = Calendar.current.startOfDay(for: date)
+        if let start = ruleStartDate, day < start {
+            return previousPlannedWeekdays
+        }
+        return plannedWeekdays
+    }
+
     // Builds the 7 days of a week, Monday through Sunday.
     // weekOffset: 0 = the week containing "today", 1 = the next one, and so on.
     func days(weekOffset: Int = 0) -> [WeekDay] {
@@ -131,10 +154,9 @@ struct WeekData {
         let day = Calendar.current.startOfDay(for: date)
 
         // Days before the last change keep the choice that was valid then
-        var planned = plannedWeekdays
+        var planned = plannedWeekdays(on: day)
         var rest = restWeekdays
         if let start = ruleStartDate, day < start {
-            planned = previousPlannedWeekdays
             rest = previousRestWeekdays
         }
 

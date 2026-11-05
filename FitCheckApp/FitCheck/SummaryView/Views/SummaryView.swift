@@ -41,7 +41,8 @@ struct SummaryView: View {
 
                     // Today: show the workout if there is one, otherwise invite the user to add it
                     if let plan = viewModel.todayPlan {
-                        TodayCardView(plan: plan, unit: unit, onStart: { viewModel.startToday() })
+                        TodayCardView(plan: plan, unit: unit, onStart: { viewModel.startToday() },
+                                      onBack: { viewModel.cancelGo() })
                     } else if viewModel.isTodayRest {
                         TodayRestCardView(unit: unit)
                     } else {
@@ -62,7 +63,7 @@ struct SummaryView: View {
                         onNewPlan: { viewModel.openAddPlan() },
                         onReadyMade: { viewModel.openReadyMade() },
                         onDeleteAllPlans: { viewModel.deleteAllPlans() },
-                        onOpenPlan: { viewModel.openEditPlan($0) },
+                        exerciseLines: { viewModel.exerciseLines(for: $0) },
                         onEditPlan: { viewModel.openEditPlan($0) },
                         onDeletePlan: { viewModel.deletePlan($0) },
                         onStartPlan: { viewModel.sendToToday($0) }
@@ -128,6 +129,16 @@ struct SummaryView: View {
         }
         // The Home has its own header: no system title bar
         .toolbar(.hidden, for: .navigationBar)
+        // All the workouts of the week are done: fireworks for a few seconds
+        .overlay {
+            if viewModel.isFireworksShown {
+                FireworksView()
+                    .task {
+                        try? await Task.sleep(for: .seconds(FireworksView.duration))
+                        viewModel.hideFireworks()
+                    }
+            }
+        }
         }
     }
 }

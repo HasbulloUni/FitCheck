@@ -29,6 +29,11 @@ enum AppColors {
     static let yellow = Color(light: 0xF2C230, dark: 0xF2C230)
     static let red = Color(light: 0xE5524A, dark: 0xF06B63)
 
+    // MARK: Rest day (tutto blu: card This week, luna, card Today). Fissi: restano chiari anche nel tema scuro
+    static let restBlue = Color(light: 0x4A9BD8, dark: 0x4A9BD8)
+    static let restBlueLight = Color(light: 0x9ACFF2, dark: 0x9ACFF2)
+    static let restBlueText = Color(light: 0x0B2A44, dark: 0x0B2A44)   // blu quasi nero, leggibile sul blu
+
     // MARK: Famiglie dei gruppi muscolari
     static let muscleBlue = Color(light: 0x4A9BD8, dark: 0x6CB4EA)
     static let musclePurple = Color(light: 0x7B4FD1, dark: 0xA287EA)

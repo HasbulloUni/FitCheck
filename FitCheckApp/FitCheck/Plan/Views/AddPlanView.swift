@@ -27,16 +27,17 @@ struct AddPlanView: View {
     let onBack: () -> Void                // the round back button: closes without saving
     let onSave: (PlanItem) -> Void        // "Save to My plans": gives the new plan to the Home
 
-    // Only the first-launch onboarding uses these three. Everywhere else they stay nil
+    // Only the first-launch onboarding uses these two. Everywhere else they stay nil
     // and the screen is exactly the normal "New plan".
     var onboardingStep: Int? = nil        // the step of the progress bar (replaces "NEW PLAN")
     var onboardingDayText: String? = nil  // e.g. "Day 1 of 3"
-    var onReadyMade: (() -> Void)? = nil  // shows the Ready-made | Custom switch at the top
+    var onSkip: (() -> Void)? = nil       // onboarding only: shows "Skip" next to the bar
 
     // editing: the plan to change (nil = a new plan)
     init(editing plan: PlanItem? = nil, takenColorIndexes: [Int], otherPlanNames: [String] = [],
-         onboardingStep: Int? = nil, onboardingDayText: String? = nil, onReadyMade: (() -> Void)? = nil,
+         onboardingStep: Int? = nil, onboardingDayText: String? = nil,
          fallbackName: String? = nil, finalButtonTitle: String? = nil,
+         onSkip: (() -> Void)? = nil,
          onBack: @escaping () -> Void, onSave: @escaping (PlanItem) -> Void) {
         let model = AddPlanViewModel(takenColorIndexes: takenColorIndexes,
                                      otherPlanNames: otherPlanNames, editing: plan)
@@ -49,7 +50,7 @@ struct AddPlanView: View {
         self.onSave = onSave
         self.onboardingStep = onboardingStep
         self.onboardingDayText = onboardingDayText
-        self.onReadyMade = onReadyMade
+        self.onSkip = onSkip
     }
 
     var body: some View {
@@ -66,10 +67,6 @@ struct AddPlanView: View {
                         bigHeader(unit: unit, topInset: topInset)
 
                         VStack(spacing: AppSizes.Space.related * unit) {
-                            if let onReadyMade {
-                                modeSwitch(onReadyMade: onReadyMade, unit: unit)
-                            }
-
                             warmupCard(unit: unit)
                             mainPartTitle(unit: unit)
 
@@ -175,6 +172,17 @@ struct AddPlanView: View {
                     Text("\(step)/\(OnboardingStep.barSteps)")
                         .font(.system(size: AppSizes.Text.caption * unit, weight: .semibold))
                         .foregroundStyle(.black)
+                        .fixedSize()
+
+                    if let onSkip {
+                        Button(action: onSkip) {
+                            Text("Skip")
+                                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                                .foregroundStyle(.black)
+                        }
+                        .buttonStyle(.plain)
+                        .fixedSize()
+                    }
                 } else {
                     Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
                         .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
@@ -250,29 +258,6 @@ struct AddPlanView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Back")
-    }
-
-    // Onboarding only: "Ready-made | Custom". Custom is where we are; Ready-made goes back.
-    private func modeSwitch(onReadyMade: @escaping () -> Void, unit: CGFloat) -> some View {
-        HStack(spacing: 0) {
-            Button(action: onReadyMade) {
-                Text("Ready-made")
-                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                    .foregroundStyle(AppColors.textPrimary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 10 * unit)
-            }
-            .buttonStyle(.plain)
-
-            Text("Custom")
-                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                .foregroundStyle(AppColors.textPrimary)
-                .frame(maxWidth: .infinity)
-                .frame(height: 10 * unit)
-                .background(AppColors.card, in: Capsule())
-        }
-        .padding(unit)
-        .background(AppColors.cardAlt, in: Capsule())
     }
 
     // A small see-through pill, e.g. "5 exercises" or "about 42 min"

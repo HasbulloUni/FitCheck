@@ -27,8 +27,11 @@ struct PhotoViewerView: View {
                 // The pages: one for each photo
                 TabView(selection: $viewModel.viewerId) {
                     ForEach(photos) { photo in
+                        // The page is as big as the free space; the photo is centered inside it
+                        // and keeps its own shape (no bands, no cropping)
                         PhotoImageView(data: photo.imageData, contentMode: .fit)
                             .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .tag(Optional(photo.id))
                     }
                 }
@@ -45,8 +48,7 @@ struct PhotoViewerView: View {
             .padding(.horizontal, AppSizes.Space.screen * unit)
             .padding(.bottom, AppSizes.Space.group * unit)
         }
-        .background(Color.black)
-        .preferredColorScheme(.dark)   // this screen is always dark, like the photo viewers of the system
+        .background(AppColors.background)   // black in dark mode, light beige in light mode
         .confirmationDialog("Delete this photo?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("Delete photo", role: .destructive) { viewModel.deleteViewerPhoto() }
             Button("Keep", role: .cancel) {}
@@ -62,9 +64,9 @@ struct PhotoViewerView: View {
             Button(action: { viewModel.isViewerOpen = false }) {
                 Image(systemName: "xmark")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(AppColors.textPrimary)
                     .frame(width: 10 * unit, height: 10 * unit)
-                    .background(Color.white.opacity(0.14), in: Circle())
+                    .background(AppColors.cardAlt, in: Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Close")
@@ -73,7 +75,7 @@ struct PhotoViewerView: View {
 
             Text(viewModel.viewerPositionText)
                 .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(AppColors.textSecondary)
         }
         .padding(.top, AppSizes.Space.related * unit)
     }
@@ -85,7 +87,7 @@ struct PhotoViewerView: View {
             ForEach(photos) { photo in
                 let isCurrent = photo.id == viewModel.viewerId
                 Capsule()
-                    .fill(isCurrent ? AppColors.yellow : Color.white.opacity(0.3))
+                    .fill(isCurrent ? AppColors.yellow : AppColors.divider)
                     .frame(width: isCurrent ? 4.6 * unit : 1.6 * unit, height: 1.6 * unit)
             }
         }
@@ -99,10 +101,10 @@ struct PhotoViewerView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(ProgressFormat.dayMonthYear(photo.date))
                     .font(.system(size: AppSizes.Text.title * unit, weight: .heavy))
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(AppColors.textPrimary)
                 Text("\(photo.angle.title) · \(ProgressFormat.daysAgo(from: photo.date))")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
-                    .foregroundStyle(Color.white.opacity(0.7))
+                    .foregroundStyle(AppColors.textSecondary)
             }
             Spacer()
         }
@@ -132,7 +134,7 @@ struct PhotoViewerView: View {
                     .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
                     .foregroundStyle(AppColors.red)
                     .frame(width: 14 * unit, height: 12 * unit)
-                    .background(Color.white.opacity(0.14), in: Capsule())
+                    .background(AppColors.cardAlt, in: Capsule())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Delete photo")

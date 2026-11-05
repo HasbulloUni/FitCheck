@@ -16,6 +16,7 @@ struct TodayPlan {
     var planId: UUID? = nil   // the plan of My plans this card comes from
     var result: TodayResult? = nil   // the numbers of the workout done today (nil = not done yet)
     var fromGo = false        // true when the plan was sent with "Go" and replaced the routine
+    var backTitle: String? = nil   // text of the "Back to ..." button: nil = no button (Go can still be cancelled)
 }
 
 // MARK: - What was done today

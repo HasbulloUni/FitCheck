@@ -60,8 +60,37 @@ final class SummaryViewModel {
             exerciseCount: plan.exerciseCount,
             planId: plan.id,
             result: nil,
-            fromGo: fromGo
+            fromGo: fromGo,
+            // The button is there only while the workout is not started (no session today, screen closed)
+            backTitle: fromGo && workoutPlan == nil ? backTitle : nil
         )
+    }
+
+    // What Today would show without the Go: it gives the text of the "Back to ..." button
+    private var backTitle: String {
+        let withoutGo = TodayResolver.resolve(
+            today: .now,
+            trainingWeekdays: weekData.plannedWeekdays,
+            rotation: savedWeekPlan?.rotation ?? [],
+            plans: plans,
+            goPlanId: nil,
+            goDate: nil
+        )
+        switch withoutGo {
+        case .rest:                 return "Back to rest day"
+        case .workout(let plan, _): return "Back to \(plan.name)"
+        case .noPlan:               return "Back to my plan"
+        }
+    }
+
+    // "Back to ..." button: the Go is cancelled and Today goes back to the routine.
+    // Only before the workout is started or done.
+    func cancelGo() {
+        guard goPlanId != nil, workoutPlan == nil, todaySessions.isEmpty else { return }
+        goPlanId = nil
+        goDate = nil
+        saveProfile()
+        refreshGoals()   // the week card and the rotation read goPlanId, so they update by themselves
     }
 
     // The Today card of a day with a workout done: the numbers come from the saved session
@@ -92,6 +121,7 @@ final class SummaryViewModel {
         goPlanId = plan.id
         goDate = Calendar.current.startOfDay(for: .now)
         saveProfile()
+        refreshGoals()
     }
 
     // The plan being trained now: not nil while the workout screen is open
@@ -107,7 +137,54 @@ final class SummaryViewModel {
     // Back from the workout screen
     func closeWorkout() {
         workoutPlan = nil
-        loadTodaySessions()
+        loadTodaySessions()   // also refreshes the goals
+        celebrateIfWeekDone()
+    }
+
+    // MARK: Fireworks
+    // True while the fireworks are on the screen
+    var isFireworksShown = false
+
+    // The Monday (as a number) of the last week already celebrated: each week is celebrated once
+    private static let celebratedWeekKey = "celebratedWeekStart"
+
+    // All the workouts of this week are done: at least as many days with a completed workout as the planned days
+    private var isThisWeekDone: Bool {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: .now) else { return false }
+        // Planned days of this week, each day with the rule that was valid on it
+        var plannedCount = 0
+        var day = week.start
+        while day < week.end {
+            if weekData.plannedWeekdays(on: day).contains(calendar.component(.weekday, from: day)) {
+                plannedCount += 1
+            }
+            guard let next = calendar.date(byAdding: .day, value: 1, to: day) else { break }
+            day = next
+        }
+        guard plannedCount > 0 else { return false }
+        let doneDays = Set(completedSessionDays.filter { week.contains($0) })
+        return doneDays.count >= plannedCount
+    }
+
+    private func celebrateIfWeekDone() {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2
+        guard isThisWeekDone,
+              let weekStart = calendar.dateInterval(of: .weekOfYear, for: .now)?.start else { return }
+
+        let key = weekStart.timeIntervalSince1970
+        guard UserDefaults.standard.double(forKey: Self.celebratedWeekKey) != key else { return }
+        UserDefaults.standard.set(key, forKey: Self.celebratedWeekKey)
+
+        // With "Reduce Motion" on there are no fireworks
+        guard !UIAccessibility.isReduceMotionEnabled else { return }
+        isFireworksShown = true
+    }
+
+    func hideFireworks() {
+        isFireworksShown = false
     }
 
     // The completed workouts saved today: the Today card shows the numbers of its plan
@@ -126,6 +203,20 @@ final class SummaryViewModel {
         let allSessions = (try? context?.fetch(allDescriptor)) ?? []
         completedSessionDays = allSessions.map { Calendar.current.startOfDay(for: $0.date) }
         completedSessionColors = allSessions.map { $0.colorIndex }
+
+        refreshGoals()
+    }
+
+    // Recomputes the Home goals from all the saved sessions (also the interrupted ones)
+    func refreshGoals() {
+        let sessions = (try? context?.fetch(FetchDescriptor<SessionRecord>())) ?? []
+        goalsViewModel.progress = GoalProgressBuilder.build(
+            sessions: sessions,
+            weekData: weekData,
+            rotation: savedWeekPlan?.rotation ?? [],
+            plans: plans,
+            now: .now
+        )
     }
 
     // The days (at midnight) with at least one completed workout, read from the saved sessions
@@ -272,12 +363,57 @@ final class SummaryViewModel {
         }
         savedWeekPlan = draft
         saveProfile()
+        refreshGoals()   // the planned days changed: the goals change too
     }
 
-    // The pencil of a plan (or a tap on its row): the same screen opens with the plan filled in
+    // The pencil of a plan: the same screen opens with the plan filled in
     func openEditPlan(_ plan: PlanItem) {
         planBeingEdited = plan
         isAddPlanOpen = true
+    }
+
+    // The lines of the dropdown of a plan: only the main exercises, in the order of the plan.
+    // Sets come from the plan, reps from Prescription (same goal and level as the plan editor).
+    func exerciseLines(for plan: PlanItem) -> [PlanExerciseLine] {
+        // Read only the exercises of this plan from the database
+        let ids = plan.exerciseIds
+        var exercises: [Exercise] = []
+        if let context {
+            let descriptor = FetchDescriptor<Exercise>(predicate: #Predicate<Exercise> { ids.contains($0.id) })
+            exercises = (try? context.fetch(descriptor)) ?? []
+        }
+        let exerciseById = Dictionary(exercises.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let catalog = CatalogBuilder.build(from: exercises)
+        let itemById = Dictionary(catalog.items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+
+        let goal = PlanGoal.tone
+        let level = PlanLevel.medium
+
+        var lines: [PlanExerciseLine] = []
+        for (position, id) in plan.exerciseIds.enumerated() {
+            let sets = position < plan.exerciseSets.count ? plan.exerciseSets[position] : Prescription.sets(for: level)
+            let lineId = "\(position)-\(id)"
+
+            if let item = itemById[id] {
+                let planned = Prescription.make(item: item, goal: goal, level: level, sets: sets, slotKey: item.group)
+                let amount: String
+                if let seconds = planned.holdSeconds {
+                    amount = "\(seconds) s"
+                } else if let low = planned.repsMin, let high = planned.repsMax {
+                    amount = low == high ? "\(low)" : "\(low)-\(high)"
+                } else {
+                    amount = "-"
+                }
+                lines.append(PlanExerciseLine(id: lineId, name: planned.name, setsRepsText: "\(planned.sets) × \(amount)"))
+            } else if let exercise = exerciseById[id] {
+                // Known exercise but not in the catalog: only the sets are shown
+                lines.append(PlanExerciseLine(id: lineId, name: exercise.name, setsRepsText: "\(sets) sets"))
+            } else {
+                // The exercise is not in the database (anymore): a placeholder, never a crash
+                lines.append(PlanExerciseLine(id: lineId, name: "Exercise not found", setsRepsText: "-"))
+            }
+        }
+        return lines
     }
 
     func closeAddPlan() {
@@ -302,6 +438,7 @@ final class SummaryViewModel {
         } else {
             addPlan(plan)
         }
+        refreshGoals()   // the minutes of the plans changed: the goals change too
     }
 
     // Same id, new values: the list and the saved row are both updated
@@ -354,6 +491,7 @@ final class SummaryViewModel {
             goDate = nil
         }
         saveProfile()
+        refreshGoals()
     }
 
     // "Delete all plans": every plan is deleted the same way as one by one
@@ -367,14 +505,12 @@ final class SummaryViewModel {
     // "Reset week" in Edit week: the week is saved empty, like before the first save.
     // The completed days (history) are kept; the reminders are removed.
     func resetWeek() {
-        weekData.plannedWeekdays = []
-        weekData.restWeekdays = []
-        weekData.previousPlannedWeekdays = []
-        weekData.previousRestWeekdays = []
-        weekData.ruleStartDate = nil
+        // Empty from today on: the days before today keep the old choice
+        weekData.resetWeek()
         savedWeekPlan = nil
         goPlanId = nil
         goDate = nil
+        refreshGoals()   // the planned days changed: the goals change too
 
         if let profile {
             profile.hasSavedWeekPlan = false
@@ -455,6 +591,7 @@ final class SummaryViewModel {
 
         savedWeekPlan = draft
         saveProfile()
+        refreshGoals()   // days or rotation changed: the goals change too
 
         // The reminders are updated in the background: the permission is asked now
         Task { await ReminderScheduler.updateReminders(for: draft) }
@@ -525,20 +662,13 @@ final class SummaryViewModel {
             )
         }
 
-        goalsViewModel.progress = GoalProgress(
-            sessionsDone: record.sessionsDone,
-            minutesDone: record.minutesDone,
-            strengthDaysDone: record.strengthDaysDone,
-            weeksActive: record.weeksActive,
-            planWorkoutsDone: record.planWorkoutsDone,
-            planWorkoutsPlanned: record.planWorkoutsPlanned,
-            musclesCovered: record.musclesCovered
-        )
+        // The goal progress is computed from the saved sessions in loadTodaySessions()
 
-        loadTodaySessions()
-
+        // The plans are loaded first: the goal targets need their minutes
         let savedPlans = (try? context.fetch(FetchDescriptor<PlanRecord>())) ?? []
         plans = savedPlans.map { PlanItem(from: $0) }
+
+        loadTodaySessions()   // also computes the goals
     }
 
     // True when the date is in the current week (weeks start on Monday)

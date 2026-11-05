@@ -66,9 +66,18 @@ final class OnboardingViewModel {
 
     // MARK: - Moving between screens
 
-    func skipName() {
-        name = ""
-        step = .level
+    // Skip: the rest of the onboarding is skipped. The days the user already chose are kept;
+    // without a valid choice the app starts with 3 days (Mon, Wed, Fri), Beginner and Full body.
+    // Returns true when the plans are ready to be saved.
+    func skipAll() -> Bool {
+        if !week.canSave {
+            for weekday in week.draft.workoutWeekdays { week.toggleDay(weekday) }
+            for weekday in [2, 4, 6] { week.toggleDay(weekday) }
+        }
+        guard let program = ReadyMadeCatalog.program(level: level, style: .fullBody, days: dayCount)
+                ?? ReadyMadeCatalog.program(level: .beginner, style: .fullBody, days: dayCount) else { return false }
+        plans = ReadyMadePlanFactory.makePlans(from: program, takenColorIndexes: [])
+        return true
     }
 
     func goNext() {
@@ -115,6 +124,9 @@ final class OnboardingViewModel {
     var takenColorIndexes: [Int] { plans.compactMap { $0.colorIndex } }
     var otherPlanNames: [String] { plans.map { $0.name } }
 
+    // The plan of the previous day, shown again when the user goes Back from Day 2 or 3 (nil = a new plan)
+    private(set) var customEditing: PlanItem? = nil
+
     // "Day 1 of 3"
     var customProgressText: String {
         "Day \((customIndex ?? 0) + 1) of \(dayCount)"
@@ -130,6 +142,7 @@ final class OnboardingViewModel {
     }
 
     func savedCustomPlan(_ plan: PlanItem) {
+        customEditing = nil
         plans.append(plan)
         let next = plans.count
         if next >= dayCount {
@@ -142,9 +155,21 @@ final class OnboardingViewModel {
 
     // Back from the plan creator: everything made so far is dropped, the user is on "Choose a plan" again
     func cancelCustom() {
+        customEditing = nil
         customIndex = nil
         plans = []
         choice = .ready(.fullBody)
+    }
+
+    // The Back of the plan creator: on Day 2 or 3 it goes to the day before (its plan is shown again);
+    // on Day 1 it goes back to "Choose a plan"
+    func backFromCustom() {
+        guard let index = customIndex, index > 0, let previous = plans.popLast() else {
+            cancelCustom()
+            return
+        }
+        customEditing = previous
+        customIndex = index - 1
     }
 
     // Custom: the user tapped "Custom" on Choose a plan (needs the training days first)
@@ -152,12 +177,8 @@ final class OnboardingViewModel {
         guard dayCount >= EditWeekRules.minWorkoutDays else { return }
         choice = .custom
         plans = []
+        customEditing = nil
         customIndex = 0
-    }
-
-    // The creator of the Custom day, in the onboarding: "Ready-made" in its switch goes back
-    func backToReadyMade() {
-        cancelCustom()
     }
 
     // MARK: - Your plan: the user edited one day

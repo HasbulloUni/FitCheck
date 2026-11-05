@@ -10,7 +10,6 @@ import SwiftUI
 struct WelcomeStepView: View {
     @Binding var name: String
     let unit: CGFloat
-    let onSkip: () -> Void
 
     @FocusState private var isNameFocused: Bool
 
@@ -43,15 +42,6 @@ struct WelcomeStepView: View {
                         .padding(AppSizes.Space.section * unit)
                         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
                 }
-
-                Button(action: onSkip) {
-                    Text("Skip for now")
-                        .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                        .foregroundStyle(AppColors.textSecondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, AppSizes.Space.group * unit)
-                }
-                .buttonStyle(.plain)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,20 +66,20 @@ struct WelcomeStepView: View {
 }
 
 #Preview("Light") {
-    WelcomeStepView(name: .constant("Peppino"), unit: 3.9, onSkip: {})
+    WelcomeStepView(name: .constant("Peppino"), unit: 3.9)
         .padding(.horizontal, 23.4)
         .background(AppColors.background)
 }
 
 #Preview("Dark") {
-    WelcomeStepView(name: .constant("Peppino"), unit: 3.9, onSkip: {})
+    WelcomeStepView(name: .constant("Peppino"), unit: 3.9)
         .padding(.horizontal, 23.4)
         .background(AppColors.background)
         .preferredColorScheme(.dark)
 }
 
 #Preview("No data") {
-    WelcomeStepView(name: .constant(""), unit: 3.9, onSkip: {})
+    WelcomeStepView(name: .constant(""), unit: 3.9)
         .padding(.horizontal, 23.4)
         .background(AppColors.background)
 }

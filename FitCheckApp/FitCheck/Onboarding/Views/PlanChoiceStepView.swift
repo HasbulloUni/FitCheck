@@ -2,8 +2,8 @@
 //  PlanChoiceStepView.swift
 //  FitCheck
 //
-//  Screen 4: "Ready-made | Custom" switch. Ready-made shows only Full body and Muscle groups.
-//  A tap on Custom opens the plan creator right away.
+//  Screen 4: two Ready-made cards (Full body, Muscle groups) and, below them,
+//  the button "Build your own plan", which opens the plan creator as a new screen.
 //
 
 import SwiftUI
@@ -18,10 +18,8 @@ struct PlanChoiceStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
             OnboardingTitleView(title: "How do you want to train?",
-                                subtitle: "Use a plan, or build a new one.",
+                                subtitle: "Pick a ready-made plan, or build your own.",
                                 unit: unit)
-
-            modeSwitch
 
             Text("\(level.title.uppercased()) · \(dayCount) \(dayCount == 1 ? "DAY" : "DAYS") A WEEK")
                 .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
@@ -37,6 +35,8 @@ struct PlanChoiceStepView: View {
                     }
                 }
             }
+
+            buildOwnButton
 
             Text("Plans are general suggestions, not medical advice.")
                 .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
@@ -60,27 +60,28 @@ struct PlanChoiceStepView: View {
         }
     }
 
-    // The capsule: Ready-made is where we are, Custom opens the creator
-    private var modeSwitch: some View {
-        HStack(spacing: 0) {
-            Text("Ready-made")
-                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                .foregroundStyle(AppColors.textPrimary)
-                .frame(maxWidth: .infinity)
-                .frame(height: 10 * unit)
-                .background(AppColors.card, in: Capsule())
-
-            Button(action: onPickCustom) {
-                Text("Custom")
-                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
-                    .foregroundStyle(AppColors.textPrimary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 10 * unit)
+    // A separate dashed button: it opens the creator for a custom plan
+    private var buildOwnButton: some View {
+        Button(action: onPickCustom) {
+            HStack {
+                Image(systemName: "plus")
+                Spacer()
+                Text("Build your own plan")
+                Spacer()
+                Image(systemName: "chevron.right")
             }
-            .buttonStyle(.plain)
+            .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+            .foregroundStyle(AppColors.textPrimary)
+            .padding(AppSizes.Space.section * unit)
+            .frame(maxWidth: .infinity, minHeight: 15 * unit)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit)
+                    .strokeBorder(AppColors.textSecondary,
+                                  style: StrokeStyle(lineWidth: 0.4 * unit, dash: [1 * unit, 0.8 * unit]))
+            )
+            .contentShape(Rectangle())
         }
-        .padding(unit)
-        .background(AppColors.cardAlt, in: Capsule())
+        .buttonStyle(.plain)
     }
 
     // A white card with a green border and a green check on the chosen one

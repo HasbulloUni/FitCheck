@@ -37,6 +37,7 @@ final class WorkoutViewModel {
     private(set) var restRemaining = 0             // 0 = no rest running
     private(set) var restTotal = 0                 // to draw the ring of the rest
     private(set) var timedRemaining = 0            // warm-up and cool-down steps
+    private(set) var isTimedRunning = false        // false until the user taps Start
 
     // MARK: What the screen shows
     private(set) var summary: WorkoutSummary? = nil
@@ -148,13 +149,12 @@ final class WorkoutViewModel {
     var leaveMessage: String {
         let done = SessionSaver.setsDone(in: sets)
         if done == 0 { return "No set was done yet, so nothing will be saved." }
-        let exercises = steps.filter { $0.kind == .exercise }
-        let finished = exercises.filter { step in
-            let stepSets = sets[step.id]
-            return !stepSets.isEmpty && stepSets.allSatisfy { $0.isDone }
-        }.count
-        if finished == exercises.count { return "All the exercises are done. Your workout will be saved." }
-        return "You did \(finished) of \(exercises.count) exercises. Your sets are saved, but the plan will not count as done."
+        let counts = SessionSaver.mainSetCounts(steps: steps, sets: sets)
+        let text = "\(counts.done) of \(counts.total) sets done"
+        if SessionSaver.isCompleted(steps: steps, sets: sets) {
+            return "\(text): it will count as done."
+        }
+        return "\(text): your sets are saved, but it will not count as done yet."
     }
 
     // MARK: Changing reps and weight of the active set
@@ -258,6 +258,13 @@ final class WorkoutViewModel {
         restRemaining = 0
         restTotal = 0
         timedRemaining = currentStep?.durationSeconds ?? 0
+        isTimedRunning = false
+    }
+
+    // The "Start" button of a warm-up or cool-down step: the countdown begins now
+    func startTimed() {
+        guard currentStep?.isTimed == true, timedRemaining > 0 else { return }
+        isTimedRunning = true
     }
 
     // MARK: Leaving and finishing
@@ -305,6 +312,6 @@ final class WorkoutViewModel {
     private func tick() {
         elapsedSeconds = Int(Date().timeIntervalSince(startDate))
         if restRemaining > 0 { restRemaining -= 1 }
-        if timedRemaining > 0, currentStep?.isTimed == true { timedRemaining -= 1 }
+        if isTimedRunning, timedRemaining > 0, currentStep?.isTimed == true { timedRemaining -= 1 }
     }
 }

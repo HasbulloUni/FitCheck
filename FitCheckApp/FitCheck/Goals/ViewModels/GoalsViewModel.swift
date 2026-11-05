@@ -20,23 +20,23 @@ final class GoalsViewModel {
         [
             GoalItem(
                 title: "Sessions",
-                centerText: "\(progress.sessionsDone)/\(GoalRules.sessionsPerWeek)",
-                subtitle: toGoText(done: progress.sessionsDone, target: GoalRules.sessionsPerWeek),
-                progress: fraction(progress.sessionsDone, GoalRules.sessionsPerWeek),
+                centerText: "\(progress.sessionsDone)/\(progress.sessionsTarget)",
+                subtitle: toGoText(done: progress.sessionsDone, target: progress.sessionsTarget),
+                progress: fraction(progress.sessionsDone, progress.sessionsTarget),
                 color: AppColors.muscleBlue
             ),
             GoalItem(
                 title: "Minutes",
                 centerText: "\(progress.minutesDone)",
                 subtitle: minutesText,
-                progress: fraction(progress.minutesDone, GoalRules.minutesPerWeek),
+                progress: fraction(progress.minutesDone, progress.minutesTarget),
                 color: AppColors.greenSoft
             ),
             GoalItem(
                 title: "Strength days",
-                centerText: "\(progress.strengthDaysDone)/\(GoalRules.strengthDaysPerWeek)",
-                subtitle: toGoText(done: progress.strengthDaysDone, target: GoalRules.strengthDaysPerWeek),
-                progress: fraction(progress.strengthDaysDone, GoalRules.strengthDaysPerWeek),
+                centerText: "\(progress.strengthDaysDone)/\(progress.strengthDaysTarget)",
+                subtitle: toGoText(done: progress.strengthDaysDone, target: progress.strengthDaysTarget),
+                progress: fraction(progress.strengthDaysDone, progress.strengthDaysTarget),
                 color: AppColors.musclePurple
             )
         ]
@@ -47,22 +47,22 @@ final class GoalsViewModel {
         [
             GoalItem(
                 title: "Week active",
-                centerText: "\(progress.weeksActive)/\(GoalRules.weeksPerMonth)",
-                subtitle: toGoText(done: progress.weeksActive, target: GoalRules.weeksPerMonth),
-                progress: fraction(progress.weeksActive, GoalRules.weeksPerMonth),
+                centerText: "\(percent(progress.weeksActive, progress.weeksActiveTarget))%",
+                subtitle: "\(progress.weeksActive) of \(progress.weeksActiveTarget) weeks",
+                progress: fraction(progress.weeksActive, progress.weeksActiveTarget),
                 color: AppColors.muscleOrange
             ),
             GoalItem(
                 title: "Plan completion",
-                centerText: "\(planPercent)%",
+                centerText: "\(percent(progress.planWorkoutsDone, progress.planWorkoutsPlanned))%",
                 subtitle: planLeftText,
                 progress: fraction(progress.planWorkoutsDone, progress.planWorkoutsPlanned),
                 color: AppColors.muscleRed
             ),
             GoalItem(
                 title: "Muscle coverage",
-                centerText: "\(progress.musclesCovered)/\(GoalRules.muscleGroups)",
-                subtitle: toGoText(done: progress.musclesCovered, target: GoalRules.muscleGroups),
+                centerText: "\(percent(progress.musclesCovered, GoalRules.muscleGroups))%",
+                subtitle: "\(progress.musclesCovered) of \(GoalRules.muscleGroups) muscles",
                 progress: fraction(progress.musclesCovered, GoalRules.muscleGroups),
                 color: AppColors.muscleYellow
             )
@@ -79,6 +79,7 @@ final class GoalsViewModel {
 
     // Short text for the cards: "2 to go" or "Reached"
     private func toGoText(done: Int, target: Int) -> String {
+        if target <= 0 { return "0 to go" }   // nothing planned
         let left = max(target - done, 0)
         if left == 0 { return "Reached" }
         return "\(left) to go"
@@ -86,7 +87,8 @@ final class GoalsViewModel {
 
     // "95 min left" or "Reached"
     private var minutesText: String {
-        let left = max(GoalRules.minutesPerWeek - progress.minutesDone, 0)
+        if progress.minutesTarget <= 0 { return "0 min left" }   // nothing planned
+        let left = max(progress.minutesTarget - progress.minutesDone, 0)
         if left == 0 { return "Reached" }
         return "\(left) min left"
     }
@@ -98,8 +100,8 @@ final class GoalsViewModel {
         return "\(left) left"
     }
 
-    // Percent of the plan completed, rounded
-    private var planPercent: Int {
-        Int((fraction(progress.planWorkoutsDone, progress.planWorkoutsPlanned) * 100).rounded())
+    // Percent from 0 to 100, rounded. Capped to 100, and 0 when the target is 0 (no NaN)
+    private func percent(_ done: Int, _ target: Int) -> Int {
+        Int((fraction(done, target) * 100).rounded())
     }
 }

@@ -12,6 +12,7 @@ struct OnboardingHeaderView: View {
     let position: Int            // 1...4: the step we are on
     let unit: CGFloat
     let onBack: () -> Void
+    var onSkip: (() -> Void)? = nil   // shows "Skip" at the right end when given
 
     var body: some View {
         HStack(spacing: AppSizes.Space.group * unit) {
@@ -31,6 +32,17 @@ struct OnboardingHeaderView: View {
             Text("\(position)/\(OnboardingStep.barSteps)")
                 .font(.system(size: AppSizes.Text.caption * unit, weight: .semibold))
                 .foregroundStyle(AppColors.textSecondary)
+                .fixedSize()
+
+            if let onSkip {
+                Button(action: onSkip) {
+                    Text("Skip")
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+                .buttonStyle(.plain)
+                .fixedSize()
+            }
         }
     }
 }

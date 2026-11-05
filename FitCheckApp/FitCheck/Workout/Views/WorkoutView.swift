@@ -149,7 +149,7 @@ struct WorkoutView: View {
             )
         } else if viewModel.isResting {
             RestCardView(
-                remaining: viewModel.restRemaining, total: viewModel.restTotal, unit: unit,
+                remaining: viewModel.restRemaining, unit: unit,
                 nextSetNumber: viewModel.activeSetIndex + 1,
                 onAdd: { viewModel.addRest() }, onSkip: { viewModel.skipRest() }
             )
@@ -169,13 +169,16 @@ struct WorkoutView: View {
         }
     }
 
-    // The block of a warm-up or cool-down step
+    // The block of a warm-up or cool-down step: Start first, then the countdown
     private func timedBlock(unit: CGFloat) -> some View {
-        TimedStepCardView(
-            remaining: viewModel.timedRemaining,
-            total: viewModel.currentStep?.durationSeconds ?? 0,
-            unit: unit
-        )
+        let remaining = viewModel.timedRemaining
+        let title = remaining == 0 ? "DONE" : (viewModel.isTimedRunning ? "TIME LEFT" : "READY")
+        return CountdownCardView(title: title, remaining: remaining, subtitle: nil, unit: unit) {
+            // The Start button keeps its place also later (hidden), so the card never changes
+            TimerStartButton(unit: unit, action: { viewModel.startTimed() })
+                .opacity(viewModel.isTimedRunning || remaining == 0 ? 0 : 1)
+                .disabled(viewModel.isTimedRunning || remaining == 0)
+        }
     }
 }
 

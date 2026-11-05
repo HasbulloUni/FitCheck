@@ -57,6 +57,8 @@ struct LevelStepView: View {
             // The text is always dark: the cards are bright in light and dark mode
             .foregroundStyle(Color(light: 0x111111, dark: 0x111111))
             .padding(AppSizes.Space.section * unit)
+            // The same height for the three cards, whatever the length of the text
+            .frame(height: 24 * unit)
             .background(data.color, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
             .opacity(isSelected ? 1 : 0.55)
         }

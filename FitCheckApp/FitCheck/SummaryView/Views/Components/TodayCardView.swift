@@ -15,6 +15,7 @@ struct TodayCardView: View {
     let plan: TodayPlan
     let unit: CGFloat   // 1% of the screen width
     let onStart: () -> Void   // what happens when the user taps Start
+    var onBack: () -> Void = {}   // what happens when the user taps "Back to ..." (after a Go)
 
     // e.g. "67 min · 11 exercises"
     private var detailsText: String { "\(plan.minutes) min · \(plan.exerciseCount) exercises" }
@@ -50,6 +51,21 @@ struct TodayCardView: View {
                     .foregroundStyle(.black.opacity(0.8))
                     .minimumScaleFactor(0.8)   // shrinks a little instead of wrapping
                     .lineLimit(1)
+
+                // After a Go: a small button to cancel it and go back to the routine
+                if let backTitle = plan.backTitle {
+                    Button(action: onBack) {
+                        Text(backTitle)
+                            .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
+                            .foregroundStyle(.black.opacity(0.7))
+                            .minimumScaleFactor(0.8)
+                            .lineLimit(1)
+                            // Bigger tap area, the layout stays the same
+                            .padding(.vertical, 1.5 * unit)
+                            .contentShape(Rectangle())
+                    }
+                    .padding(.vertical, -1.5 * unit)
+                }
             }
 
             Spacer()
@@ -213,17 +229,17 @@ struct TodayRestCardView: View {
             VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
                 Text("TODAY")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.restBlueText.opacity(0.7))
 
                 Text("Rest day")
                     .font(.system(size: AppSizes.Text.title * unit, weight: .bold))
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.restBlueText)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
 
                 Text("Swipe a plan right to train anyway")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .medium))
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.restBlueText.opacity(0.8))
                     .minimumScaleFactor(0.8)
                     .lineLimit(1)
             }
@@ -232,11 +248,16 @@ struct TodayRestCardView: View {
 
             Image(systemName: "moon.zzz.fill")
                 .font(.system(size: AppSizes.Text.display * unit))
-                .foregroundStyle(AppColors.musclePurple)
+                .foregroundStyle(AppColors.restBlueText)
         }
         .padding(5 * unit)
         .frame(maxWidth: .infinity)
-        .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
+        // Blue gradient (light on top left, deeper blue on bottom right). Like the yellow card it keeps its colors in dark mode
+        .background(
+            LinearGradient(colors: [AppColors.restBlueLight, AppColors.restBlue],
+                           startPoint: .topLeading, endPoint: .bottomTrailing),
+            in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit)
+        )
     }
 }
 
@@ -251,6 +272,23 @@ private let samplePlan = TodayPlan(name: "Full body A", minutes: 67, exerciseCou
 
 #Preview("Dark") {
     TodayCardView(plan: samplePlan, unit: 3.9, onStart: {})
+        .padding(20)
+        .background(AppColors.background)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Go on a rest day") {
+    TodayCardView(plan: TodayPlan(name: "Full body A", minutes: 67, exerciseCount: 11,
+                                  fromGo: true, backTitle: "Back to rest day"),
+                  unit: 3.9, onStart: {})
+        .padding(20)
+        .background(AppColors.background)
+}
+
+#Preview("Go on a training day") {
+    TodayCardView(plan: TodayPlan(name: "Upper body", minutes: 45, exerciseCount: 8,
+                                  fromGo: true, backTitle: "Back to Full body A"),
+                  unit: 3.9, onStart: {})
         .padding(20)
         .background(AppColors.background)
         .preferredColorScheme(.dark)

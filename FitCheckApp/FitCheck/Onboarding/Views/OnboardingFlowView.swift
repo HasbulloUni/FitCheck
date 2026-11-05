@@ -22,7 +22,8 @@ struct OnboardingFlowView: View {
 
             VStack(spacing: 0) {
                 if let position = viewModel.step.barPosition {
-                    OnboardingHeaderView(position: position, unit: unit, onBack: { viewModel.goBack() })
+                    OnboardingHeaderView(position: position, unit: unit, onBack: { viewModel.goBack() },
+                                         onSkip: { skip() })
                         .padding(.horizontal, AppSizes.Space.screen * unit)
                         .padding(.top, AppSizes.Space.section * unit)
                 }
@@ -36,6 +37,22 @@ struct OnboardingFlowView: View {
                 .scrollDismissesKeyboard(.interactively)
 
                 bigButton(unit: unit)
+            }
+            .overlay(alignment: .topTrailing) {
+                // Welcome has no header, so its Skip sits at the top right (over the rainbow)
+                if viewModel.step == .welcome {
+                    Button(action: skip) {
+                        Text("Skip")
+                            .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                            .foregroundStyle(.black)
+                            .padding(.horizontal, AppSizes.Space.group * unit)
+                            .padding(.vertical, AppSizes.Space.related * unit)
+                            .background(AppColors.background.opacity(0.85), in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.trailing, AppSizes.Space.screen * unit)
+                    .padding(.top, AppSizes.Space.section * unit)
+                }
             }
             .animation(.easeInOut(duration: 0.2), value: viewModel.step)
         }
@@ -55,7 +72,7 @@ struct OnboardingFlowView: View {
     private func currentStep(unit: CGFloat) -> some View {
         switch viewModel.step {
         case .welcome:
-            WelcomeStepView(name: $viewModel.name, unit: unit, onSkip: { viewModel.skipName() })
+            WelcomeStepView(name: $viewModel.name, unit: unit)
         case .level:
             LevelStepView(level: $viewModel.level, unit: unit)
         case .week:
@@ -87,15 +104,27 @@ struct OnboardingFlowView: View {
         .padding(.bottom, AppSizes.Space.group * unit)
     }
 
+    // Saves what is chosen and opens the app
+    private func finishOnboarding() {
+        OnboardingSaver.save(
+            name: viewModel.trimmedName,
+            draft: viewModel.week.draft,
+            plans: viewModel.plans,
+            context: modelContext
+        )
+        onFinish()
+    }
+
+    // Skip: the whole onboarding is skipped (default week and plan)
+    private func skip() {
+        viewModel.cancelCustom()   // closes the plan creator if it is open
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        if viewModel.skipAll() { finishOnboarding() }
+    }
+
     private func tapContinue() {
         if viewModel.step == .yourPlan {
-            OnboardingSaver.save(
-                name: viewModel.trimmedName,
-                draft: viewModel.week.draft,
-                plans: viewModel.plans,
-                context: modelContext
-            )
-            onFinish()
+            finishOnboarding()
         } else {
             viewModel.goNext()
         }
@@ -104,18 +133,18 @@ struct OnboardingFlowView: View {
     // MARK: - Custom plan creator
 
     // AddPlanView is the same screen of "New plan"; .id restarts it for each day.
-    // In the onboarding its top shows the progress bar (step 3 of 4) and the Ready-made | Custom switch.
+    // In the onboarding its top shows the progress bar (step 3 of 4).
     private var customCreator: some View {
         AddPlanView(
-            editing: nil,
+            editing: viewModel.customEditing,
             takenColorIndexes: viewModel.takenColorIndexes,
             otherPlanNames: viewModel.otherPlanNames,
             onboardingStep: OnboardingStep.choice.rawValue,
             onboardingDayText: viewModel.customProgressText,
-            onReadyMade: { viewModel.backToReadyMade() },
             fallbackName: viewModel.customDayName,
             finalButtonTitle: viewModel.customButtonTitle,
-            onBack: { viewModel.cancelCustom() },
+            onSkip: { skip() },
+            onBack: { viewModel.backFromCustom() },
             onSave: { viewModel.savedCustomPlan($0) }
         )
         .id(viewModel.customIndex)
