@@ -76,8 +76,8 @@ struct SummaryView: View {
             }
             // A tap on a plan: its exercises rise from the bottom (pull up for more, drag down to close)
             .sheet(item: $viewModel.planShown) { plan in
-                PlanExercisesSheetView(plan: plan, lines: viewModel.exerciseLines(for: plan), unit: unit)
-                    .presentationDetents([.fraction(0.5), .large])
+                PlanExercisesSheetView(plan: plan, lines: viewModel.exerciseLines(for: plan))
+                    .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
                     .presentationCornerRadius(8 * unit)
                     .presentationBackground(AppColors.background)

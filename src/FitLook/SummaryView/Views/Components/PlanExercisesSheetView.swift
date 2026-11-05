@@ -13,6 +13,19 @@ import SwiftUI
 struct PlanExercisesSheetView: View {
     let plan: PlanItem
     let lines: [PlanExerciseLine]
+
+    var body: some View {
+        // The sheet measures its OWN width (it can be narrower than the screen, e.g. on iPad)
+        GeometryReader { geo in
+            PlanExercisesSheetContent(plan: plan, lines: lines, unit: geo.size.width / 100)
+        }
+        .background(AppColors.background.ignoresSafeArea())
+    }
+}
+
+private struct PlanExercisesSheetContent: View {
+    let plan: PlanItem
+    let lines: [PlanExerciseLine]
     let unit: CGFloat
 
     var body: some View {
@@ -27,7 +40,6 @@ struct PlanExercisesSheetView: View {
         .padding(.horizontal, AppSizes.Space.screen * unit)
         .padding(.top, AppSizes.Space.screen * unit)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(AppColors.background)
     }
 
     // The icon in the color of the plan, the name and the caption
@@ -109,11 +121,11 @@ private let previewLines: [PlanExerciseLine] = [
 ]
 
 #Preview("Light") {
-    PlanExercisesSheetView(plan: previewPlan, lines: previewLines, unit: 3.9)
+    PlanExercisesSheetView(plan: previewPlan, lines: previewLines)
 }
 
 #Preview("Dark") {
-    PlanExercisesSheetView(plan: previewPlan, lines: previewLines, unit: 3.9)
+    PlanExercisesSheetView(plan: previewPlan, lines: previewLines)
         .preferredColorScheme(.dark)
 }
 
@@ -121,6 +133,6 @@ private let previewLines: [PlanExerciseLine] = [
     PlanExercisesSheetView(
         plan: PlanItem(id: UUID(), name: "Empty plan", icon: "figure.run",
                        color: AppColors.muscleGreen, exerciseCount: 0, minutes: 0),
-        lines: [], unit: 3.9
+        lines: []
     )
 }

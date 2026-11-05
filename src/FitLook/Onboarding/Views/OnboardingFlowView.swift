@@ -17,6 +17,7 @@ struct OnboardingFlowView: View {
 
     // True when the first save failed: the user can try again
     @State private var saveFailed = false
+    @State private var skipNoticeShown = false
     @State private var isSaving = false   // a second tap on the big button is ignored
 
     var body: some View {
@@ -42,8 +43,8 @@ struct OnboardingFlowView: View {
 
                 bigButton(unit: unit)
             }
-            .overlay(alignment: .topTrailing) {
-                // Welcome has no header, so its Skip sits at the top right, in the centre of the rainbow
+            .overlay(alignment: .topLeading) {
+                // Welcome has no header, so its Skip sits at the top left (the rainbow takes the top right)
                 if viewModel.step == .welcome {
                     Button(action: skip) {
                         // Visible in light and dark: card color behind, primary text color on top
@@ -56,18 +57,32 @@ struct OnboardingFlowView: View {
                             .overlay(Capsule().stroke(AppColors.divider, lineWidth: 0.3 * unit))
                     }
                     .buttonStyle(.plain)
-                    .padding(.trailing, AppSizes.Space.screen * unit)
+                    .padding(.leading, AppSizes.Space.screen * unit)
                     .padding(.top, AppSizes.Space.section * unit)
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: viewModel.step)
+            // Skip: the user must acknowledge that nothing is saved, then the app opens empty
+            .alert("Skip the setup?", isPresented: $skipNoticeShown) {
+                Button("Cancel", role: .cancel) {}
+                Button("I understand") { onFinish() }
+            } message: {
+                Text("Your choices won't be saved. The app will open with no data.")
+            }
             .alert("Couldn't save your plan", isPresented: $saveFailed) {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text("Please try again.")
             }
         }
-        .background(AppColors.background)
+        .background(alignment: .topTrailing) {
+            // The rainbow of Welcome: centred on the top right corner of the screen
+            if viewModel.step == .welcome {
+                RainbowArcView()
+                    .ignoresSafeArea()
+            }
+        }
+        .background(AppColors.background.ignoresSafeArea())
         // Custom: the plan creator of the app, once for each training day
         .fullScreenCover(isPresented: Binding(
             get: { viewModel.customIndex != nil },
@@ -133,11 +148,16 @@ struct OnboardingFlowView: View {
         }
     }
 
-    // Skip: the whole onboarding is skipped (default week and plan)
+    // Skip: nothing is saved. A notice is shown first; after it the app opens with no data.
     private func skip() {
+        let creatorWasOpen = viewModel.customIndex != nil
         viewModel.cancelCustom()   // closes the plan creator if it is open
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        if viewModel.skipAll() { finishOnboarding() }
+        Task {
+            // An alert cannot appear while the plan creator is still closing
+            if creatorWasOpen { try? await Task.sleep(for: .milliseconds(500)) }
+            skipNoticeShown = true
+        }
     }
 
     private func tapContinue() {

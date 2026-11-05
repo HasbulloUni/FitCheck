@@ -15,8 +15,6 @@ struct WelcomeStepView: View {
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            rainbow
-
             VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
                 // Space for the arc: the text starts below the lowest ring
                 Spacer().frame(height: 40 * unit)
@@ -57,31 +55,51 @@ struct WelcomeStepView: View {
     // centre of the rainbow can be put exactly on its centre.
     static let skipWidth: CGFloat = 16
     static let skipHeight: CGFloat = 8
+}
 
-    // The rainbow is only an ARC: the circles are very big and their centre is OUTSIDE the
-    // screen (above and to the right of Skip), so only a band of each circle is seen.
-    // Skip does not move and stays inside the smallest circle (its distance from the centre
-    // is about 28 units, the smallest radius is 38).
-    // All values are in units (1% of the screen width), so it looks the same on every iPhone.
-    static let centerShiftX: CGFloat = 20     // centre is 20 units to the right of Skip's centre
-    static let centerShiftY: CGFloat = -20    // and 20 units above it
-    static let smallestRadius: CGFloat = 38
-    static let ringStep: CGFloat = 6
+// MARK: - The rainbow
+// A quarter of a circle, centred on the top right corner of the SCREEN (it goes under the
+// status bar). 6 concentric bands, from the outside: purple, blue, green, yellow, orange, red,
+// each one split from the next by a thin white line. The inside of the red band is empty.
+//  All values are in units (1% of the screen width).
+struct RainbowArcView: View {
+    static let innerRadius: CGFloat = 14
+    static let bandWidth: CGFloat = 3.96
+    static let lineWidth: CGFloat = 0.4
 
-    private var rainbow: some View {
+    var body: some View {
+        // It measures its own width: 1 unit = 1% of the screen width
+        GeometryReader { geo in
+            arc(unit: geo.size.width / 100)
+        }
+    }
+
+    @ViewBuilder
+    private func arc(unit: CGFloat) -> some View {
+        // PlanPalette is red...purple: reversed, the first band (outer) is purple
+        let colors = Array(PlanPalette.colors.reversed())
+        let count = CGFloat(colors.count)
+        let outer = Self.innerRadius + Self.bandWidth * count
+
         ZStack {
-            ForEach(Array(PlanPalette.colors.enumerated()), id: \.offset) { index, color in
-                // index 0 (red) is the biggest circle, the last one (purple) the smallest
-                let radius = Self.smallestRadius + Self.ringStep * CGFloat(PlanPalette.colors.count - 1 - index)
+            ForEach(Array(colors.enumerated()), id: \.offset) { index, color in
+                let mid = outer - Self.bandWidth * (CGFloat(index) + 0.5)
                 Circle()
-                    .stroke(color, lineWidth: 3 * unit)
-                    .frame(width: radius * 2 * unit, height: radius * 2 * unit)
+                    .stroke(color, lineWidth: Self.bandWidth * unit)
+                    .frame(width: mid * 2 * unit, height: mid * 2 * unit)
+            }
+            // The thin white lines between the bands (and on the outer edge)
+            ForEach(0..<colors.count, id: \.self) { index in
+                let edge = outer - Self.bandWidth * CGFloat(index)
+                Circle()
+                    .stroke(Color.white, lineWidth: Self.lineWidth * unit)
+                    .frame(width: edge * 2 * unit, height: edge * 2 * unit)
             }
         }
         .frame(width: 0, height: 0)   // a point: the circles are centred on it
-        .offset(x: (-Self.skipWidth / 2 + Self.centerShiftX) * unit,
-                y: (Self.skipHeight / 2 + Self.centerShiftY) * unit)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
         .accessibilityHidden(true)
+        .allowsHitTesting(false)
     }
 }
 

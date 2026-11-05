@@ -15,6 +15,6 @@ struct GoalItem: Identifiable {
     let centerText: String  // text inside the ring, e.g. "85" or "1/3"
     let subtitle: String    // e.g. "95 min left"
     let progress: Double    // from 0 (nothing done) to 1 (goal reached)
-    // Color of the ring: red at 0, yellow in the middle, the app green at 100%. Same for every goal.
+    // Color of the ring: orange until the goal is reached, the app green when it is. Same for every goal.
     var color: Color { AppColors.goalColor(progress: progress) }
 }

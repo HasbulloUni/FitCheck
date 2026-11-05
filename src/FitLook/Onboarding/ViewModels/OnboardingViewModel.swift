@@ -66,20 +66,6 @@ final class OnboardingViewModel {
 
     // MARK: - Moving between screens
 
-    // Skip: the rest of the onboarding is skipped. The days the user already chose are kept;
-    // without a valid choice the app starts with 3 days (Mon, Wed, Fri), Beginner and Full body.
-    // Returns true when the plans are ready to be saved.
-    func skipAll() -> Bool {
-        if !week.canSave {
-            for weekday in week.draft.workoutWeekdays { week.toggleDay(weekday) }
-            for weekday in [2, 4, 6] { week.toggleDay(weekday) }
-        }
-        guard let program = ReadyMadeCatalog.program(level: level, style: .fullBody, days: dayCount)
-                ?? ReadyMadeCatalog.program(level: .beginner, style: .fullBody, days: dayCount) else { return false }
-        plans = ReadyMadePlanFactory.makePlans(from: program, takenColorIndexes: [])
-        return true
-    }
-
     func goNext() {
         switch step {
         case .welcome: step = .level

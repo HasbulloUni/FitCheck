@@ -44,23 +44,9 @@ enum AppColors {
 }
 
 extension AppColors {
-    /// Colore dei goal: rosso a 0%, giallo a metà, verde dell'app a 100%.
-    /// Usa i colori dell'app, quindi segue il tema chiaro e scuro.
+    /// Colore dei goal: arancione finché non è completato, verde dell'app quando è completato.
     static func goalColor(progress: Double) -> Color {
-        let t = min(max(progress, 0), 1)
-        return Color(UIColor { traits in
-            func resolved(_ c: Color) -> UIColor { UIColor(c).resolvedColor(with: traits) }
-            let from: UIColor, to: UIColor, f: Double
-            if t < 0.5 { from = resolved(red); to = resolved(yellow); f = t * 2 }
-            else { from = resolved(yellow); to = resolved(green); f = (t - 0.5) * 2 }
-            var a: (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
-            var b: (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
-            from.getRed(&a.0, green: &a.1, blue: &a.2, alpha: &a.3)
-            to.getRed(&b.0, green: &b.1, blue: &b.2, alpha: &b.3)
-            let k = CGFloat(f)
-            return UIColor(red: a.0 + (b.0 - a.0) * k, green: a.1 + (b.1 - a.1) * k,
-                           blue: a.2 + (b.2 - a.2) * k, alpha: 1)
-        })
+        progress >= 1 ? green : muscleOrange
     }
 }
 
