@@ -22,6 +22,10 @@ enum SafetyRules {
     static let secondsPerSet = 40.0             // ESTIMATE
     static let holdSeconds = 30                 // for static exercises (plank...)
 
+    // MARK: Limit of plans (Peppino decision, 5 Nov 2026)
+    // The most plans in My plans: one for each color of PlanPalette, so two plans never look the same
+    static let maxPlans = 6
+
     // MARK: Limits of one session
     static let maxExercisesPerSession = 12      // ESTIMATE
     static let maxExercisesPerMuscle = 4        // ESTIMATE

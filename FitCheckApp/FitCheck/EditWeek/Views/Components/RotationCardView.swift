@@ -36,7 +36,7 @@ struct RotationCardView: View {
                         .foregroundStyle(AppColors.textSecondary)
                 }
             }
-            .padding(.bottom, 3 * unit)
+            .padding(.bottom, AppSizes.Space.group * unit)
 
             if rows.isEmpty {
                 // No training day picked yet
@@ -62,7 +62,7 @@ struct RotationCardView: View {
                 }
             }
         }
-        .padding(4 * unit)
+        .padding(AppSizes.Space.section * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
     }

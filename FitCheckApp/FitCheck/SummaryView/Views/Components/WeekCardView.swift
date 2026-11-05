@@ -57,7 +57,7 @@ struct WeekCardView: View {
             .frame(maxWidth: .infinity)
             .clipped()   // the week that slides out does not leave the card
             .contentShape(Rectangle())
-            // Swipe left: next week. Swipe right: back (the Home stops at this week).
+            // Swipe left: next week. Swipe right: the previous week.
             .simultaneousGesture(
                 DragGesture(minimumDistance: 15).onEnded { drag in
                     // The weeks slide with a smooth animation, in the direction of the swipe
@@ -105,23 +105,35 @@ struct DayCircleView: View {
             ZStack {
                 Circle().fill(fillColor)
                 Circle().strokeBorder(borderColor, style: borderStyle)
-                Text("\(day.number)")
-                    .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
-                    .foregroundStyle(numberColor)
+                if day.state == .done && Calendar.current.isDateInToday(day.date) {
+                    // The workout of today is done: a check mark instead of the number
+                    Image(systemName: "checkmark")
+                        .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .heavy))
+                        .foregroundStyle(numberColor)
+                        .accessibilityLabel("Workout done today")
+                } else {
+                    Text("\(day.number)")
+                        .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
+                        .foregroundStyle(numberColor)
+                        // A soft shadow under the number, so it stands out from the circle
+                        .shadow(color: .black.opacity(0.35), radius: 0.6 * unit, x: 0, y: 0.3 * unit)
+                }
             }
             .frame(width: 10 * unit, height: 10 * unit)
 
             // The letter below, bold only for today
+            // Today stays bold, also when its circle is already green (workout done)
+            let isTodayDate = Calendar.current.isDateInToday(day.date)
             Text(day.letter)
-                .font(.system(size: AppSizes.Text.small * unit, weight: day.state.isToday ? .bold : .regular))
-                .foregroundStyle(day.state.isToday ? AppColors.textPrimary : AppColors.textSecondary)
+                .font(.system(size: AppSizes.Text.small * unit, weight: isTodayDate ? .bold : .regular))
+                .foregroundStyle(isTodayDate ? AppColors.textPrimary : AppColors.textSecondary)
         }
     }
 
     // Fill color of the circle
     private var fillColor: Color {
         switch day.state {
-        case .done:     return AppColors.green
+        case .done:     return doneColor
         case .rest:     return AppColors.musclePurple
         case .planned:  return AppColors.divider
         case .todayWorkout: return AppColors.green.opacity(0.25)
@@ -129,6 +141,12 @@ struct DayCircleView: View {
         case .today:        return .clear
         case .upcoming:     return .clear
         }
+    }
+
+    // A day done takes the color of its plan (green when the plan is not known)
+    private var doneColor: Color {
+        guard let index = day.colorIndex, PlanPalette.colors.indices.contains(index) else { return AppColors.green }
+        return PlanPalette.colors[index]
     }
 
     // Border color
@@ -153,7 +171,8 @@ struct DayCircleView: View {
     // Number color: readable on every background
     private var numberColor: Color {
         switch day.state {
-        case .done, .rest:         return .white
+        case .done:                return day.colorIndex == nil ? .white : .black   // black reads well on every plan color
+        case .rest:                return .white
         case .today, .todayWorkout, .todayRest: return AppColors.textPrimary
         case .planned, .upcoming:  return AppColors.textSecondary
         }

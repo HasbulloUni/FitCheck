@@ -30,7 +30,7 @@ enum ReminderScheduler {
         for reminder in draft.reminders {
             let content = UNMutableNotificationContent()
             content.title = EditWeekRules.reminderTitle
-            content.body = EditWeekRules.reminderBody(minutes: draft.durationMinutes)
+            content.body = EditWeekRules.reminderBody()
             content.sound = .default
 
             // Every week, on this day of the week (1 = Sunday ... 7 = Saturday), at this time

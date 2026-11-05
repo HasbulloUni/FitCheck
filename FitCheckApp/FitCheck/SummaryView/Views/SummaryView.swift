@@ -25,7 +25,6 @@ struct SummaryView: View {
                 VStack(spacing: AppSizes.Space.section * unit) {
                     HomeHeaderView(
                         name: viewModel.userName,
-                        doneThisWeek: viewModel.doneThisWeek,
                         plannedThisWeek: viewModel.plannedThisWeek,
                         unit: unit
                     )
@@ -42,7 +41,7 @@ struct SummaryView: View {
 
                     // Today: show the workout if there is one, otherwise invite the user to add it
                     if let plan = viewModel.todayPlan {
-                        TodayCardView(plan: plan, unit: unit, onStart: {})
+                        TodayCardView(plan: plan, unit: unit, onStart: { viewModel.startToday() })
                     } else if viewModel.isTodayRest {
                         TodayRestCardView(unit: unit)
                     } else {
@@ -61,13 +60,15 @@ struct SummaryView: View {
                         plans: viewModel.plans,
                         unit: unit,
                         onNewPlan: { viewModel.openAddPlan() },
+                        onReadyMade: { viewModel.openReadyMade() },
+                        onDeleteAllPlans: { viewModel.deleteAllPlans() },
                         onOpenPlan: { viewModel.openEditPlan($0) },
                         onEditPlan: { viewModel.openEditPlan($0) },
                         onDeletePlan: { viewModel.deletePlan($0) },
                         onStartPlan: { viewModel.sendToToday($0) }
                     )
                 }
-                .padding(6 * unit)
+                .padding(AppSizes.Space.screen * unit)
             }
         }
         .background(AppColors.background)
@@ -79,7 +80,8 @@ struct SummaryView: View {
                 savedPlan: viewModel.savedWeekPlan,
                 plans: viewModel.plans,
                 onBack: { viewModel.closeEditWeek() },
-                onSave: { viewModel.saveWeek($0) }
+                onSave: { viewModel.saveWeek($0) },
+                onReset: { viewModel.resetWeek() }
             )
             .navigationBarBackButtonHidden(true)   // the screens have their own Back
             .toolbar(.hidden, for: .navigationBar)
@@ -95,6 +97,34 @@ struct SummaryView: View {
             )
             .navigationBarBackButtonHidden(true)   // the screens have their own Back
             .toolbar(.hidden, for: .navigationBar)
+        }
+        // Start opens the workout on the whole screen: Back returns here
+        .fullScreenCover(item: $viewModel.workoutPlan) { plan in
+            WorkoutView(plan: plan, onClose: { viewModel.closeWorkout() })
+        }
+        // "+ New plan" > Ready-made: a short sheet rises from the bottom (drag it down to close)
+        .sheet(isPresented: $viewModel.isReadyMadeOpen, onDismiss: { viewModel.readyMadeSheetClosed() }) {
+            ReadyMadeSheetView(
+                hasWeek: viewModel.hasSavedWeek,
+                initialStyle: viewModel.readyMadeStyle,
+                onCreate: { viewModel.createReadyMade($0) },
+                onSetWeek: { viewModel.setWeekFromReadyMade($0) }
+            )
+                .presentationDetents([.fraction(0.36)])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(AppColors.background)
+        }
+        // The limit of plans: a native alert with one button
+        .alert(
+            "Plan limit reached",
+            isPresented: Binding(
+                get: { viewModel.planLimitMessage != nil },
+                set: { if !$0 { viewModel.planLimitMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(viewModel.planLimitMessage ?? "")
         }
         // The Home has its own header: no system title bar
         .toolbar(.hidden, for: .navigationBar)

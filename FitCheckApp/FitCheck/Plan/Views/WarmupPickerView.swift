@@ -51,7 +51,7 @@ struct WarmupPickerView: View {
                     }
                 }
                 .padding(.horizontal, 5 * unit)
-                .padding(.top, 4 * unit)
+                .padding(.top, AppSizes.Space.section * unit)
 
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
@@ -60,7 +60,7 @@ struct WarmupPickerView: View {
                         }
                     }
                     .padding(.horizontal, 5 * unit)
-                    .padding(.vertical, 3 * unit)
+                    .padding(.vertical, AppSizes.Space.group * unit)
                 }
 
                 doneButton(unit: unit)
@@ -128,7 +128,7 @@ struct WarmupPickerView: View {
 
                 addButton(isSelected: isSelected, isBlocked: !isAllowed, unit: unit)
             }
-            .padding(.horizontal, 3 * unit)
+            .padding(.horizontal, AppSizes.Space.group * unit)
             .padding(.vertical, 2.8 * unit)
             .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
             .overlay(
@@ -169,15 +169,15 @@ struct WarmupPickerView: View {
             }
             .foregroundStyle(viewModel.canFinish ? AppColors.background : AppColors.textSecondary)
             .padding(.leading, 6.5 * unit)
-            .padding(.trailing, 2 * unit)
+            .padding(.trailing, AppSizes.Space.related * unit)
             .frame(height: 15 * unit)
             .background(viewModel.canFinish ? AppColors.textPrimary : AppColors.cardAlt, in: Capsule())
         }
         .buttonStyle(.plain)
         .disabled(!viewModel.canFinish)
         .padding(.horizontal, 5 * unit)
-        .padding(.top, 3 * unit)
-        .padding(.bottom, 2 * unit)
+        .padding(.top, AppSizes.Space.group * unit)
+        .padding(.bottom, AppSizes.Space.related * unit)
     }
 }
 

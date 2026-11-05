@@ -12,7 +12,7 @@ import SwiftData
 //  - a big header in the color of the plan: name, 60 / 90 min, color
 //  - the warm-up card (opens "Warm-up"), the main part with "+ Add" and the × of each exercise,
 //    the cool-down card with its switch
-//  - when the user scrolls, a small header with the minutes bar takes the place of the big one
+//  - when the user scrolls, a small header with the plan name takes the place of the big one
 //  - "Undo" after an exercise is removed, and the big button that says what is still missing
 // It only draws: the data and the logic live in AddPlanViewModel.
 // Every size is a multiple of "unit" (1% of the screen width), like the other screens.
@@ -27,15 +27,29 @@ struct AddPlanView: View {
     let onBack: () -> Void                // the round back button: closes without saving
     let onSave: (PlanItem) -> Void        // "Save to My plans": gives the new plan to the Home
 
+    // Only the first-launch onboarding uses these three. Everywhere else they stay nil
+    // and the screen is exactly the normal "New plan".
+    var onboardingStep: Int? = nil        // the step of the progress bar (replaces "NEW PLAN")
+    var onboardingDayText: String? = nil  // e.g. "Day 1 of 3"
+    var onReadyMade: (() -> Void)? = nil  // shows the Ready-made | Custom switch at the top
+
     // editing: the plan to change (nil = a new plan)
     init(editing plan: PlanItem? = nil, takenColorIndexes: [Int], otherPlanNames: [String] = [],
+         onboardingStep: Int? = nil, onboardingDayText: String? = nil, onReadyMade: (() -> Void)? = nil,
+         fallbackName: String? = nil, finalButtonTitle: String? = nil,
          onBack: @escaping () -> Void, onSave: @escaping (PlanItem) -> Void) {
-        _viewModel = State(initialValue: AddPlanViewModel(takenColorIndexes: takenColorIndexes,
-                                                          otherPlanNames: otherPlanNames, editing: plan))
+        let model = AddPlanViewModel(takenColorIndexes: takenColorIndexes,
+                                     otherPlanNames: otherPlanNames, editing: plan)
+        model.fallbackName = fallbackName
+        model.finalButtonTitle = finalButtonTitle
+        _viewModel = State(initialValue: model)
         self.otherPlanNames = otherPlanNames
         self.takenColorIndexes = takenColorIndexes
         self.onBack = onBack
         self.onSave = onSave
+        self.onboardingStep = onboardingStep
+        self.onboardingDayText = onboardingDayText
+        self.onReadyMade = onReadyMade
     }
 
     var body: some View {
@@ -52,6 +66,10 @@ struct AddPlanView: View {
                         bigHeader(unit: unit, topInset: topInset)
 
                         VStack(spacing: AppSizes.Space.related * unit) {
+                            if let onReadyMade {
+                                modeSwitch(onReadyMade: onReadyMade, unit: unit)
+                            }
+
                             warmupCard(unit: unit)
                             mainPartTitle(unit: unit)
 
@@ -76,8 +94,8 @@ struct AddPlanView: View {
                                 .padding(.top, 1.5 * unit)
                         }
                         .padding(.horizontal, 5 * unit)
-                        .padding(.top, 3 * unit)
-                        .padding(.bottom, 4 * unit)
+                        .padding(.top, AppSizes.Space.group * unit)
+                        .padding(.bottom, AppSizes.Space.section * unit)
                     }
                 }
                 .scrollDismissesKeyboard(.immediately)
@@ -102,9 +120,6 @@ struct AddPlanView: View {
                         selectedIds: viewModel.chosen.map { $0.id },
                         goal: viewModel.goal,
                         level: viewModel.level,
-                        targetMinutes: viewModel.minutes,
-                        warmupMinutes: viewModel.warmupMinutes,
-                        cooldownMinutes: viewModel.hasCooldown ? Int(SafetyRules.cooldownMinutes) : 0,
                         planName: viewModel.displayName,
                         details: viewModel.pickerDetails
                     ),
@@ -153,12 +168,21 @@ struct AddPlanView: View {
             HStack(spacing: AppSizes.Space.section * unit) {
                 backButton(unit: unit)
 
-                Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                    .tracking(0.4 * unit)
-                    .foregroundStyle(.black)
+                if let step = onboardingStep {
+                    // Onboarding: the progress bar takes the place of "NEW PLAN"
+                    OnboardingProgressBar(position: step, unit: unit, onColor: true)
 
-                Spacer()
+                    Text("\(step)/\(OnboardingStep.barSteps)")
+                        .font(.system(size: AppSizes.Text.caption * unit, weight: .semibold))
+                        .foregroundStyle(.black)
+                } else {
+                    Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
+                        .tracking(0.4 * unit)
+                        .foregroundStyle(.black)
+
+                    Spacer()
+                }
             }
 
             // The name: the suggested one is shown faded until the user writes one
@@ -190,24 +214,24 @@ struct AddPlanView: View {
                 Text("Another plan has this name")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
                     .foregroundStyle(.black.opacity(0.7))
-                    .padding(.top, 1 * unit)
+                    .padding(.top, AppSizes.Space.tight * unit)
             }
 
             HStack(spacing: AppSizes.Space.related * unit) {
                 statPill(icon: "dumbbell", text: viewModel.exerciseCountText, unit: unit)
-                statPill(icon: "clock", text: "about \(viewModel.estimatedMinutes) min", unit: unit)
+
+                if let onboardingDayText {
+                    statPill(icon: "calendar", text: onboardingDayText, unit: unit)
+                }
             }
             .padding(.top, 3.5 * unit)
-
-            durationSwitch(unit: unit)
-                .padding(.top, 4 * unit)
 
             colorRow(unit: unit)
                 .padding(.top, 3.5 * unit)
         }
         .padding(.horizontal, 5.5 * unit)
         .padding(.top, topInset + 2.5 * unit)
-        .padding(.bottom, 4 * unit)
+        .padding(.bottom, AppSizes.Space.section * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             viewModel.color,
@@ -228,6 +252,29 @@ struct AddPlanView: View {
         .accessibilityLabel("Back")
     }
 
+    // Onboarding only: "Ready-made | Custom". Custom is where we are; Ready-made goes back.
+    private func modeSwitch(onReadyMade: @escaping () -> Void, unit: CGFloat) -> some View {
+        HStack(spacing: 0) {
+            Button(action: onReadyMade) {
+                Text("Ready-made")
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                    .foregroundStyle(AppColors.textPrimary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 10 * unit)
+            }
+            .buttonStyle(.plain)
+
+            Text("Custom")
+                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                .foregroundStyle(AppColors.textPrimary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 10 * unit)
+                .background(AppColors.card, in: Capsule())
+        }
+        .padding(unit)
+        .background(AppColors.cardAlt, in: Capsule())
+    }
+
     // A small see-through pill, e.g. "5 exercises" or "about 42 min"
     private func statPill(icon: String, text: String, unit: CGFloat) -> some View {
         HStack(spacing: AppSizes.Space.related * unit) {
@@ -237,40 +284,15 @@ struct AddPlanView: View {
                 .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
         }
         .foregroundStyle(.black)
-        .padding(.horizontal, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.group * unit)
         .frame(height: 8 * unit)
         .background(.white.opacity(0.42), in: Capsule())
     }
 
-    // "60 min" and "90 min" in a black bar: the chosen one is white
-    private func durationSwitch(unit: CGFloat) -> some View {
-        HStack(spacing: 0) {
-            ForEach(SafetyRules.sessionMinutesOptions, id: \.self) { option in
-                let isSelected = viewModel.minutes == option
-
-                Button(action: { viewModel.minutes = option }) {
-                    Text(EditWeekRules.durationTitle(option))
-                        .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
-                        .foregroundStyle(isSelected ? Color.black : Color.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 11.5 * unit)
-                        .background(isSelected ? Color.white : Color.clear, in: Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
-        .padding(1 * unit)
-        .background(.black, in: Capsule())
-    }
-
     // The colors: the ones used by other plans are faded and cannot be tapped
     private func colorRow(unit: CGFloat) -> some View {
-        HStack(spacing: AppSizes.Space.section * unit) {
-            Text("Color")
-                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                .foregroundStyle(.black.opacity(0.7))
-
+        // No label: the circles share the whole width evenly, so they line up with the name above
+        HStack(spacing: 0) {
             ForEach(PlanPalette.colors.indices, id: \.self) { index in
                 let isSelected = viewModel.colorIndex == index
                 // When every color is used (more plans than colors) all of them can be picked again
@@ -290,6 +312,7 @@ struct AddPlanView: View {
                             .padding(1.4 * unit)
                     }
                     .frame(width: 9.5 * unit, height: 9.5 * unit)
+                    .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
                 .disabled(isTaken)
@@ -321,29 +344,9 @@ struct AddPlanView: View {
 
                 Spacer()
             }
-
-            // The minutes bar: how much of the 60 or 90 minutes is used
-            HStack(spacing: AppSizes.Space.group * unit) {
-                Capsule()
-                    .fill(.white.opacity(0.45))
-                    .frame(width: 56 * unit, height: 2 * unit)
-                    .overlay(alignment: .leading) {
-                        Capsule()
-                            .fill(.black)
-                            .frame(width: 56 * unit * CGFloat(viewModel.timeShare), height: 2 * unit)
-                    }
-
-                Text(viewModel.timeText)
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                    .foregroundStyle(.black)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-
-                Spacer(minLength: 0)
-            }
         }
         .padding(.horizontal, 5 * unit)
-        .padding(.top, topInset + 2 * unit)
+        .padding(.top, topInset + AppSizes.Space.related * unit)
         .padding(.bottom, 4.5 * unit)
         .background(
             viewModel.color,
@@ -402,8 +405,6 @@ struct AddPlanView: View {
                 .foregroundStyle(AppColors.textPrimary)
 
             if !viewModel.chosen.isEmpty {
-                countBadge(viewModel.mainCountText, isDone: viewModel.hasEnoughExercises, unit: unit)
-
                 Spacer()
 
                 Button(action: { viewModel.isPickerShown = true }) {
@@ -423,7 +424,7 @@ struct AddPlanView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 1 * unit)
+        .padding(.horizontal, AppSizes.Space.tight * unit)
         .padding(.top, 1.5 * unit)
     }
 
@@ -496,7 +497,7 @@ struct AddPlanView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Remove \(name)")
         }
-        .padding(.horizontal, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.group * unit)
         .padding(.vertical, 3.2 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -546,14 +547,14 @@ struct AddPlanView: View {
                 Text("Undo")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
-                    .padding(.horizontal, 4 * unit)
+                    .padding(.horizontal, AppSizes.Space.section * unit)
                     .frame(height: 9.5 * unit)
                     .background(AppColors.background, in: Capsule())
             }
             .buttonStyle(.plain)
         }
         .padding(.leading, 4.5 * unit)
-        .padding(.trailing, 2 * unit)
+        .padding(.trailing, AppSizes.Space.related * unit)
         .frame(height: 13 * unit)
         .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -583,7 +584,7 @@ struct AddPlanView: View {
             }
             .foregroundStyle(isEnabled ? AppColors.background : AppColors.textSecondary)
             .padding(.leading, 6.5 * unit)
-            .padding(.trailing, 2 * unit)
+            .padding(.trailing, AppSizes.Space.related * unit)
             .frame(height: 15 * unit)
             .background(isEnabled ? AppColors.textPrimary : AppColors.cardAlt, in: Capsule())
         }
@@ -600,16 +601,6 @@ struct AddPlanView: View {
             .foregroundStyle(AppColors.textPrimary)
             .frame(width: 9.5 * unit, height: 9.5 * unit)
             .background(AppColors.cardAlt, in: RoundedRectangle(cornerRadius: AppSizes.Radius.small * unit))
-    }
-
-    // "2 / 2" or "5 · min 4": green when the rule is met, grey otherwise
-    private func countBadge(_ text: String, isDone: Bool, unit: CGFloat) -> some View {
-        Text(text)
-            .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-            .foregroundStyle(isDone ? Color.black : AppColors.textPrimary)
-            .padding(.horizontal, 2.2 * unit)
-            .frame(height: 6 * unit)
-            .background(isDone ? AppColors.greenSoft : AppColors.cardAlt, in: Capsule())
     }
 
     // A small grey chip, e.g. "Brisk walk · 4 min"

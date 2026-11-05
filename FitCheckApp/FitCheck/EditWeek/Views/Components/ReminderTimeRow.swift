@@ -49,7 +49,7 @@ struct ReminderTimeRow: View {
             Text("Reminder · \(dayName)")
                 .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)
-                .padding(.top, 6 * unit)
+                .padding(.top, AppSizes.Space.screen * unit)
 
             DatePicker(
                 "",

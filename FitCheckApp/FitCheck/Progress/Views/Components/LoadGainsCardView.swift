@@ -11,13 +11,37 @@ import SwiftUI
 // With no increases the same card shows an invitation.
 struct LoadGainsCardView: View {
     let gains: [LoadGain]
+    var topLoads: [LoadTop] = []   // shown instead of the invitation when there are no increases yet
     let unit: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.group * unit) {
-            ProgressCardTitle(text: "Top load gains", unit: unit)
+            ProgressCardTitle(text: gains.isEmpty && !topLoads.isEmpty ? "Heaviest weights" : "Top load gains", unit: unit)
 
-            if gains.isEmpty {
+            if gains.isEmpty && !topLoads.isEmpty {
+                // No increase yet (for example the first workout): the heaviest weights of the period
+                VStack(spacing: AppSizes.Space.group * unit) {
+                    ForEach(topLoads) { load in
+                        HStack(spacing: AppSizes.Space.related * unit) {
+                            Text(load.name)
+                                .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
+                                .foregroundStyle(AppColors.textPrimary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+
+                            Spacer(minLength: unit)
+
+                            Text("\(ProgressFormat.kg(load.kg)) kg")
+                                .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))
+                                .foregroundStyle(AppColors.textPrimary)
+                        }
+                    }
+                }
+
+                Text("Your heaviest weights so far. Increases will show up here.")
+                    .font(.system(size: AppSizes.Text.caption * unit, weight: .regular))
+                    .foregroundStyle(AppColors.textSecondary)
+            } else if gains.isEmpty {
                 VStack(alignment: .leading, spacing: unit) {
                     Text("No weight increases yet")
                         .font(.system(size: AppSizes.Text.body * unit, weight: .heavy))

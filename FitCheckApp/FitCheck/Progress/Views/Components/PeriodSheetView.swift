@@ -58,9 +58,9 @@ struct PeriodSheetView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, 6 * unit)
-            .padding(.top, 6 * unit)
-            .padding(.bottom, 4 * unit)
+            .padding(.horizontal, AppSizes.Space.screen * unit)
+            .padding(.top, AppSizes.Space.screen * unit)
+            .padding(.bottom, AppSizes.Space.section * unit)
         }
         .background(AppColors.background)
     }

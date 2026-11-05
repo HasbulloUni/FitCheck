@@ -17,7 +17,8 @@ final class ProgressScreenViewModel {
     private(set) var sessions: [SessionRecord] = []
 
     // The period chosen: the unit, and how far back for week, month, 3 months and year
-    // (offset 0 = the current one, -1 = the one before, and so on)
+    // (offset 0 = the current one, -1 = the one before, and so on).
+    // The screen opens on the current month (offset 0).
     var unit: ProgressUnit = .month
     var offset = 0
 
@@ -28,7 +29,6 @@ final class ProgressScreenViewModel {
     // The sheet "Choose a period" and the screens opened from the Photos card
     var isPeriodSheetOpen = false
     var isGalleryOpen = false
-    var isCompareOpen = false
 
     // The photos have their own ViewModel
     let photosViewModel = PhotosViewModel()
@@ -38,6 +38,7 @@ final class ProgressScreenViewModel {
     // Called when the screen appears: loads the sessions and the photos
     func configure(context: ModelContext) {
         self.context = context
+        photosViewModel.onShowDate = { [weak self] date in self?.showPeriod(containing: date) }
         photosViewModel.configure(context: context)
         reload()
     }
@@ -105,6 +106,50 @@ final class ProgressScreenViewModel {
         if newEnd > today { newEnd = today }
         customEnd = newEnd
         customStart = ProgressPeriodBuilder.addDays(newEnd, -(length - 1))
+    }
+
+    // The Progress tab was tapped again: every screen above the main page closes
+    func popToRoot() {
+        photosViewModel.isViewerOpen = false
+        photosViewModel.isCompareOpen = false
+        photosViewModel.isChoosingSource = false
+        isGalleryOpen = false
+        isPeriodSheetOpen = false
+    }
+
+    // Compare opened from the Photos card of Progress: Photos is pushed first, without animation,
+    // and it opens Compare as soon as it is on screen. So the Back of Compare goes straight to Photos.
+    func openCompareFromCard() {
+        if isGalleryOpen {
+            photosViewModel.startCompare()
+            return
+        }
+        photosViewModel.pendingCompare = true
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { isGalleryOpen = true }
+    }
+
+    // Moves the period to the one that contains this day (used after a photo is saved,
+    // so the new photo is not hidden, e.g. a photo with a date chosen in an older month)
+    func showPeriod(containing date: Date) {
+        if ProgressPeriodBuilder.contains(period, date) { return }
+
+        // A custom range grows until it includes the day
+        if unit == .custom {
+            customStart = min(customStart, date)
+            customEnd = max(customEnd ?? customStart, date)
+            return
+        }
+
+        // Look for the offset of the current unit that contains the day (this one, then back in time)
+        for candidate in stride(from: 0, through: -240, by: -1) {
+            let found = ProgressPeriodBuilder.period(unit: unit, offset: candidate)
+            if ProgressPeriodBuilder.contains(found, date) {
+                offset = candidate
+                return
+            }
+        }
     }
 
     // MARK: - The sheet "Choose a period"

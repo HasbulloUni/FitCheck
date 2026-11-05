@@ -16,12 +16,18 @@ struct EditWeekView: View {
 
     let onBack: () -> Void        // the round back button: closes the screen without saving
     let onSave: (EditWeekDraft) -> Void   // "Save changes": gives the chosen week to the Home
+    let onReset: () -> Void       // "Reset week": the Home saves an empty week (after the question)
+
+    // True while the question "Reset your week?" is shown
+    @State private var isResetAsked = false
 
     init(week: WeekData, savedPlan: EditWeekDraft? = nil, plans: [PlanItem] = [],
-         onBack: @escaping () -> Void, onSave: @escaping (EditWeekDraft) -> Void) {
+         onBack: @escaping () -> Void, onSave: @escaping (EditWeekDraft) -> Void,
+         onReset: @escaping () -> Void = {}) {
         _viewModel = State(initialValue: EditWeekViewModel(week: week, savedPlan: savedPlan, plans: plans))
         self.onBack = onBack
         self.onSave = onSave
+        self.onReset = onReset
     }
 
     var body: some View {
@@ -41,19 +47,41 @@ struct EditWeekView: View {
                         rotationSection(unit: unit)
 
                         reminderSection(unit: unit)
+
+                        resetButton(unit: unit)
                     }
-                    .padding(.horizontal, 6 * unit)
-                    .padding(.top, 4 * unit)
-                    .padding(.bottom, 4 * unit)
+                    .padding(.horizontal, AppSizes.Space.screen * unit)
+                    .padding(.top, AppSizes.Space.section * unit)
+                    .padding(.bottom, AppSizes.Space.section * unit)
                 }
 
                 saveButton(unit: unit)
             }
         }
         .background(AppColors.background)
+        // Reset asks first: it cannot be undone
+        .confirmationDialog("Reset your week?", isPresented: $isResetAsked, titleVisibility: .visible) {
+            Button("Reset week", role: .destructive) { onReset() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Training days, rotation and reminders are cleared. Your plans stay in My plans.")
+        }
     }
 
     // MARK: - Pieces of the screen
+
+    // "Reset week": a quiet red text at the end of the list
+    private func resetButton(unit: CGFloat) -> some View {
+        Button { isResetAsked = true } label: {
+            Text("Reset week")
+                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                .foregroundStyle(AppColors.red)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, AppSizes.Space.group * unit)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, AppSizes.Space.section * unit)
+    }
 
     // The round back button
     private func backButton(unit: CGFloat) -> some View {
@@ -99,6 +127,12 @@ struct EditWeekView: View {
                 unit: unit,
                 onChange: { viewModel.changePlan(weekday: $0, to: $1) }
             )
+
+            if let note = viewModel.rotationLimitNote {
+                Text(note)
+                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
+                    .foregroundStyle(AppColors.textSecondary)
+            }
         }
     }
 
@@ -131,9 +165,9 @@ struct EditWeekView: View {
         .buttonStyle(.plain)
         .disabled(!viewModel.canSave)
         .opacity(viewModel.canSave ? 1 : 0.3)
-        .padding(.horizontal, 6 * unit)
+        .padding(.horizontal, AppSizes.Space.screen * unit)
         .padding(.top, 5 * unit)
-        .padding(.bottom, 3 * unit)
+        .padding(.bottom, AppSizes.Space.group * unit)
     }
 
     // The bold title of a section

@@ -12,6 +12,13 @@ import Foundation
 // The movements are written by hand (to review): none of them goes over the head.
 enum WarmupCooldownBuilder {
 
+    // The order of the blocks in a session: big muscles first
+    static let blockOrder = [
+        "quadriceps", "hamstrings", "glutes", "calves", "adductors", "abductors",
+        "chest", "lats", "middle back", "lower back", "traps",
+        "shoulders", "neck", "biceps", "triceps", "forearms", "abdominals"
+    ]
+
     private static let generalWarmups = [
         "Brisk walk", "Light stationary bike", "March on the spot", "Side steps, arms in front"
     ]
@@ -97,8 +104,8 @@ enum WarmupCooldownBuilder {
     static func cooldown(for exercises: [PlannedExercise], stretches: [StretchItem], seed: Int) -> CooldownPart {
         // The muscles of the day, in session order, each one once
         let inOrder = exercises.indices.sorted { first, second in
-            let blockFirst = DayBuilder.blockOrder.firstIndex(of: exercises[first].muscle) ?? 99
-            let blockSecond = DayBuilder.blockOrder.firstIndex(of: exercises[second].muscle) ?? 99
+            let blockFirst = blockOrder.firstIndex(of: exercises[first].muscle) ?? 99
+            let blockSecond = blockOrder.firstIndex(of: exercises[second].muscle) ?? 99
             if blockFirst != blockSecond { return blockFirst < blockSecond }
             return first < second
         }

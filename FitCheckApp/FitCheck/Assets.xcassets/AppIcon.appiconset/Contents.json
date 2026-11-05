@@ -1,10 +1,7 @@
 {
   "images" : [
     {
-<<<<<<< Updated upstream
-=======
-      "filename" : "Centered Charcoal Fitness Emblem-2.png",
->>>>>>> Stashed changes
+      "filename" : "Centered Charcoal Fitness Emblem-2 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -16,10 +13,10 @@
           "value" : "dark"
         }
       ],
+      "filename" : "Ivory Runner Emblem on Black-2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
-<<<<<<< Updated upstream
     },
     {
       "appearances" : [
@@ -28,11 +25,10 @@
           "value" : "tinted"
         }
       ],
+      "filename" : "Ivory Runner Emblem on Black-2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
-=======
->>>>>>> Stashed changes
     }
   ],
   "info" : {

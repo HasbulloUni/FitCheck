@@ -46,7 +46,8 @@ enum ProgressStatsBuilder {
                 minutes: totalMinutes,
                 previousMinutes: previousMinutes,
                 period: period
-            )
+            ),
+            topLoads: topLoads(from: current)
         )
     }
 
@@ -110,6 +111,29 @@ enum ProgressStatsBuilder {
             }
         }
         return Array(gains.sorted { $0.gainKg > $1.gainKg }.prefix(3))
+    }
+
+    // MARK: - The heaviest weights
+    // For each exercise: the heaviest weight of the period. The 3 heaviest are kept.
+    // The card shows them while there are no increases yet (for example after the first workout).
+
+    private static func topLoads(from list: [SessionRecord]) -> [LoadTop] {
+        var heaviest: [String: Double] = [:]
+        var names: [String: String] = [:]
+
+        for session in list {
+            for (index, id) in session.loadExerciseIds.enumerated()
+            where index < session.loadWeights.count && index < session.loadExerciseNames.count {
+                let weight = session.loadWeights[index]
+                if weight > (heaviest[id] ?? 0) {
+                    heaviest[id] = weight
+                }
+                names[id] = session.loadExerciseNames[index]
+            }
+        }
+
+        let all = heaviest.map { LoadTop(id: $0.key, name: names[$0.key] ?? $0.key, kg: $0.value) }
+        return Array(all.sorted { $0.kg > $1.kg }.prefix(3))
     }
 
     // MARK: - The number stack

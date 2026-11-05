@@ -91,9 +91,26 @@ final class EditWeekViewModel {
         }
     }
 
-    // The "Change" menu: the day keeps its plan until the user picks another one
+    // The most plans the rotation can have: one for each training day
+    var maxRotationPlans: Int { workoutDayCount }
+
+    // How many different plans the rotation uses now
+    var rotationPlanCount: Int {
+        Set(draft.rotation.compactMap { $0.planId }).count
+    }
+
+    // The note under the rotation rows, e.g. "3 training days: up to 3 plans in the rotation."
+    var rotationLimitNote: String? {
+        workoutDayCount == 0 ? nil : EditWeekRules.rotationLimitNote(days: workoutDayCount)
+    }
+
+    // The "Change" menu: the day keeps its plan until the user picks another one.
+    // A new plan can enter the rotation only if there is still room (never more plans than days).
     func changePlan(weekday: Int, to planId: UUID) {
         guard let index = draft.rotation.firstIndex(where: { $0.weekday == weekday }) else { return }
+        var newRotation = draft.rotation
+        newRotation[index].planId = planId
+        guard Set(newRotation.compactMap { $0.planId }).count <= maxRotationPlans else { return }
         draft.rotation[index].planId = planId
     }
 

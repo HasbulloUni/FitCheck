@@ -13,7 +13,7 @@ import SwiftUI
 // at the top, "suggested" exercises for muscles not trained yet, then everything else.
 // A tap on a row opens its preview (photos and steps); the round button on the right adds or
 // removes it right away, with a small "Undo" afterwards.
-// A row that breaks a safe limit (max 4 for one muscle, max 12 in a day) is faded and says why,
+// A row that breaks a safe limit (max 4 for one muscle) is faded and says why,
 // and a banner explains it when the whole list is blocked.
 // It only draws: the data and the logic live in ExercisePickerViewModel.
 // Every size is a multiple of "unit" (1% of the screen width), like the other screens.
@@ -58,7 +58,7 @@ struct ExercisePickerView: View {
                     resultsLabel(unit: unit)
                 }
                 .padding(.horizontal, 5 * unit)
-                .padding(.top, 4 * unit)
+                .padding(.top, AppSizes.Space.section * unit)
 
                 ZStack(alignment: .bottom) {
                     exercisesList(unit: unit)
@@ -66,7 +66,7 @@ struct ExercisePickerView: View {
                     if let change = viewModel.recentChange {
                         undoToast(change, unit: unit)
                             .padding(.horizontal, 5 * unit)
-                            .padding(.bottom, 2 * unit)
+                            .padding(.bottom, AppSizes.Space.related * unit)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
@@ -149,7 +149,7 @@ struct ExercisePickerView: View {
                 .accessibilityLabel("Clear search")
             }
         }
-        .padding(.horizontal, 4 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
         .frame(height: 12.5 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .overlay(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit).stroke(AppColors.divider, lineWidth: 0.3 * unit))
@@ -180,7 +180,7 @@ struct ExercisePickerView: View {
             Text(title)
                 .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
-                .padding(.horizontal, 4 * unit)
+                .padding(.horizontal, AppSizes.Space.section * unit)
                 .frame(height: 9 * unit)
                 .background(isSelected ? AppColors.textPrimary : AppColors.card, in: Capsule())
                 .overlay(Capsule().stroke(AppColors.divider, lineWidth: 0.3 * unit))
@@ -201,7 +201,7 @@ struct ExercisePickerView: View {
         .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
         .tracking(0.3 * unit)
         .foregroundStyle(AppColors.textSecondary)
-        .padding(.horizontal, 1 * unit)
+        .padding(.horizontal, AppSizes.Space.tight * unit)
     }
 
     private var resultsLabelText: String {
@@ -233,7 +233,7 @@ struct ExercisePickerView: View {
                     resultsSection(unit: unit)
                 }
                 .padding(.horizontal, 5 * unit)
-                .padding(.vertical, 2 * unit)
+                .padding(.vertical, AppSizes.Space.related * unit)
                 .padding(.bottom, 14 * unit)   // room for the "Undo" toast
             }
             .onChange(of: viewModel.selectedGroup) {
@@ -283,7 +283,7 @@ struct ExercisePickerView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Remove \(viewModel.name(of: item))")
         }
-        .padding(.leading, 1 * unit)
+        .padding(.leading, AppSizes.Space.tight * unit)
         .padding(.trailing, 1.5 * unit)
         .frame(height: 10 * unit)
         .background(AppColors.card, in: Capsule())
@@ -322,7 +322,7 @@ struct ExercisePickerView: View {
             .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
             .tracking(0.3 * unit)
             .foregroundStyle(AppColors.textSecondary)
-            .padding(.horizontal, 1 * unit)
+            .padding(.horizontal, AppSizes.Space.tight * unit)
     }
 
     // Explains why every exercise shown is blocked, e.g. "Quadriceps is full: 4 of 4."
@@ -334,7 +334,7 @@ struct ExercisePickerView: View {
                 .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
         }
         .foregroundStyle(AppColors.textPrimary)
-        .padding(3 * unit)
+        .padding(AppSizes.Space.group * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -360,8 +360,8 @@ struct ExercisePickerView: View {
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .padding(.top, 6 * unit)
-            .padding(.horizontal, 4 * unit)
+            .padding(.top, AppSizes.Space.screen * unit)
+            .padding(.horizontal, AppSizes.Space.section * unit)
 
             if !viewModel.alternativeItems.isEmpty {
                 sectionLabel("SIMILAR", unit: unit)
@@ -409,7 +409,7 @@ struct ExercisePickerView: View {
 
             addButton(item, isSelected: isSelected, isBlocked: blockedText != nil, unit: unit)
         }
-        .padding(.horizontal, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.group * unit)
         .padding(.vertical, 2.8 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .overlay(
@@ -461,31 +461,27 @@ struct ExercisePickerView: View {
                 Text("Undo")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
-                    .padding(.horizontal, 4 * unit)
+                    .padding(.horizontal, AppSizes.Space.section * unit)
                     .frame(height: 9.5 * unit)
                     .background(AppColors.background, in: Capsule())
             }
             .buttonStyle(.plain)
         }
         .padding(.leading, 4.5 * unit)
-        .padding(.trailing, 2 * unit)
+        .padding(.trailing, AppSizes.Space.related * unit)
         .frame(height: 13 * unit)
         .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 
-    // MARK: - Bottom: "N selected", the minutes and "Done"
+    // MARK: - Bottom: "N selected" and "Done"
 
-    // "5 selected", "about 42 of 60 min" and the black "Done" button, in a white bar at the bottom
+    // "5 selected" and the black "Done" button, in a white bar at the bottom
     private func bottomBar(unit: CGFloat) -> some View {
         HStack(spacing: AppSizes.Space.group * unit) {
             VStack(alignment: .leading, spacing: AppSizes.Space.tight * unit) {
                 Text(viewModel.selectedText)
                     .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
-
-                Text(viewModel.minutesText)
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
-                    .foregroundStyle(AppColors.textSecondary)
             }
 
             Spacer()
@@ -502,10 +498,10 @@ struct ExercisePickerView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.leading, 6 * unit)
+        .padding(.leading, AppSizes.Space.screen * unit)
         .padding(.trailing, 5 * unit)
         .padding(.top, 5 * unit)
-        .padding(.bottom, 2 * unit)
+        .padding(.bottom, AppSizes.Space.related * unit)
         .background {
             UnevenRoundedRectangle(topLeadingRadius: 7 * unit, topTrailingRadius: 7 * unit)
                 .fill(AppColors.card)
@@ -541,7 +537,7 @@ private func previewItems() -> [CatalogItem] {
 #Preview("Light") {
     ExercisePickerView(
         viewModel: ExercisePickerViewModel(pool: previewItems(), selectedIds: ["Goblet_Squat", "Leg_Press"],
-                                           goal: .tone, level: .medium, targetMinutes: 60, planName: "Leg day"),
+                                           goal: .tone, level: .medium, planName: "Leg day"),
         label: "Leg day",
         accent: AppColors.muscleOrange,
         onDone: { _ in }
@@ -551,7 +547,7 @@ private func previewItems() -> [CatalogItem] {
 #Preview("Dark") {
     ExercisePickerView(
         viewModel: ExercisePickerViewModel(pool: previewItems(), selectedIds: ["Goblet_Squat", "Leg_Press"],
-                                           goal: .tone, level: .medium, targetMinutes: 60, planName: "Leg day"),
+                                           goal: .tone, level: .medium, planName: "Leg day"),
         label: "Leg day",
         accent: AppColors.muscleOrange,
         onDone: { _ in }

@@ -21,7 +21,7 @@ struct NumberStackView: View {
 
     // The card is 43% of the screen wide: two cards side by side with the Home margins
     private var cardWidth: CGFloat { 43 * unit }
-    private var cardHeight: CGFloat { 24 * unit }
+    private var cardHeight: CGFloat { ProgressRowHeights.side * unit }
 
     var body: some View {
         ZStack {
@@ -79,8 +79,8 @@ struct NumberStackView: View {
                 .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity, minHeight: 6 * unit, alignment: .topLeading)   // room for 2 lines
         }
-        .padding(.horizontal, 4 * unit)
-        .padding(.top, 4 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
+        .padding(.top, AppSizes.Space.section * unit)
         .padding(.bottom, 5.5 * unit)   // space for the dots
         .frame(width: cardWidth, height: cardHeight, alignment: .topLeading)
         .scaleEffect(1 - distance * 0.16)
