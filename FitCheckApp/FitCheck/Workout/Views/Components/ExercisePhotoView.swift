@@ -17,9 +17,9 @@ struct ExercisePhotoView: View {
     let hasPhotos: Bool
     let height: CGFloat
     let unit: CGFloat
-    let onHowTo: () -> Void
+    let onHowTo: (() -> Void)?     // nil = no "How to do it" button (the info sheet already is that)
 
-    init(paths: [String], height: CGFloat, unit: CGFloat, onHowTo: @escaping () -> Void) {
+    init(paths: [String], height: CGFloat, unit: CGFloat, onHowTo: (() -> Void)? = nil) {
         _viewModel = State(initialValue: ExercisePhotoViewModel(paths: paths))
         hasPhotos = !paths.isEmpty
         self.height = height
@@ -42,7 +42,7 @@ struct ExercisePhotoView: View {
             .overlay(alignment: .topTrailing) {
                 // "How to do it" with the photo switch right under it
                 VStack(alignment: .trailing, spacing: AppSizes.Space.related * unit) {
-                    howToButton
+                    if let onHowTo { howToButton(action: onHowTo) }
                     photoSwitch
                 }
                 .padding(AppSizes.Space.group * unit)
@@ -72,8 +72,8 @@ struct ExercisePhotoView: View {
         }
     }
 
-    private var howToButton: some View {
-        Button(action: onHowTo) {
+    private func howToButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             Text("How to do it")
                 .font(.system(size: AppSizes.Text.caption * unit, weight: .heavy))
                 .foregroundStyle(AppColors.textPrimary)

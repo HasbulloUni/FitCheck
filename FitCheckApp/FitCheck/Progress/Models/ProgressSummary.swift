@@ -41,6 +41,13 @@ struct LoadGain: Identifiable {
     var gainKg: Double { toKg - fromKg }
 }
 
+// The heaviest weight of an exercise in the period (used when there are no increases yet)
+struct LoadTop: Identifiable {
+    let id: String          // id of the exercise
+    let name: String
+    let kg: Double
+}
+
 // One state of the number stack (the card you swipe left and right)
 struct StackNumber: Identifiable {
     let id: Int
@@ -74,4 +81,5 @@ struct ProgressSummary {
     let leastMuscle: MuscleSets?
     let loadGains: [LoadGain]        // only the biggest increases (3 at most)
     let numbers: [StackNumber]       // the states of the number stack
+    var topLoads: [LoadTop] = []     // the 3 heaviest weights of the period (shown when there is no increase yet)
 }

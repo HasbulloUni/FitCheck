@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeHeaderView: View {
     let name: String
-    let doneThisWeek: Int
     let plannedThisWeek: Int
     let unit: CGFloat   // 1% of the screen width
 
@@ -18,13 +17,10 @@ struct HomeHeaderView: View {
         name.isEmpty ? "User" : name
     }
 
-    // The line under the title
-    private var subtitle: String {
-        if plannedThisWeek == 0 {
-            // No workout plan yet: invite the user to set the first one
-            return "Set your first workout plan to get started"
-        }
-        return "\(doneThisWeek) of \(plannedThisWeek) this week"
+    // The line under the title: only the invitation when there is no workout plan yet.
+    // The progress of the week is already in the "This week" card, so it is not repeated here.
+    private var subtitle: String? {
+        plannedThisWeek == 0 ? "Set your first workout plan to get started" : nil
     }
 
     var body: some View {
@@ -35,11 +31,13 @@ struct HomeHeaderView: View {
                 .minimumScaleFactor(0.6)   // a long name shrinks instead of wrapping
                 .lineLimit(1)
 
-            Text(subtitle)
-                .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .medium))
-                .foregroundStyle(AppColors.textSecondary)
-                .lineLimit(2)   // the invitation message can use two lines
-                .fixedSize(horizontal: false, vertical: true)   // never cut the text
+            if let subtitle {
+                Text(subtitle)
+                    .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .medium))
+                    .foregroundStyle(AppColors.textSecondary)
+                    .lineLimit(2)   // the invitation message can use two lines
+                    .fixedSize(horizontal: false, vertical: true)   // never cut the text
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -47,20 +45,20 @@ struct HomeHeaderView: View {
 
 // unit 3.9 = an iPhone that is 390 pt wide
 #Preview("Light") {
-    HomeHeaderView(name: "Sebastian", doneThisWeek: 1, plannedThisWeek: 3, unit: 3.9)
+    HomeHeaderView(name: "Sebastian", plannedThisWeek: 3, unit: 3.9)
         .padding(20)
         .background(AppColors.background)
 }
 
 #Preview("Dark") {
-    HomeHeaderView(name: "Sebastian", doneThisWeek: 1, plannedThisWeek: 3, unit: 3.9)
+    HomeHeaderView(name: "Sebastian", plannedThisWeek: 3, unit: 3.9)
         .padding(20)
         .background(AppColors.background)
         .preferredColorScheme(.dark)
 }
 
 #Preview("No data") {
-    HomeHeaderView(name: "", doneThisWeek: 0, plannedThisWeek: 0, unit: 3.9)
+    HomeHeaderView(name: "", plannedThisWeek: 0, unit: 3.9)
         .padding(20)
         .background(AppColors.background)
 }

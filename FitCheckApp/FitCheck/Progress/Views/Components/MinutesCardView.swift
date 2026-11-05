@@ -36,7 +36,7 @@ struct MinutesCardView: View {
                 .foregroundStyle(AppColors.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .progressCard(unit: unit, height: 24 * unit)
+        .progressCard(unit: unit, height: ProgressRowHeights.side * unit)
     }
 }
 

@@ -8,7 +8,7 @@
     {
      "name": "Full body A",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -32,12 +32,12 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -45,7 +45,7 @@
     {
      "name": "Full body B",
      "icon": "figure.mixed.cardio",
-     "minutes": 43,
+     "minutes": 45,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -74,7 +74,7 @@
       },
       {
        "id": "Cable_Rear_Delt_Fly",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -89,7 +89,7 @@
     {
      "name": "Upper",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -113,12 +113,12 @@
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Dumbbell_Bicep_Curl",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -126,7 +126,7 @@
     {
      "name": "Lower",
      "icon": "figure.run",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -140,7 +140,7 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -155,7 +155,7 @@
       },
       {
        "id": "Seated_Calf_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -170,7 +170,7 @@
     {
      "name": "Full body A",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -194,12 +194,12 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -207,7 +207,7 @@
     {
      "name": "Full body B",
      "icon": "figure.mixed.cardio",
-     "minutes": 43,
+     "minutes": 45,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -236,7 +236,7 @@
       },
       {
        "id": "Cable_Rear_Delt_Fly",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -244,7 +244,7 @@
     {
      "name": "Full body C",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -268,12 +268,12 @@
       },
       {
        "id": "Single_Leg_Glute_Bridge",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Seated_Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -288,7 +288,7 @@
     {
      "name": "Push",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 38,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -307,17 +307,17 @@
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Triceps_Pushdown_-_Rope_Attachment",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Butterfly",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -325,7 +325,7 @@
     {
      "name": "Pull",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -344,12 +344,12 @@
       },
       {
        "id": "Reverse_Machine_Flyes",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Dumbbell_Bicep_Curl",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -362,7 +362,7 @@
     {
      "name": "Legs",
      "icon": "figure.run",
-     "minutes": 38,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -376,7 +376,7 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -386,12 +386,12 @@
       },
       {
        "id": "Seated_Calf_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Butt_Lift_Bridge",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -406,7 +406,7 @@
     {
      "name": "Full body A",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -430,12 +430,12 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -443,7 +443,7 @@
     {
      "name": "Full body B",
      "icon": "figure.mixed.cardio",
-     "minutes": 43,
+     "minutes": 45,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -472,7 +472,7 @@
       },
       {
        "id": "Cable_Rear_Delt_Fly",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -480,7 +480,7 @@
     {
      "name": "Full body C",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -504,12 +504,12 @@
       },
       {
        "id": "Single_Leg_Glute_Bridge",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Seated_Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -517,7 +517,7 @@
     {
      "name": "Full body D",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -541,12 +541,12 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Reverse_Machine_Flyes",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -561,7 +561,7 @@
     {
      "name": "Upper A",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -585,12 +585,12 @@
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Dumbbell_Bicep_Curl",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -598,7 +598,7 @@
     {
      "name": "Lower A",
      "icon": "figure.run",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -612,7 +612,7 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -627,7 +627,7 @@
       },
       {
        "id": "Seated_Calf_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -635,7 +635,7 @@
     {
      "name": "Upper B",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -659,12 +659,12 @@
       },
       {
        "id": "Cable_Seated_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Machine_Preacher_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -672,7 +672,7 @@
     {
      "name": "Lower B",
      "icon": "figure.run",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -686,7 +686,7 @@
       },
       {
        "id": "Seated_Leg_Curl",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -701,7 +701,7 @@
       },
       {
        "id": "Standing_Calf_Raises",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -716,7 +716,7 @@
     {
      "name": "Full body A",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -740,12 +740,12 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -753,7 +753,7 @@
     {
      "name": "Full body B",
      "icon": "figure.mixed.cardio",
-     "minutes": 43,
+     "minutes": 45,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -782,7 +782,7 @@
       },
       {
        "id": "Cable_Rear_Delt_Fly",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -790,7 +790,7 @@
     {
      "name": "Full body C",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -814,12 +814,12 @@
       },
       {
        "id": "Single_Leg_Glute_Bridge",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Seated_Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -827,7 +827,7 @@
     {
      "name": "Full body D",
      "icon": "figure.mixed.cardio",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -851,12 +851,12 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Reverse_Machine_Flyes",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -864,7 +864,7 @@
     {
      "name": "Full body E",
      "icon": "figure.mixed.cardio",
-     "minutes": 43,
+     "minutes": 45,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -893,7 +893,7 @@
       },
       {
        "id": "Cable_Seated_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -908,7 +908,7 @@
     {
      "name": "Push",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 38,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -927,17 +927,17 @@
       },
       {
        "id": "Side_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Triceps_Pushdown_-_Rope_Attachment",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Butterfly",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -945,7 +945,7 @@
     {
      "name": "Pull",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -964,12 +964,12 @@
       },
       {
        "id": "Reverse_Machine_Flyes",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Dumbbell_Bicep_Curl",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -982,7 +982,7 @@
     {
      "name": "Legs",
      "icon": "figure.run",
-     "minutes": 38,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -996,7 +996,7 @@
       },
       {
        "id": "Lying_Leg_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -1006,12 +1006,12 @@
       },
       {
        "id": "Seated_Calf_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Butt_Lift_Bridge",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -1019,7 +1019,7 @@
     {
      "name": "Upper",
      "icon": "figure.strengthtraining.traditional",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Arm_Circles",
@@ -1043,12 +1043,12 @@
       },
       {
        "id": "Cable_Seated_Lateral_Raise",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
        "id": "Machine_Preacher_Curls",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -1056,7 +1056,7 @@
     {
      "name": "Lower",
      "icon": "figure.run",
-     "minutes": 41,
+     "minutes": 44,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -1070,7 +1070,7 @@
       },
       {
        "id": "Seated_Leg_Curl",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       },
       {
@@ -1085,7 +1085,7 @@
       },
       {
        "id": "Standing_Calf_Raises",
-       "sets": 2,
+       "sets": 3,
        "reps": "12-15"
       }
      ]
@@ -1499,7 +1499,7 @@
     {
      "name": "Legs",
      "icon": "figure.run",
-     "minutes": 48,
+     "minutes": 49,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",
@@ -2199,7 +2199,7 @@
     {
      "name": "Legs",
      "icon": "figure.run",
-     "minutes": 48,
+     "minutes": 49,
      "warmup": [
       "Walking_Treadmill",
       "Standing_Hip_Circles",

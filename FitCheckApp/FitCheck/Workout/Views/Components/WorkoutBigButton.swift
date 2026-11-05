@@ -36,7 +36,7 @@ struct WorkoutBigButton: View {
 #Preview("Light") {
     VStack(spacing: 12) {
         WorkoutBigButton(title: "Complete set", style: .yellow, unit: 3.9, action: {})
-        WorkoutBigButton(title: "Next: Leg press", style: .black, unit: 3.9, action: {})
+        WorkoutBigButton(title: "Next exercise", style: .black, unit: 3.9, action: {})
     }
     .padding()
     .background(AppColors.background)
@@ -46,7 +46,7 @@ struct WorkoutBigButton: View {
 #Preview("Dark") {
     VStack(spacing: 12) {
         WorkoutBigButton(title: "Complete set", style: .yellow, unit: 3.9, action: {})
-        WorkoutBigButton(title: "Next: Leg press", style: .black, unit: 3.9, action: {})
+        WorkoutBigButton(title: "Next exercise", style: .black, unit: 3.9, action: {})
     }
     .padding()
     .background(AppColors.background)

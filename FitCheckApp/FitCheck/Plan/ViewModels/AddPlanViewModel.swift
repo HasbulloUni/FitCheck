@@ -25,6 +25,11 @@ final class AddPlanViewModel {
     private(set) var warmupMoves: [String] = []      // 0 or 1 exercise id (mandatory once picked)
     var hasCooldown = true
 
+    // Onboarding only (nil everywhere else): the name used when the user writes none, e.g. "Day 1",
+    // and the text of the big button when the plan is ready, e.g. "Next: Day 2"
+    var fallbackName: String? = nil
+    var finalButtonTitle: String? = nil
+
     // MARK: What is open on the screen
     var isPickerShown = false                       // "Add exercises"
     var isWarmupShown = false                       // "Warm-up"
@@ -198,6 +203,7 @@ final class AddPlanViewModel {
 
     // e.g. "Legs", "Chest + Back", or "Full body" with 3 or more groups
     var suggestedName: String {
+        if let fallbackName { return fallbackName }
         if groups.isEmpty { return "Name the day" }
         if groups.count >= 3 { return "Full body" }
         return groups.joined(separator: " + ")
@@ -207,6 +213,7 @@ final class AddPlanViewModel {
     var displayName: String {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty { return trimmed }
+        if let fallbackName { return fallbackName }
         return groups.isEmpty ? "New plan" : suggestedName
     }
 
@@ -385,7 +392,7 @@ final class AddPlanViewModel {
     var saveTitle: String {
         if !hasEnoughExercises { return "Add \(missingExercises) more to save" }
         if !isWarmupReady { return "Pick your warm-up" }
-        return isEditing ? "Save changes" : "Save to My plans"
+        return isEditing ? "Save changes" : (finalButtonTitle ?? "Save to My plans")
     }
 
     // The big button: it gives the plan, or opens the warm-up if no move is picked yet

@@ -31,6 +31,7 @@ struct WeekDay: Identifiable {
     let letter: String   // "M", "T", "W"...
     let date: Date       // the actual date
     let state: DayState  // how it should be drawn
+    var colorIndex: Int? = nil   // for a day done: the color of the plan (position in PlanPalette.colors)
 
     // The day of the month (e.g. 29), written inside the circle.
     var number: Int {
@@ -47,6 +48,10 @@ struct WeekData {
     var restWeekdays: [Int] = []
     // Completed workouts (dates at midnight)
     var completedDays: [Date] = []
+    // The days of the completed workouts and the color of each plan: the same position in the two arrays
+    // goes together (sessionDays[0] has the color sessionColorIndexes[0])
+    var sessionDays: [Date] = []
+    var sessionColorIndexes: [Int] = []
     // Rest days already recorded (dates at midnight)
     var restDays: [Date] = []
     // The current day
@@ -100,15 +105,25 @@ struct WeekData {
             // Which day of the week it is (1 = Sunday ... 7 = Saturday)
             let weekday = cal.component(.weekday, from: date)
 
+            let dayState = state(of: date, weekday: weekday, todayStart: todayStart)
             let item = WeekDay(
                 letter: letter,
                 date: date,
-                state: state(of: date, weekday: weekday, todayStart: todayStart)
+                state: dayState,
+                colorIndex: dayState == .done ? planColorIndex(on: date) : nil
             )
             result.append(item)
         }
 
         return result
+    }
+
+    // The color of the plan done on this day (the last one if there are two), nil if it is not known
+    private func planColorIndex(on date: Date) -> Int? {
+        let day = Calendar.current.startOfDay(for: date)
+        guard let position = sessionDays.lastIndex(of: day),
+              sessionColorIndexes.indices.contains(position) else { return nil }
+        return sessionColorIndexes[position]
     }
 
     // The state of a day: the first check that matches wins.
@@ -124,6 +139,10 @@ struct WeekData {
         }
 
         if day == todayStart {
+            // A workout finished today: the circle of today turns green
+            if completedDays.contains(day) {
+                return .done
+            }
             if hasGoToday {
                 return .todayWorkout
             }

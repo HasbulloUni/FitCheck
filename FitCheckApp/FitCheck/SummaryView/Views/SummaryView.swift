@@ -25,7 +25,6 @@ struct SummaryView: View {
                 VStack(spacing: AppSizes.Space.section * unit) {
                     HomeHeaderView(
                         name: viewModel.userName,
-                        doneThisWeek: viewModel.doneThisWeek,
                         plannedThisWeek: viewModel.plannedThisWeek,
                         unit: unit
                     )
@@ -114,6 +113,18 @@ struct SummaryView: View {
                 .presentationDetents([.fraction(0.36)])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(AppColors.background)
+        }
+        // The limit of plans: a native alert with one button
+        .alert(
+            "Plan limit reached",
+            isPresented: Binding(
+                get: { viewModel.planLimitMessage != nil },
+                set: { if !$0 { viewModel.planLimitMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(viewModel.planLimitMessage ?? "")
         }
         // The Home has its own header: no system title bar
         .toolbar(.hidden, for: .navigationBar)

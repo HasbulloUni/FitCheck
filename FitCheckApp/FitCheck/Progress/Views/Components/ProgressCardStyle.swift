@@ -30,3 +30,11 @@ struct ProgressCardTitle: View {
             .foregroundStyle(AppColors.textPrimary)
     }
 }
+
+// MARK: - Heights of the row with Photos, Minutes and the number stack
+// Photos is one tall card on the left. Minutes and the number stack share the same height on the right:
+// two cards plus the space between them add up to the height of Photos. Every size is a multiple of "unit".
+enum ProgressRowHeights {
+    static let photos: CGFloat = 66
+    static let side: CGFloat = (photos - AppSizes.Space.related) / 2
+}

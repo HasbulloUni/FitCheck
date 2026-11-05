@@ -36,8 +36,10 @@ final class PhotosViewModel {
 
     // Add: the source chosen by the user (camera or library)
     var isChoosingSource = false
+    var chosenSource: PhotoSource?     // the row tapped in the sheet, used when the sheet closes
     var isLibraryOpen = false
     var isCameraOpen = false
+    var pendingCompare = false        // the Compare button of the Progress card was tapped: Compare opens once Photos is on screen
     var pendingAdd = false            // the card of Progress asked to add: the choice opens when Photos is on screen
     var cameraData: Data?             // the picture just taken, used when the camera closes
 
@@ -50,6 +52,10 @@ final class PhotosViewModel {
     // Small feedback after saving or deleting
     private(set) var toastText: String?
     private(set) var newPhotoId: UUID?
+
+    // Asks the Progress screen to move to the period that contains a day (after saving a photo,
+    // or when Photos opens with photos that are all outside the chosen period)
+    var onShowDate: ((Date) -> Void)?
 
     private var context: ModelContext?
 
@@ -175,6 +181,34 @@ final class PhotosViewModel {
         )
     }
 
+    // Photos opens and there are photos, but none in the chosen period: the period moves to the latest photo,
+    // so the screen never says "No photos here" while photos exist.
+    func showLatestPhotoIfPeriodIsEmpty() {
+        guard periodPhotos.isEmpty, let last = photos.last else { return }
+        onShowDate?(last.date)
+    }
+
+    // Opens the sheet "Take photo / Photo library"
+    func openSourceChoice() {
+        isChoosingSource = true
+    }
+
+    // The user tapped a row of the sheet: it is remembered and the sheet closes
+    func chooseSource(_ source: PhotoSource) {
+        chosenSource = source
+        isChoosingSource = false
+    }
+
+    // The sheet is closed: only now the camera or the library can open (two screens never open together)
+    func sourceSheetClosed() {
+        guard let source = chosenSource else { return }
+        chosenSource = nil
+        switch source {
+        case .camera: isCameraOpen = true
+        case .library: isLibraryOpen = true
+        }
+    }
+
     func cancelDraft() {
         draft = nil
     }
@@ -187,6 +221,8 @@ final class PhotosViewModel {
         self.draft = nil
         filter = nil
         reload()
+        // The new photo must be visible: if its day is outside the chosen period, the period moves to it
+        onShowDate?(photo.date)
         newPhotoId = photo.id
         showToast("Photo saved. It stays on this iPhone.")
         Task { @MainActor in
@@ -254,6 +290,11 @@ final class PhotosViewModel {
         afterId = nil
         activeSide = before == nil ? .before : .after
         isCompareOpen = true
+    }
+
+    // Back from Compare (Photos is always under it)
+    func closeCompare() {
+        isCompareOpen = false
     }
 
     var beforePhoto: PhotoRecord? { photo(withId: beforeId) }

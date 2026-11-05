@@ -27,15 +27,29 @@ struct AddPlanView: View {
     let onBack: () -> Void                // the round back button: closes without saving
     let onSave: (PlanItem) -> Void        // "Save to My plans": gives the new plan to the Home
 
+    // Only the first-launch onboarding uses these three. Everywhere else they stay nil
+    // and the screen is exactly the normal "New plan".
+    var onboardingStep: Int? = nil        // the step of the progress bar (replaces "NEW PLAN")
+    var onboardingDayText: String? = nil  // e.g. "Day 1 of 3"
+    var onReadyMade: (() -> Void)? = nil  // shows the Ready-made | Custom switch at the top
+
     // editing: the plan to change (nil = a new plan)
     init(editing plan: PlanItem? = nil, takenColorIndexes: [Int], otherPlanNames: [String] = [],
+         onboardingStep: Int? = nil, onboardingDayText: String? = nil, onReadyMade: (() -> Void)? = nil,
+         fallbackName: String? = nil, finalButtonTitle: String? = nil,
          onBack: @escaping () -> Void, onSave: @escaping (PlanItem) -> Void) {
-        _viewModel = State(initialValue: AddPlanViewModel(takenColorIndexes: takenColorIndexes,
-                                                          otherPlanNames: otherPlanNames, editing: plan))
+        let model = AddPlanViewModel(takenColorIndexes: takenColorIndexes,
+                                     otherPlanNames: otherPlanNames, editing: plan)
+        model.fallbackName = fallbackName
+        model.finalButtonTitle = finalButtonTitle
+        _viewModel = State(initialValue: model)
         self.otherPlanNames = otherPlanNames
         self.takenColorIndexes = takenColorIndexes
         self.onBack = onBack
         self.onSave = onSave
+        self.onboardingStep = onboardingStep
+        self.onboardingDayText = onboardingDayText
+        self.onReadyMade = onReadyMade
     }
 
     var body: some View {
@@ -52,6 +66,10 @@ struct AddPlanView: View {
                         bigHeader(unit: unit, topInset: topInset)
 
                         VStack(spacing: AppSizes.Space.related * unit) {
+                            if let onReadyMade {
+                                modeSwitch(onReadyMade: onReadyMade, unit: unit)
+                            }
+
                             warmupCard(unit: unit)
                             mainPartTitle(unit: unit)
 
@@ -150,12 +168,21 @@ struct AddPlanView: View {
             HStack(spacing: AppSizes.Space.section * unit) {
                 backButton(unit: unit)
 
-                Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
-                    .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                    .tracking(0.4 * unit)
-                    .foregroundStyle(.black)
+                if let step = onboardingStep {
+                    // Onboarding: the progress bar takes the place of "NEW PLAN"
+                    OnboardingProgressBar(position: step, unit: unit, onColor: true)
 
-                Spacer()
+                    Text("\(step)/\(OnboardingStep.barSteps)")
+                        .font(.system(size: AppSizes.Text.caption * unit, weight: .semibold))
+                        .foregroundStyle(.black)
+                } else {
+                    Text(viewModel.isEditing ? "EDIT PLAN" : "NEW PLAN")
+                        .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
+                        .tracking(0.4 * unit)
+                        .foregroundStyle(.black)
+
+                    Spacer()
+                }
             }
 
             // The name: the suggested one is shown faded until the user writes one
@@ -192,6 +219,10 @@ struct AddPlanView: View {
 
             HStack(spacing: AppSizes.Space.related * unit) {
                 statPill(icon: "dumbbell", text: viewModel.exerciseCountText, unit: unit)
+
+                if let onboardingDayText {
+                    statPill(icon: "calendar", text: onboardingDayText, unit: unit)
+                }
             }
             .padding(.top, 3.5 * unit)
 
@@ -219,6 +250,29 @@ struct AddPlanView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Back")
+    }
+
+    // Onboarding only: "Ready-made | Custom". Custom is where we are; Ready-made goes back.
+    private func modeSwitch(onReadyMade: @escaping () -> Void, unit: CGFloat) -> some View {
+        HStack(spacing: 0) {
+            Button(action: onReadyMade) {
+                Text("Ready-made")
+                    .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                    .foregroundStyle(AppColors.textPrimary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 10 * unit)
+            }
+            .buttonStyle(.plain)
+
+            Text("Custom")
+                .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
+                .foregroundStyle(AppColors.textPrimary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 10 * unit)
+                .background(AppColors.card, in: Capsule())
+        }
+        .padding(unit)
+        .background(AppColors.cardAlt, in: Capsule())
     }
 
     // A small see-through pill, e.g. "5 exercises" or "about 42 min"

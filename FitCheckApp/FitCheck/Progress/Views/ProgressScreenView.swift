@@ -17,6 +17,9 @@ struct ProgressScreenView: View {
     @State private var viewModel = ProgressScreenViewModel()
     @Environment(\.modelContext) private var modelContext
 
+    // Changes when the Progress tab is tapped again: the screen returns to its main page
+    var popToRootTrigger = 0
+
     var body: some View {
         // The NavigationStack lets the gallery open INSIDE the tab: the navbar stays visible
         NavigationStack {
@@ -58,9 +61,10 @@ struct ProgressScreenView: View {
                                     unit: unit,
                                     onOpen: { viewModel.isGalleryOpen = true },
                                     onCompare: {
-                                        // Opens the compare screen with Before and After empty
+                                        // Opens the compare screen with Before and After empty:
+                                        // Photos goes under it first, so Back lands on Photos
                                         photos.filter = nil
-                                        photos.startCompare()
+                                        viewModel.openCompareFromCard()
                                     },
                                     onAdd: {
                                         // Opens Photos, where the choice "Take photo / Photo library" appears
@@ -88,7 +92,7 @@ struct ProgressScreenView: View {
                                 unit: unit
                             )
 
-                            LoadGainsCardView(gains: summary.loadGains, unit: unit)
+                            LoadGainsCardView(gains: summary.loadGains, topLoads: summary.topLoads, unit: unit)
                         }
                     }
                     .padding(AppSizes.Space.screen * unit)
@@ -119,6 +123,10 @@ struct ProgressScreenView: View {
                 viewModel.configure(context: modelContext)
                 viewModel.photosViewModel.period = viewModel.period
             }
+            // A second tap on the Progress tab: back to the main page, from Photos, Compare or the viewer
+            .onChange(of: popToRootTrigger) { _, _ in
+                withAnimation { viewModel.popToRoot() }
+            }
             // Photos follows the period chosen with the capsule
             .onChange(of: viewModel.period) { _, newPeriod in
                 viewModel.photosViewModel.period = newPeriod
@@ -132,15 +140,7 @@ struct ProgressScreenView: View {
                 .navigationBarBackButtonHidden(true)   // the screens have their own Back
                 .toolbar(.hidden, for: .navigationBar)
             }
-            // The compare screen opens on top of everything, from the card or from Photos
-            .navigationDestination(isPresented: Binding(
-                get: { viewModel.photosViewModel.isCompareOpen },
-                set: { viewModel.photosViewModel.isCompareOpen = $0 }
-            )) {
-                PhotoCompareView(viewModel: viewModel.photosViewModel)
-                    .navigationBarBackButtonHidden(true)
-                    .toolbar(.hidden, for: .navigationBar)
-            }
+            // (The compare screen is opened by the Photos screen, so Back from Compare always lands on Photos)
             // The screen has its own title: no system title bar
             .toolbar(.hidden, for: .navigationBar)
         }

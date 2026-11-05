@@ -39,15 +39,44 @@ final class SummaryViewModel {
         )
     }
 
-    // Today's workout: nil when there is no plan to show (rest day or nothing chosen yet)
+    // Today's workout: nil when there is no plan to show (rest day or nothing chosen yet).
+    // As soon as a workout is completed today, the card shows its results and stays green all day:
+    // whichever plan was trained, the day is done (a plan sent with Go later does not bring Start back).
     var todayPlan: TodayPlan? {
-        guard case let .workout(plan, fromGo) = todayOutcome else { return nil }
+        let outcome = todayOutcome
+
+        if let session = todaySessions.first {
+            // The plan of the session if it is the one of the card, otherwise only the numbers
+            if case let .workout(plan, fromGo) = outcome, session.planId == plan.id.uuidString {
+                return donePlan(from: session, plan: plan, fromGo: fromGo)
+            }
+            return donePlan(from: session)
+        }
+
+        guard case let .workout(plan, fromGo) = outcome else { return nil }
         return TodayPlan(
             name: plan.name,
             minutes: plan.minutes,
             exerciseCount: plan.exerciseCount,
             planId: plan.id,
-            result: todayResult(of: plan.id),
+            result: nil,
+            fromGo: fromGo
+        )
+    }
+
+    // The Today card of a day with a workout done: the numbers come from the saved session
+    private func donePlan(from session: SessionRecord, plan: PlanItem? = nil, fromGo: Bool = false) -> TodayPlan {
+        TodayPlan(
+            name: session.planName,
+            minutes: session.minutes,
+            exerciseCount: plan?.exerciseCount ?? 0,
+            planId: plan?.id,
+            result: TodayResult(
+                minutes: session.minutes,
+                sets: session.muscleSets.reduce(0, +),
+                topWeight: session.loadWeights.max(),
+                date: session.date
+            ),
             fromGo: fromGo
         )
     }
@@ -91,16 +120,25 @@ final class SummaryViewModel {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
         todaySessions = (try? context?.fetch(descriptor)) ?? []
+
+        // Every day with a completed workout turns its circle green in the week card
+        let allDescriptor = FetchDescriptor<SessionRecord>(predicate: #Predicate { $0.isCompleted })
+        let allSessions = (try? context?.fetch(allDescriptor)) ?? []
+        completedSessionDays = allSessions.map { Calendar.current.startOfDay(for: $0.date) }
+        completedSessionColors = allSessions.map { $0.colorIndex }
     }
 
-    // The numbers of the last completed workout of this plan today (nil = not done yet)
-    private func todayResult(of planId: UUID) -> TodayResult? {
-        guard let session = todaySessions.first(where: { $0.planId == planId.uuidString }) else { return nil }
-        return TodayResult(
-            minutes: session.minutes,
-            sets: session.muscleSets.reduce(0, +),
-            topWeight: session.loadWeights.max()
-        )
+    // The days (at midnight) with at least one completed workout, read from the saved sessions
+    private var completedSessionDays: [Date] = []
+    private var completedSessionColors: [Int] = []   // the plan color of each day above, same position
+
+    // The week data with the days done added: the week card and the header read this one
+    private var weekDataWithHistory: WeekData {
+        var data = weekData
+        data.completedDays += completedSessionDays
+        data.sessionDays = completedSessionDays
+        data.sessionColorIndexes = completedSessionColors
+        return data
     }
 
     // True when a plan sent with Go is active today
@@ -121,7 +159,27 @@ final class SummaryViewModel {
     // The plan being changed in the editor: nil means the editor creates a new plan
     var planBeingEdited: PlanItem? = nil
 
+    // True when My plans is full: no more plans can be created until one is deleted
+    var isPlanLimitReached: Bool { plans.count >= SafetyRules.maxPlans }
+
+    // The message of the alert shown when a new plan would go over the limit (nil = no alert)
+    var planLimitMessage: String? = nil
+
+    private func showPlanLimitAlert(extraPlans: Int = 1) {
+        let free = max(0, SafetyRules.maxPlans - plans.count)
+        if extraPlans > 1 && free > 0 {
+            planLimitMessage = "You can have up to \(SafetyRules.maxPlans) plans and you have \(plans.count). This program adds \(extraPlans): delete \(extraPlans - free) first."
+        } else {
+            planLimitMessage = "You can have up to \(SafetyRules.maxPlans) plans. Delete one to make a new one."
+        }
+    }
+
     func openAddPlan() {
+        // A new plan needs a free place (editing an existing plan is always possible)
+        if isPlanLimitReached {
+            showPlanLimitAlert()
+            return
+        }
         planBeingEdited = nil
         isAddPlanOpen = true
     }
@@ -131,6 +189,10 @@ final class SummaryViewModel {
 
     // "+ New plan" > Ready-made: the sheet rises from the bottom
     func openReadyMade() {
+        if isPlanLimitReached {
+            showPlanLimitAlert()
+            return
+        }
         readyMadeStyle = .fullBody
         isReadyMadeOpen = true
     }
@@ -187,6 +249,17 @@ final class SummaryViewModel {
             takenColorIndexes: plans.compactMap { $0.colorIndex }
         )
         guard !newPlans.isEmpty else { return }
+
+        // The program must fit in My plans: otherwise nothing is created
+        if plans.count + newPlans.count > SafetyRules.maxPlans {
+            let extra = newPlans.count
+            // The alert waits until the sheet has gone
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(450))
+                showPlanLimitAlert(extraPlans: extra)
+            }
+            return
+        }
 
         for plan in newPlans {
             addPlan(plan)
@@ -326,15 +399,18 @@ final class SummaryViewModel {
     // True while the screen "Edit your week" is open
     var isEditWeekOpen = false
 
-    // Which week the card shows: 0 = this week, 1 = next week... (the user swipes to change it)
+    // Which week the card shows: 0 = this week, 1 = next week, -1 = last week... (the user swipes to change it)
     var weekOffset = 0
 
     // How many weeks ahead the user can swipe
     static let maxWeeksAhead = 8
 
+    // How many weeks back the user can swipe
+    static let maxWeeksBack = 12
+
     // The 7 days shown in the week card
     var weekDays: [WeekDay] {
-        var data = weekData
+        var data = weekDataWithHistory
         data.hasGoToday = isGoActiveToday
         return data.days(weekOffset: weekOffset)
     }
@@ -344,6 +420,8 @@ final class SummaryViewModel {
         switch weekOffset {
         case 0:  return "This week"
         case 1:  return "Next week"
+        case -1: return "Last week"
+        case ..<0: return "\(-weekOffset) weeks ago"
         default: return "In \(weekOffset) weeks"
         }
     }
@@ -355,15 +433,14 @@ final class SummaryViewModel {
         }
     }
 
-    // Swipe back: never before this week, because the past cannot be trained
+    // Swipe back: the past weeks can be seen too (up to maxWeeksBack)
     func showPreviousWeek() {
-        if weekOffset > 0 {
+        if weekOffset > -Self.maxWeeksBack {
             weekOffset -= 1
         }
     }
 
-    // Workouts done / planned this week, shown in the header
-    var doneThisWeek: Int { weekData.days().filter { $0.state == .done }.count }
+    // Workouts planned this week: the header shows the invitation only when there are none
     var plannedThisWeek: Int { weekData.plannedWeekdays.count }
 
     // The pencil of the week card: opens "Edit your week"

@@ -33,7 +33,7 @@ struct PhotosCardView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .progressCard(unit: unit, height: 50 * unit)
+        .progressCard(unit: unit, height: ProgressRowHeights.photos * unit)
     }
 
     // MARK: - With photos

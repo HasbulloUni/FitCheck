@@ -68,31 +68,28 @@ struct ExerciseDetailView: View {
         }
     }
 
-    // The photo of the exercise (downloaded the first time), with the equipment on top
+    // The photo of the exercise (downloaded the first time), with the equipment on top.
+    // The exercise photos are 3:2, so the frame is 3:2 too: the whole photo is visible,
+    // nothing is cut and there is no empty strip under it.
     private func photo(_ exercise: ChosenExercise, unit: CGFloat) -> some View {
-        ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit)
-                .fill(viewModel.color.opacity(0.3))
-
-            // The empty frame gives the size; the photo is drawn on top and cropped to it,
-            // so a wide photo can never push the sheet wider than the screen
-            Color.clear
-                .frame(height: 38 * unit)
-                .frame(maxWidth: .infinity)
-                .overlay { ExerciseImageView(paths: viewModel.images(of: exercise)) }
-                .clipped()
-
-            HStack(spacing: AppSizes.Space.related * unit) {
-                if viewModel.hasRampUp(exercise) {
-                    photoChip("Ramp-up sets", unit: unit)
+        // The empty frame gives the size; the photo is drawn on top and cropped to it,
+        // so a wide photo can never push the sheet wider than the screen
+        Color.clear
+            .aspectRatio(3 / 2, contentMode: .fit)
+            .frame(maxWidth: .infinity)
+            .overlay { ExerciseImageView(paths: viewModel.images(of: exercise)) }
+            .overlay(alignment: .top) {
+                HStack(spacing: AppSizes.Space.related * unit) {
+                    if viewModel.hasRampUp(exercise) {
+                        photoChip("Ramp-up sets", unit: unit)
+                    }
+                    Spacer()
+                    photoChip(exercise.item.equipment, unit: unit)
                 }
-                Spacer()
-                photoChip(exercise.item.equipment, unit: unit)
+                .padding(AppSizes.Space.group * unit)
             }
-            .padding(AppSizes.Space.group * unit)
-        }
-        .frame(height: 42 * unit)
-        .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
+            .background(viewModel.color.opacity(0.3))
+            .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
     }
 
     private func photoChip(_ text: String, unit: CGFloat) -> some View {

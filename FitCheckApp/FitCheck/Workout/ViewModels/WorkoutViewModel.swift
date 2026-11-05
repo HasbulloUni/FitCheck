@@ -132,10 +132,10 @@ final class WorkoutViewModel {
         }
     }
 
-    // The title of the big bottom button, e.g. "Next: Leg press"
+    // The title of the big bottom button, "Next exercise", or "Finish workout" on the last step
     var nextTitle: String {
         let next = stepIndex + 1
-        if next < steps.count { return "Next: \(steps[next].name)" }
+        if next < steps.count { return "Next exercise" }
         return "Finish workout"
     }
 

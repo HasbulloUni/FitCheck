@@ -25,7 +25,8 @@ struct FoundationApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            OnboardingGateView()
+                .disclaimerOnFirstLaunch()
         }
         .modelContainer(container)
     }

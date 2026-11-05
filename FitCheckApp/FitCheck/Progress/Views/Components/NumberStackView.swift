@@ -21,7 +21,7 @@ struct NumberStackView: View {
 
     // The card is 43% of the screen wide: two cards side by side with the Home margins
     private var cardWidth: CGFloat { 43 * unit }
-    private var cardHeight: CGFloat { 24 * unit }
+    private var cardHeight: CGFloat { ProgressRowHeights.side * unit }
 
     var body: some View {
         ZStack {

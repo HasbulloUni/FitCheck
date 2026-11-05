@@ -24,4 +24,5 @@ struct TodayResult {
     let minutes: Int
     let sets: Int
     let topWeight: Double?    // the heaviest weight used today (kg), nil if no exercise had weight
+    var date: Date? = nil     // when the workout ended (shown as the time, e.g. 09:47)
 }

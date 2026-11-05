@@ -12,7 +12,7 @@ import SwiftUI
 struct PhotoAddSheet: View {
     @Bindable var viewModel: PhotosViewModel
 
-    // "Pick a date" is open (only for photos from the library)
+    // The calendar is open (only for photos from the library)
     @State private var isPickingDate = false
 
     var body: some View {
@@ -69,29 +69,44 @@ struct PhotoAddSheet: View {
             fieldTitle("Date", unit: unit)
 
             HStack(spacing: AppSizes.Space.related * unit) {
-                chip(title: "Today", isSelected: isToday && !isPickingDate, unit: unit) {
-                    isPickingDate = false
+                chip(title: "Today", isSelected: isToday, unit: unit) {
                     viewModel.draft?.date = ProgressPeriodBuilder.today()
                 }
-                chip(title: "Pick a date", isSelected: isPickingDate, unit: unit) {
+                // Tapping it opens the calendar right away. After a day is chosen, the chip shows that day.
+                chip(title: isToday ? "Pick a date" : ProgressFormat.dayMonth(draft.date),
+                     isSelected: !isToday, unit: unit) {
                     isPickingDate = true
                 }
             }
-
-            // Any day up to today, with the date picker of the system
-            if isPickingDate {
+        }
+        // The calendar of the system, in a small sheet: tap a day and it closes by itself
+        .sheet(isPresented: $isPickingDate) {
+            NavigationStack {
                 DatePicker(
                     "Date",
                     selection: Binding(
                         get: { viewModel.draft?.date ?? ProgressPeriodBuilder.today() },
-                        set: { viewModel.draft?.date = ProgressPeriodBuilder.startOfDay($0) }
+                        set: {
+                            viewModel.draft?.date = ProgressPeriodBuilder.startOfDay($0)
+                            isPickingDate = false
+                        }
                     ),
-                    in: ...ProgressPeriodBuilder.today(),
+                    in: ...ProgressPeriodBuilder.today(),   // any day up to today
                     displayedComponents: .date
                 )
+                .datePickerStyle(.graphical)
                 .labelsHidden()
-                .tint(AppColors.textPrimary)
+                .padding(.horizontal)
+                .navigationTitle("Pick a date")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { isPickingDate = false }
+                    }
+                }
+                Spacer(minLength: 0)
             }
+            .presentationDetents([.medium])
         }
     }
 

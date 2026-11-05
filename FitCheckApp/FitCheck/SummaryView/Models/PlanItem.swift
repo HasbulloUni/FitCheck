@@ -17,7 +17,7 @@ struct PlanItem: Identifiable {
     let icon: String          // SF Symbol of the plan, e.g. "figure.run"
     let color: Color          // the color of this plan
     let exerciseCount: Int    // e.g. 11
-    let minutes: Int          // 60 or 90 (EditWeekRules.durations)
+    let minutes: Int          // warm-up + all the exercises + cool-down, added up
 
     // The ids of the exercises of the day (from the database), in order
     var exerciseIds: [String] = []

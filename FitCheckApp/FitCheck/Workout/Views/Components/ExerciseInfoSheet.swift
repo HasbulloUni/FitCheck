@@ -37,6 +37,11 @@ struct ExerciseInfoSheet: View {
                     .accessibilityLabel("Close")
                 }
 
+                // The exercise photos, lower than on the workout screen, with the switch 1 | 2
+                ExercisePhotoView(paths: step.imagePaths, height: 42 * unit, unit: unit)
+                    // A new exercise gets a new photo view (it keeps no old photo)
+                    .id(step.id)
+
                 Text("HOW TO DO IT")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
                     .foregroundStyle(AppColors.muscleGreen)

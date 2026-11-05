@@ -20,6 +20,9 @@ struct PhotosScreenView: View {
     // The picture chosen in the photo library
     @State private var pickedItem: PhotosPickerItem?
 
+    // The same speed for every change caused by the angle filter
+    private let filterAnimation = Animation.smooth(duration: 0.38)
+
     var body: some View {
         GeometryReader { geo in
             let unit = geo.size.width / 100   // 1% of the screen width
@@ -30,19 +33,32 @@ struct PhotosScreenView: View {
                 if viewModel.photos.isEmpty {
                     emptyState(unit: unit)
                 } else {
+                    ScrollViewReader { proxy in
                     ScrollView {
                         VStack(alignment: .leading, spacing: AppSizes.Space.section * unit) {
+                            // The latest photo, the chips and the grids: when the filter changes, the photo and
+                            // the grids fade and move a little, the chips stay (their highlight slides)
                             topBlock(unit: unit)
-                            filterChips(unit: unit)
-                            if viewModel.visiblePhotos.isEmpty {
-                                nothingInPeriod(unit: unit)
-                            } else {
-                                monthGrids(unit: unit)
+                                .id("latest-\(viewModel.latest?.id.uuidString ?? "none")")
+                                .transition(.opacity)
+                            // The same bar as in Compare: "Jump to" and the angles
+                            PhotoNavigationBar(jumpItems: jumpItems(proxy: proxy), angle: $viewModel.filter, unit: unit)
+                                .id("navigationBar")
+                            Group {
+                                if viewModel.visiblePhotos.isEmpty {
+                                    nothingInPeriod(unit: unit)
+                                } else {
+                                    monthGrids(unit: unit)
+                                }
                             }
+                            .id(viewModel.filter?.rawValue ?? "all")
+                            .transition(.opacity.combined(with: .scale(scale: 0.97, anchor: .top)))
                         }
+                        .animation(filterAnimation, value: viewModel.filter)
                         .padding(.bottom, AppSizes.Space.section * unit)
                     }
                     .scrollIndicators(.hidden)
+                    }
                 }
             }
             .padding(.horizontal, AppSizes.Space.screen * unit)
@@ -55,12 +71,10 @@ struct PhotosScreenView: View {
             }
         }
         .background(AppColors.background)
-        // Add: first the choice (camera or library), then the sheet "Ready to save"
-        .confirmationDialog("Add a photo", isPresented: $viewModel.isChoosingSource, titleVisibility: .visible) {
-            Button("Take photo") { viewModel.isCameraOpen = true }
-                .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
-            Button("Photo library") { viewModel.isLibraryOpen = true }
-            Button("Cancel", role: .cancel) {}
+        // Add: first the choice (camera or library), then the sheet "Ready to save".
+        // The choice is a sheet: the camera or the library open only after it is closed.
+        .sheet(isPresented: $viewModel.isChoosingSource, onDismiss: { viewModel.sourceSheetClosed() }) {
+            PhotoSourceSheet(onChoose: { viewModel.chooseSource($0) })
         }
         .photosPicker(isPresented: $viewModel.isLibraryOpen, selection: $pickedItem, matching: .images)
         .onChange(of: pickedItem) { _, newItem in
@@ -84,13 +98,25 @@ struct PhotosScreenView: View {
         }
         // When the card of Progress asked to add, the choice opens once this screen is on screen
         .onAppear {
+            viewModel.showLatestPhotoIfPeriodIsEmpty()
+            // The Compare button of the Progress card: Photos is the page under Compare
+            if viewModel.pendingCompare {
+                viewModel.pendingCompare = false
+                viewModel.startCompare()
+            }
             if viewModel.pendingAdd {
                 viewModel.pendingAdd = false
                 Task { @MainActor in
                     try? await Task.sleep(for: .seconds(0.5))
-                    viewModel.isChoosingSource = true
+                    viewModel.openSourceChoice()
                 }
             }
+        }
+        // Compare opens on top of Photos: its Back button comes back here
+        .navigationDestination(isPresented: $viewModel.isCompareOpen) {
+            PhotoCompareView(viewModel: viewModel)
+                .navigationBarBackButtonHidden(true)
+                .toolbar(.hidden, for: .navigationBar)
         }
         // View one photo
         .navigationDestination(isPresented: $viewModel.isViewerOpen) {
@@ -180,32 +206,29 @@ struct PhotosScreenView: View {
         )
     }
 
-    // MARK: - Filter by angle
+    // MARK: - Jump to: the top of the list, a month, or the oldest photo
 
-    private func filterChips(unit: CGFloat) -> some View {
-        HStack(spacing: AppSizes.Space.related * unit) {
-            chip(title: "All", isSelected: viewModel.filter == nil, unit: unit) {
-                viewModel.filter = nil
-            }
-            ForEach(PhotoAngle.allCases) { angle in
-                chip(title: angle.title, isSelected: viewModel.filter == angle, unit: unit) {
-                    viewModel.filter = angle
-                }
-            }
-            Spacer()
+    private func jumpItems(proxy: ScrollViewProxy) -> [PhotoJumpItem] {
+        var items: [PhotoJumpItem] = []
+        if viewModel.latest != nil {
+            items.append(PhotoJumpItem(id: "latest", title: "Latest photo", systemImage: "arrow.up.to.line") {
+                withAnimation { proxy.scrollTo("navigationBar", anchor: .top) }
+            })
         }
-    }
-
-    private func chip(title: String, isSelected: Bool, unit: CGFloat, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
-                .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
-                .padding(.horizontal, 3.6 * unit)
-                .padding(.vertical, AppSizes.Space.related * unit)
-                .background(isSelected ? AppColors.textPrimary : AppColors.card, in: Capsule())
+        // The photos are listed newest first: a month starts with its newest photo
+        for group in viewModel.grouped(viewModel.visiblePhotos) {
+            if let newestOfMonth = group.photos.first {
+                items.append(PhotoJumpItem(id: group.id, title: group.title, systemImage: "calendar") {
+                    withAnimation { proxy.scrollTo(newestOfMonth.id, anchor: .top) }
+                })
+            }
         }
-        .buttonStyle(.plain)
+        if let oldest = viewModel.first {
+            items.append(PhotoJumpItem(id: "first", title: "First photo", systemImage: "arrow.down.to.line") {
+                withAnimation { proxy.scrollTo(oldest.id, anchor: .bottom) }
+            })
+        }
+        return items
     }
 
     // MARK: - The grids, one for each month
@@ -227,6 +250,7 @@ struct PhotosScreenView: View {
                     LazyVGrid(columns: columns, spacing: AppSizes.Space.related * unit) {
                         ForEach(group.photos) { photo in
                             cell(photo, unit: unit)
+                                .id(photo.id)
                         }
                     }
                 }
@@ -267,7 +291,7 @@ struct PhotosScreenView: View {
                     viewModel.startCompare()
                 }
                 barButton(title: "Add photo", icon: "plus", isMain: true, isEnabled: true, unit: unit) {
-                    viewModel.isChoosingSource = true
+                    viewModel.openSourceChoice()
                 }
             }
             .padding(.horizontal, AppSizes.Space.screen * unit)
@@ -341,7 +365,7 @@ struct PhotosScreenView: View {
             }
 
             barButton(title: "Add first photo", icon: "plus", isMain: true, isEnabled: true, unit: unit) {
-                viewModel.isChoosingSource = true
+                viewModel.openSourceChoice()
             }
 
             Spacer()

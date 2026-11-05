@@ -38,7 +38,7 @@ struct ReadyMadeProgram: Codable {
 struct ReadyMadePlan: Codable {
     let name: String                 // e.g. "Full body A", "Push", "Upper B"
     let icon: String                 // SF Symbol
-    let minutes: Int                 // estimate: warm-up + exercises + cool-down
+    let minutes: Int                 // sum of warm-up + sets x (work + rest) of each exercise + cool-down, same formula as Add plan
     let warmup: [String]             // exercise ids: the treadmill walk + 2 mobility moves
     let exercises: [ReadyMadeExercise]
 }

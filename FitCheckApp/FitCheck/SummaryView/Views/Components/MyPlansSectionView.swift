@@ -30,6 +30,8 @@ struct MyPlansSectionView: View {
     @State private var planToDelete: PlanItem? = nil
     // True while the question "Delete all plans?" is shown
     @State private var isDeleteAllAsked = false
+    // The row that is swiped open right now: when another row is swiped, this one closes
+    @State private var openPlanId: UUID? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSizes.Space.related * unit) {
@@ -79,6 +81,7 @@ struct MyPlansSectionView: View {
                     PlanRowView(
                         plan: plan,
                         unit: unit,
+                        openPlanId: $openPlanId,
                         onOpen: { onOpenPlan(plan) },
                         onEdit: { onEditPlan(plan) },
                         onDelete: { planToDelete = plan },
@@ -122,6 +125,7 @@ struct MyPlansSectionView: View {
 struct PlanRowView: View {
     let plan: PlanItem
     let unit: CGFloat
+    @Binding var openPlanId: UUID?   // the row swiped open in the list (shared by all the rows)
     let onOpen: () -> Void     // tap on the row
     let onEdit: () -> Void     // Edit button
     let onDelete: () -> Void   // Delete button
@@ -213,6 +217,12 @@ struct PlanRowView: View {
         .frame(height: rowHeight)
         // A soft tap when the row opens or closes
         .sensoryFeedback(.impact(flexibility: .soft), trigger: restingOffset)
+        // Another row was swiped: this one closes
+        .onChange(of: openPlanId) { _, newValue in
+            if newValue != plan.id && restingOffset != 0 {
+                closeRow()
+            }
+        }
         // The swipe is not possible with VoiceOver, so the same actions are offered here
         .accessibilityElement(children: .combine)
         .accessibilityAction(named: "Go") { onStart() }
@@ -273,6 +283,8 @@ struct PlanRowView: View {
                     isHorizontalSwipe = abs(value.translation.width) > abs(value.translation.height)
                 }
                 guard isHorizontalSwipe == true else { return }
+                // This row is the one in use now: the row that was open closes
+                if openPlanId != plan.id { openPlanId = plan.id }
                 dragOffset = value.translation.width
             }
             .onEnded { value in

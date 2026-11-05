@@ -70,7 +70,7 @@ struct ReadyMadeSheetView: View {
                 }
                 .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
 
-                Text(hasWeek ? "Your plans are added to My plans." : "Set your training days first.")
+                Text(hasWeek ? "Your plans are added to My plans. They are general suggestions, not medical advice." : "Set your training days first.")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
                     .padding(.horizontal, AppSizes.Space.related * unit)
