@@ -76,8 +76,8 @@ struct AddPlanView: View {
                                 .padding(.top, 1.5 * unit)
                         }
                         .padding(.horizontal, 5 * unit)
-                        .padding(.top, 3 * unit)
-                        .padding(.bottom, 4 * unit)
+                        .padding(.top, AppSizes.Space.group * unit)
+                        .padding(.bottom, AppSizes.Space.section * unit)
                     }
                 }
                 .scrollDismissesKeyboard(.immediately)
@@ -187,7 +187,7 @@ struct AddPlanView: View {
                 Text("Another plan has this name")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .semibold))
                     .foregroundStyle(.black.opacity(0.7))
-                    .padding(.top, 1 * unit)
+                    .padding(.top, AppSizes.Space.tight * unit)
             }
 
             HStack(spacing: AppSizes.Space.related * unit) {
@@ -200,7 +200,7 @@ struct AddPlanView: View {
         }
         .padding(.horizontal, 5.5 * unit)
         .padding(.top, topInset + 2.5 * unit)
-        .padding(.bottom, 4 * unit)
+        .padding(.bottom, AppSizes.Space.section * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             viewModel.color,
@@ -230,7 +230,7 @@ struct AddPlanView: View {
                 .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
         }
         .foregroundStyle(.black)
-        .padding(.horizontal, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.group * unit)
         .frame(height: 8 * unit)
         .background(.white.opacity(0.42), in: Capsule())
     }
@@ -292,7 +292,7 @@ struct AddPlanView: View {
             }
         }
         .padding(.horizontal, 5 * unit)
-        .padding(.top, topInset + 2 * unit)
+        .padding(.top, topInset + AppSizes.Space.related * unit)
         .padding(.bottom, 4.5 * unit)
         .background(
             viewModel.color,
@@ -370,7 +370,7 @@ struct AddPlanView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 1 * unit)
+        .padding(.horizontal, AppSizes.Space.tight * unit)
         .padding(.top, 1.5 * unit)
     }
 
@@ -443,7 +443,7 @@ struct AddPlanView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Remove \(name)")
         }
-        .padding(.horizontal, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.group * unit)
         .padding(.vertical, 3.2 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -493,14 +493,14 @@ struct AddPlanView: View {
                 Text("Undo")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
-                    .padding(.horizontal, 4 * unit)
+                    .padding(.horizontal, AppSizes.Space.section * unit)
                     .frame(height: 9.5 * unit)
                     .background(AppColors.background, in: Capsule())
             }
             .buttonStyle(.plain)
         }
         .padding(.leading, 4.5 * unit)
-        .padding(.trailing, 2 * unit)
+        .padding(.trailing, AppSizes.Space.related * unit)
         .frame(height: 13 * unit)
         .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -530,7 +530,7 @@ struct AddPlanView: View {
             }
             .foregroundStyle(isEnabled ? AppColors.background : AppColors.textSecondary)
             .padding(.leading, 6.5 * unit)
-            .padding(.trailing, 2 * unit)
+            .padding(.trailing, AppSizes.Space.related * unit)
             .frame(height: 15 * unit)
             .background(isEnabled ? AppColors.textPrimary : AppColors.cardAlt, in: Capsule())
         }

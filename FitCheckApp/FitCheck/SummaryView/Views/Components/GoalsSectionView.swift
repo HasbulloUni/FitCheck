@@ -78,7 +78,7 @@ struct GoalCardView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
-        .padding(.vertical, 3 * unit)
+        .padding(.vertical, AppSizes.Space.group * unit)
         .padding(.horizontal, 1.5 * unit)
         .frame(maxWidth: .infinity, maxHeight: .infinity)   // all cards get the same size
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
@@ -126,7 +126,7 @@ struct AddGoalCardView: View {
                         .minimumScaleFactor(0.7)
                 }
             }
-            .padding(3 * unit)
+            .padding(AppSizes.Space.group * unit)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         }

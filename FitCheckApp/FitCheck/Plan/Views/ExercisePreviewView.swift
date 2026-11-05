@@ -57,8 +57,8 @@ struct ExercisePreviewView: View {
                     }
                 }
                 .padding(.horizontal, 5 * unit)
-                .padding(.top, 2 * unit)
-                .padding(.bottom, 4 * unit)
+                .padding(.top, AppSizes.Space.related * unit)
+                .padding(.bottom, AppSizes.Space.section * unit)
             }
         }
         .background(AppColors.card)
@@ -89,7 +89,7 @@ struct ExercisePreviewView: View {
                             .padding(.horizontal, 2.2 * unit)
                             .frame(height: 5.5 * unit)
                             .background(.black, in: Capsule())
-                            .padding(2 * unit)
+                            .padding(AppSizes.Space.related * unit)
                     }
                     .frame(height: 38 * unit)
                     .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
@@ -137,7 +137,7 @@ struct ExercisePreviewView: View {
         .padding(.horizontal, 3.5 * unit)
         .frame(height: 11 * unit)
         .background(AppColors.background, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
-        .padding(.top, 3 * unit)
+        .padding(.top, AppSizes.Space.group * unit)
     }
 
     // The steps: only the first 3 at first, with a button to show the rest
@@ -147,7 +147,7 @@ struct ExercisePreviewView: View {
                 .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
                 .tracking(0.3 * unit)
                 .foregroundStyle(AppColors.textSecondary)
-                .padding(.top, 4 * unit)
+                .padding(.top, AppSizes.Space.section * unit)
 
             ForEach(Array((showsAllSteps ? steps : Array(steps.prefix(3))).enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .top, spacing: AppSizes.Space.group * unit) {

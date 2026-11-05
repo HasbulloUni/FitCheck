@@ -56,8 +56,8 @@ struct ReminderCard: View {
                 }
             }
         }
-        .padding(.horizontal, 4 * unit)
-        .padding(.vertical, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
+        .padding(.vertical, AppSizes.Space.group * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
         // The list of times appears and disappears smoothly with the switch
         .animation(.easeInOut(duration: 0.25), value: remindMe)

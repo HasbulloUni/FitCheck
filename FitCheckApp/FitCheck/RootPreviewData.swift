@@ -25,25 +25,25 @@ enum RootPreviewData {
             number: 1, name: "Chest and Back", icon: "figure.strengthtraining.traditional",
             colorIndex: 0, minutes: 60,
             exerciseIds: ["Butterfly", "Alternating_Floor_Press", "Bent_Over_Two-Dumbbell_Row", "Chin-Up"],
-            sets: [3, 3, 3, 3], warmup: ["Arm Circles", "Walking Treadmill"]
+            sets: [3, 3, 3, 3], warmup: ["Arm_Circles", "Walking_Treadmill"]
         ),
         makePlan(
             number: 2, name: "Legs", icon: "figure.run",
             colorIndex: 1, minutes: 60,
             exerciseIds: ["Bodyweight_Squat", "Barbell_Step_Ups", "Butt_Lift_Bridge", "Calf_Press"],
-            sets: [4, 3, 3, 3], warmup: ["Walking Treadmill"]
+            sets: [4, 3, 3, 3], warmup: ["Walking_Treadmill"]
         ),
         makePlan(
             number: 3, name: "Shoulders and Arms", icon: "dumbbell.fill",
             colorIndex: 4, minutes: 90,
             exerciseIds: ["Alternating_Deltoid_Raise", "Barbell_Curl", "Close-Grip_Dumbbell_Press", "Dumbbell_Shrug"],
-            sets: [3, 3, 3, 2], warmup: ["Arm Circles", "Walking Treadmill"]
+            sets: [3, 3, 3, 2], warmup: ["Arm_Circles", "Walking_Treadmill"]
         ),
         makePlan(
             number: 4, name: "Core", icon: "figure.core.training",
             colorIndex: 5, minutes: 60,
             exerciseIds: ["Ab_Crunch_Machine", "Air_Bike", "Barbell_Ab_Rollout_-_On_Knees", "Alternate_Heel_Touchers"],
-            sets: [3, 3, 3, 3], warmup: ["Walking Treadmill"]
+            sets: [3, 3, 3, 3], warmup: ["Walking_Treadmill"]
         )
     ]
 

@@ -42,7 +42,7 @@ struct PhotoViewerView: View {
 
                 buttons(current: current, unit: unit)
             }
-            .padding(.horizontal, 6 * unit)
+            .padding(.horizontal, AppSizes.Space.screen * unit)
             .padding(.bottom, AppSizes.Space.group * unit)
         }
         .background(Color.black)

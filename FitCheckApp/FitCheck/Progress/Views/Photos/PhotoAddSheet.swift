@@ -52,7 +52,7 @@ struct PhotoAddSheet: View {
 
                     Spacer(minLength: 0)
                 }
-                .padding(6 * unit)
+                .padding(AppSizes.Space.screen * unit)
             }
         }
         .background(AppColors.background)
@@ -125,7 +125,7 @@ struct PhotoAddSheet: View {
             Text(title)
                 .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
-                .padding(.horizontal, 3 * unit)
+                .padding(.horizontal, AppSizes.Space.group * unit)
                 .padding(.vertical, 1.8 * unit)
                 .background(isSelected ? AppColors.textPrimary : AppColors.card, in: Capsule())
         }

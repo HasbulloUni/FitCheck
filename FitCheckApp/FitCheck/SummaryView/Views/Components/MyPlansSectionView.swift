@@ -257,7 +257,7 @@ struct PlanRowView: View {
 
             Spacer()
         }
-        .padding(3 * unit)
+        .padding(AppSizes.Space.group * unit)
         .frame(height: rowHeight)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .contentShape(Rectangle())

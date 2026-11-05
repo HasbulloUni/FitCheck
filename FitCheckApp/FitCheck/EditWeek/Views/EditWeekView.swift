@@ -50,9 +50,9 @@ struct EditWeekView: View {
 
                         resetButton(unit: unit)
                     }
-                    .padding(.horizontal, 6 * unit)
-                    .padding(.top, 4 * unit)
-                    .padding(.bottom, 4 * unit)
+                    .padding(.horizontal, AppSizes.Space.screen * unit)
+                    .padding(.top, AppSizes.Space.section * unit)
+                    .padding(.bottom, AppSizes.Space.section * unit)
                 }
 
                 saveButton(unit: unit)
@@ -77,7 +77,7 @@ struct EditWeekView: View {
                 .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                 .foregroundStyle(AppColors.red)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 3 * unit)
+                .padding(.vertical, AppSizes.Space.group * unit)
         }
         .buttonStyle(.plain)
         .padding(.top, AppSizes.Space.section * unit)
@@ -165,9 +165,9 @@ struct EditWeekView: View {
         .buttonStyle(.plain)
         .disabled(!viewModel.canSave)
         .opacity(viewModel.canSave ? 1 : 0.3)
-        .padding(.horizontal, 6 * unit)
+        .padding(.horizontal, AppSizes.Space.screen * unit)
         .padding(.top, 5 * unit)
-        .padding(.bottom, 3 * unit)
+        .padding(.bottom, AppSizes.Space.group * unit)
     }
 
     // The bold title of a section

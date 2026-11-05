@@ -37,7 +37,7 @@ struct PhotoCompareView: View {
                         filmstrip(unit: unit)
                     }
                 }
-                .padding(6 * unit)
+                .padding(AppSizes.Space.screen * unit)
             }
             .scrollIndicators(.hidden)
         }
@@ -102,7 +102,7 @@ struct PhotoCompareView: View {
                 Spacer()
                 label("After · \(ProgressFormat.dayMonth(after.date))", unit: unit)
             }
-            .padding(3 * unit)
+            .padding(AppSizes.Space.group * unit)
             .frame(width: width, height: height, alignment: .top)
         }
         .frame(width: width, height: height)
@@ -120,7 +120,7 @@ struct PhotoCompareView: View {
         Text(text)
             .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
             .foregroundStyle(Color.white)
-            .padding(.horizontal, 3 * unit)
+            .padding(.horizontal, AppSizes.Space.group * unit)
             .padding(.vertical, 1.4 * unit)
             .background(Color.black.opacity(0.6), in: Capsule())
     }
@@ -190,7 +190,7 @@ struct PhotoCompareView: View {
                     .padding(.horizontal, 2.6 * unit)
                     .padding(.vertical, 1.2 * unit)
                     .background(isActive ? AppColors.yellow : AppColors.background, in: Capsule())
-                    .padding(2 * unit)
+                    .padding(AppSizes.Space.related * unit)
             }
         }
         .buttonStyle(.plain)
@@ -306,7 +306,7 @@ struct PhotoCompareView: View {
             }
             .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
             .foregroundStyle(AppColors.textPrimary)
-            .padding(.horizontal, 4 * unit)
+            .padding(.horizontal, AppSizes.Space.section * unit)
             .padding(.vertical, 2.4 * unit)
             .background(AppColors.card, in: Capsule())
         }

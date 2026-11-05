@@ -49,7 +49,7 @@ struct ReadyMadeSheetView: View {
                         }
                         .font(.system(size: AppSizes.Text.body * unit, weight: .semibold))
                         .foregroundStyle(AppColors.background)
-                        .padding(.horizontal, 4 * unit)
+                        .padding(.horizontal, AppSizes.Space.section * unit)
                         .padding(.vertical, 2.5 * unit)
                         .background(AppColors.textPrimary, in: Capsule())
                     }
@@ -64,7 +64,7 @@ struct ReadyMadeSheetView: View {
                             Rectangle()
                                 .fill(AppColors.divider)
                                 .frame(height: 0.2 * unit)
-                                .padding(.leading, 4 * unit)
+                                .padding(.leading, AppSizes.Space.section * unit)
                         }
                     }
                 }
@@ -73,11 +73,11 @@ struct ReadyMadeSheetView: View {
                 Text(hasWeek ? "Your plans are added to My plans." : "Set your training days first.")
                     .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                     .foregroundStyle(AppColors.textSecondary)
-                    .padding(.horizontal, 2 * unit)
+                    .padding(.horizontal, AppSizes.Space.related * unit)
 
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 6 * unit)
+            .padding(.horizontal, AppSizes.Space.screen * unit)
             .padding(.top, 8 * unit)
         }
         .background(AppColors.background)
@@ -99,8 +99,8 @@ struct ReadyMadeSheetView: View {
                     .foregroundStyle(AppColors.greenSoft)
                     .opacity(viewModel.isSelected(style) ? 1 : 0)
             }
-            .padding(.horizontal, 4 * unit)
-            .padding(.vertical, 4 * unit)
+            .padding(.horizontal, AppSizes.Space.section * unit)
+            .padding(.vertical, AppSizes.Space.section * unit)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

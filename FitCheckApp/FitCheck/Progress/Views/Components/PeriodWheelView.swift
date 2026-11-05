@@ -95,7 +95,7 @@ struct PeriodWheelView: View {
                 .minimumScaleFactor(0.6)
         }
         .frame(maxHeight: .infinity, alignment: .bottom)
-        .padding(.vertical, 3 * unit)
+        .padding(.vertical, AppSizes.Space.group * unit)
         // The further from the middle, the fainter
         .opacity(max(0.3, 1 - Double(distance) * 0.22))
     }

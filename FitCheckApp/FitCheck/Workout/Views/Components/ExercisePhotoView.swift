@@ -45,7 +45,7 @@ struct ExercisePhotoView: View {
                     howToButton
                     photoSwitch
                 }
-                .padding(3 * unit)
+                .padding(AppSizes.Space.group * unit)
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel(viewModel.hasTwoPhotos

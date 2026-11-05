@@ -40,9 +40,9 @@ struct SetEditorCardView: View {
                              unit: unit, action: onMainButton)
                 .padding(.top, AppSizes.Space.group * unit)
         }
-        .padding(.horizontal, 4 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
         .padding(.top, AppSizes.Space.related * unit)
-        .padding(.bottom, 4 * unit)
+        .padding(.bottom, AppSizes.Space.section * unit)
         .frame(height: WorkoutRules.cardHeightUnits * unit, alignment: .top)   // same height as the rest card
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }

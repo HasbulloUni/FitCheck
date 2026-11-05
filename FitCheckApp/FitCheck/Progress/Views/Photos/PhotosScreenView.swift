@@ -40,12 +40,12 @@ struct PhotosScreenView: View {
                                 monthGrids(unit: unit)
                             }
                         }
-                        .padding(.bottom, 4 * unit)
+                        .padding(.bottom, AppSizes.Space.section * unit)
                     }
                     .scrollIndicators(.hidden)
                 }
             }
-            .padding(.horizontal, 6 * unit)
+            .padding(.horizontal, AppSizes.Space.screen * unit)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .safeAreaInset(edge: .bottom) {
                 bottomBar(unit: unit)
@@ -145,7 +145,7 @@ struct PhotosScreenView: View {
                         Text("Latest")
                             .font(.system(size: AppSizes.Text.small * unit, weight: .heavy))
                             .foregroundStyle(Color.black)
-                            .padding(.horizontal, 3 * unit)
+                            .padding(.horizontal, AppSizes.Space.group * unit)
                             .padding(.vertical, 1.4 * unit)
                             .background(AppColors.yellow, in: Capsule())
                             .padding(3.4 * unit)
@@ -172,7 +172,7 @@ struct PhotosScreenView: View {
                 .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
         }
         .foregroundStyle(Color.white)
-        .padding(.horizontal, 4 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
         .padding(.top, 10 * unit)
         .padding(.bottom, 3.4 * unit)
         .background(
@@ -202,7 +202,7 @@ struct PhotosScreenView: View {
                 .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
                 .padding(.horizontal, 3.6 * unit)
-                .padding(.vertical, 2 * unit)
+                .padding(.vertical, AppSizes.Space.related * unit)
                 .background(isSelected ? AppColors.textPrimary : AppColors.card, in: Capsule())
         }
         .buttonStyle(.plain)
@@ -270,7 +270,7 @@ struct PhotosScreenView: View {
                     viewModel.isChoosingSource = true
                 }
             }
-            .padding(.horizontal, 6 * unit)
+            .padding(.horizontal, AppSizes.Space.screen * unit)
             .padding(.vertical, AppSizes.Space.group * unit)
         }
     }
@@ -361,10 +361,10 @@ struct PhotosScreenView: View {
             }
             .font(.system(size: AppSizes.Text.small * unit, weight: .bold))
             .foregroundStyle(AppColors.background)
-            .padding(.horizontal, 4 * unit)
-            .padding(.vertical, 3 * unit)
+            .padding(.horizontal, AppSizes.Space.section * unit)
+            .padding(.vertical, AppSizes.Space.group * unit)
             .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
-            .padding(.top, 4 * unit)
+            .padding(.top, AppSizes.Space.section * unit)
             .transition(.move(edge: .top).combined(with: .opacity))
         }
     }

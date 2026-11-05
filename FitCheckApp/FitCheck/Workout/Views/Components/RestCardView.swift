@@ -70,7 +70,7 @@ struct RestCardView: View {
                 .layoutPriority(1)
             }
         }
-        .padding(4 * unit)
+        .padding(AppSizes.Space.section * unit)
         .frame(maxWidth: .infinity)
         .frame(height: WorkoutRules.cardHeightUnits * unit)   // same height as the Reps/Weight card
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))

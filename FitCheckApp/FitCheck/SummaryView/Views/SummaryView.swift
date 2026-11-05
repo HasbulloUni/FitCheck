@@ -69,7 +69,7 @@ struct SummaryView: View {
                         onStartPlan: { viewModel.sendToToday($0) }
                     )
                 }
-                .padding(6 * unit)
+                .padding(AppSizes.Space.screen * unit)
             }
         }
         .background(AppColors.background)

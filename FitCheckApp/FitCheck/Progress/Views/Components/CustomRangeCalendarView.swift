@@ -37,7 +37,7 @@ struct CustomRangeCalendarView: View {
             weekdayNames
             days
         }
-        .padding(3 * unit)
+        .padding(AppSizes.Space.group * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 

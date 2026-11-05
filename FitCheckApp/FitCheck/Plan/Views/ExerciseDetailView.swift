@@ -26,8 +26,8 @@ struct ExerciseDetailView: View {
                 ScrollView {
                     content(exercise, unit: unit)
                         .padding(.horizontal, 5 * unit)
-                        .padding(.top, 6 * unit)
-                        .padding(.bottom, 4 * unit)
+                        .padding(.top, AppSizes.Space.screen * unit)
+                        .padding(.bottom, AppSizes.Space.section * unit)
                 }
             }
         }
@@ -60,7 +60,7 @@ struct ExerciseDetailView: View {
                         .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
                 }
                 .foregroundStyle(AppColors.textSecondary)
-                .padding(.top, 3 * unit)
+                .padding(.top, AppSizes.Space.group * unit)
             }
 
             buttons(exercise, unit: unit)
@@ -89,7 +89,7 @@ struct ExerciseDetailView: View {
                 Spacer()
                 photoChip(exercise.item.equipment, unit: unit)
             }
-            .padding(3 * unit)
+            .padding(AppSizes.Space.group * unit)
         }
         .frame(height: 42 * unit)
         .clipShape(RoundedRectangle(cornerRadius: AppSizes.Radius.large * unit))
@@ -134,9 +134,9 @@ struct ExerciseDetailView: View {
                     .foregroundStyle(AppColors.textPrimary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 3 * unit)
+            .padding(.vertical, AppSizes.Space.group * unit)
         }
-        .padding(.horizontal, 4 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
         .background(AppColors.background, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
 

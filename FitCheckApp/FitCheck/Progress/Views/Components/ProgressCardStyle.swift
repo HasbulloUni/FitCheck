@@ -13,7 +13,7 @@ import SwiftUI
 extension View {
     func progressCard(unit: CGFloat, height: CGFloat? = nil) -> some View {
         self
-            .padding(4 * unit)
+            .padding(AppSizes.Space.section * unit)
             .frame(height: height)
             .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }

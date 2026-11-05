@@ -62,7 +62,7 @@ struct TodayCardView: View {
                 Text("Start")
                     .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 6 * unit)
+                    .padding(.horizontal, AppSizes.Space.screen * unit)
                     .padding(.vertical, 3.5 * unit)
                     .background(.black, in: Capsule())
             }
@@ -109,7 +109,7 @@ struct TodayEmptyCardView: View {
                 Text("Add plan")
                     .font(.system(size: AppSizes.Text.bodyLarge * unit, weight: .semibold))
                     .foregroundStyle(AppColors.background)
-                    .padding(.horizontal, 6 * unit)
+                    .padding(.horizontal, AppSizes.Space.screen * unit)
                     .padding(.vertical, 3.5 * unit)
                     .background(AppColors.textPrimary, in: Capsule())
             }

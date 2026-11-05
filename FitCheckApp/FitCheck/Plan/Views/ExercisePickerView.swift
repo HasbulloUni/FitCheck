@@ -58,7 +58,7 @@ struct ExercisePickerView: View {
                     resultsLabel(unit: unit)
                 }
                 .padding(.horizontal, 5 * unit)
-                .padding(.top, 4 * unit)
+                .padding(.top, AppSizes.Space.section * unit)
 
                 ZStack(alignment: .bottom) {
                     exercisesList(unit: unit)
@@ -66,7 +66,7 @@ struct ExercisePickerView: View {
                     if let change = viewModel.recentChange {
                         undoToast(change, unit: unit)
                             .padding(.horizontal, 5 * unit)
-                            .padding(.bottom, 2 * unit)
+                            .padding(.bottom, AppSizes.Space.related * unit)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
@@ -149,7 +149,7 @@ struct ExercisePickerView: View {
                 .accessibilityLabel("Clear search")
             }
         }
-        .padding(.horizontal, 4 * unit)
+        .padding(.horizontal, AppSizes.Space.section * unit)
         .frame(height: 12.5 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .overlay(RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit).stroke(AppColors.divider, lineWidth: 0.3 * unit))
@@ -180,7 +180,7 @@ struct ExercisePickerView: View {
             Text(title)
                 .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                 .foregroundStyle(isSelected ? AppColors.background : AppColors.textPrimary)
-                .padding(.horizontal, 4 * unit)
+                .padding(.horizontal, AppSizes.Space.section * unit)
                 .frame(height: 9 * unit)
                 .background(isSelected ? AppColors.textPrimary : AppColors.card, in: Capsule())
                 .overlay(Capsule().stroke(AppColors.divider, lineWidth: 0.3 * unit))
@@ -201,7 +201,7 @@ struct ExercisePickerView: View {
         .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
         .tracking(0.3 * unit)
         .foregroundStyle(AppColors.textSecondary)
-        .padding(.horizontal, 1 * unit)
+        .padding(.horizontal, AppSizes.Space.tight * unit)
     }
 
     private var resultsLabelText: String {
@@ -233,7 +233,7 @@ struct ExercisePickerView: View {
                     resultsSection(unit: unit)
                 }
                 .padding(.horizontal, 5 * unit)
-                .padding(.vertical, 2 * unit)
+                .padding(.vertical, AppSizes.Space.related * unit)
                 .padding(.bottom, 14 * unit)   // room for the "Undo" toast
             }
             .onChange(of: viewModel.selectedGroup) {
@@ -283,7 +283,7 @@ struct ExercisePickerView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Remove \(viewModel.name(of: item))")
         }
-        .padding(.leading, 1 * unit)
+        .padding(.leading, AppSizes.Space.tight * unit)
         .padding(.trailing, 1.5 * unit)
         .frame(height: 10 * unit)
         .background(AppColors.card, in: Capsule())
@@ -322,7 +322,7 @@ struct ExercisePickerView: View {
             .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
             .tracking(0.3 * unit)
             .foregroundStyle(AppColors.textSecondary)
-            .padding(.horizontal, 1 * unit)
+            .padding(.horizontal, AppSizes.Space.tight * unit)
     }
 
     // Explains why every exercise shown is blocked, e.g. "Quadriceps is full: 4 of 4."
@@ -334,7 +334,7 @@ struct ExercisePickerView: View {
                 .font(.system(size: AppSizes.Text.small * unit, weight: .regular))
         }
         .foregroundStyle(AppColors.textPrimary)
-        .padding(3 * unit)
+        .padding(AppSizes.Space.group * unit)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -360,8 +360,8 @@ struct ExercisePickerView: View {
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .padding(.top, 6 * unit)
-            .padding(.horizontal, 4 * unit)
+            .padding(.top, AppSizes.Space.screen * unit)
+            .padding(.horizontal, AppSizes.Space.section * unit)
 
             if !viewModel.alternativeItems.isEmpty {
                 sectionLabel("SIMILAR", unit: unit)
@@ -409,7 +409,7 @@ struct ExercisePickerView: View {
 
             addButton(item, isSelected: isSelected, isBlocked: blockedText != nil, unit: unit)
         }
-        .padding(.horizontal, 3 * unit)
+        .padding(.horizontal, AppSizes.Space.group * unit)
         .padding(.vertical, 2.8 * unit)
         .background(AppColors.card, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
         .overlay(
@@ -461,14 +461,14 @@ struct ExercisePickerView: View {
                 Text("Undo")
                     .font(.system(size: AppSizes.Text.body * unit, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
-                    .padding(.horizontal, 4 * unit)
+                    .padding(.horizontal, AppSizes.Space.section * unit)
                     .frame(height: 9.5 * unit)
                     .background(AppColors.background, in: Capsule())
             }
             .buttonStyle(.plain)
         }
         .padding(.leading, 4.5 * unit)
-        .padding(.trailing, 2 * unit)
+        .padding(.trailing, AppSizes.Space.related * unit)
         .frame(height: 13 * unit)
         .background(AppColors.textPrimary, in: RoundedRectangle(cornerRadius: AppSizes.Radius.card * unit))
     }
@@ -498,10 +498,10 @@ struct ExercisePickerView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.leading, 6 * unit)
+        .padding(.leading, AppSizes.Space.screen * unit)
         .padding(.trailing, 5 * unit)
         .padding(.top, 5 * unit)
-        .padding(.bottom, 2 * unit)
+        .padding(.bottom, AppSizes.Space.related * unit)
         .background {
             UnevenRoundedRectangle(topLeadingRadius: 7 * unit, topTrailingRadius: 7 * unit)
                 .fill(AppColors.card)

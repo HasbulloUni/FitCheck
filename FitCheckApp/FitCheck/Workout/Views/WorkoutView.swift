@@ -104,7 +104,7 @@ struct WorkoutView: View {
                     if viewModel.isEditingDoneSet && viewModel.isResting {
                         RestBarView(remaining: viewModel.restRemaining, total: viewModel.restTotal,
                                     unit: unit, onSkip: { viewModel.skipRest() })
-                            .padding(3 * unit)
+                            .padding(AppSizes.Space.group * unit)
                     }
                 }
 

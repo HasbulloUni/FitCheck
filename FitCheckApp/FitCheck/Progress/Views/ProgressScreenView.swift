@@ -91,7 +91,7 @@ struct ProgressScreenView: View {
                             LoadGainsCardView(gains: summary.loadGains, unit: unit)
                         }
                     }
-                    .padding(6 * unit)
+                    .padding(AppSizes.Space.screen * unit)
                 }
                 // The sheet "Choose a period"
                 .sheet(isPresented: $viewModel.isPeriodSheetOpen) {

@@ -49,7 +49,7 @@ struct PhotosCardView: View {
                         Text(dateText)
                             .font(.system(size: AppSizes.Text.caption * unit, weight: .bold))
                             .foregroundStyle(AppColors.textPrimary)
-                            .padding(.horizontal, 2 * unit)
+                            .padding(.horizontal, AppSizes.Space.related * unit)
                             .padding(.vertical, 0.8 * unit)
                             .background(AppColors.background, in: Capsule())
                             .padding(unit * 1.6)
