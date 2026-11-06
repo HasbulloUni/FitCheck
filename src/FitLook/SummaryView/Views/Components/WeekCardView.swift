@@ -134,10 +134,10 @@ struct DayCircleView: View {
     private var fillColor: Color {
         switch day.state {
         case .done:     return doneColor
-        case .rest:     return AppColors.restBlue
+        case .rest:     return .clear
         case .planned:  return (plannedColor ?? AppColors.divider).opacity(plannedOpacity)
         case .todayWorkout: return (plannedColor ?? AppColors.green).opacity(0.25)
-        case .todayRest:    return AppColors.restBlue.opacity(0.25)
+        case .todayRest:    return .clear
         case .today:        return .clear
         case .upcoming:     return .clear
         }
@@ -162,9 +162,8 @@ struct DayCircleView: View {
     private var borderColor: Color {
         switch day.state {
         case .todayWorkout: return plannedColor ?? AppColors.green
-        case .todayRest:    return AppColors.restBlue
-        case .today:        return AppColors.textPrimary
-        case .upcoming: return AppColors.divider
+        case .today, .todayRest: return AppColors.textPrimary
+        case .rest, .upcoming: return AppColors.divider
         default:        return .clear
         }
     }
@@ -181,10 +180,9 @@ struct DayCircleView: View {
     private var numberColor: Color {
         switch day.state {
         case .done:                return day.colorIndex == nil ? .white : .black   // black reads well on every plan color
-        case .rest:                return Color.white
         case .today, .todayWorkout, .todayRest: return AppColors.textPrimary
         case .planned:             return plannedColor == nil ? AppColors.textSecondary : AppColors.textPrimary   // soft like the fill, readable in light and dark
-        case .upcoming:            return AppColors.textSecondary
+        case .rest, .upcoming:    return AppColors.textSecondary
         }
     }
 }
